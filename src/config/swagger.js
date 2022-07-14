@@ -2,8 +2,7 @@ const getServiceUrl = path => {
   const basePath = process.env.API_BASE_PATH + path
   const url = new URL(basePath + '/apiDocs', process.env.APP_HOST)
   url.search = new URLSearchParams({
-    type: 'apiDoc',
-    basePath: basePath
+    type: 'apiDoc'
   })
   return url.href
 }

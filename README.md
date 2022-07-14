@@ -23,6 +23,14 @@ Seed the data
 yarn seed
 ```
 
+## Docs
+
+Swagger generates docs, you can see them at: 
+
+```
+http://localhost:4000/docs
+```
+
 ## TODO
 
 * Fix tests
