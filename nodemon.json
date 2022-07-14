@@ -1,0 +1,9 @@
+{
+  "verbose": true,
+  "ignore": [
+    "**/data/*",
+    "**/test/**",
+    "**/bin/**",
+    "**/tmp/**"
+  ]
+}
