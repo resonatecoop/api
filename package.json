@@ -12,10 +12,8 @@
     "migrate":"NODE_ENV=development sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:migrate": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:seed": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders",
-    "run-all-tests": "npm-run-all test:*",
-    "test": "npm run test:lint src && npm run test:deps",
-    "test:lint": "standard src",
-    "test:deps": "dependency-check --verbose --missing ./lib/**/*.js --no-dev --i mysql2 --i pg --i pg-hstore --i dotenv-safe --i sequelize-cli"
+    "test": "npm run test:lint src",
+    "test:lint": "standard src"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
