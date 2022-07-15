@@ -53,14 +53,16 @@ const allowlist = [
   '/tracks/apiDocs'
 ]
 
-user.use(async (ctx, next) => {
-  if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
-    // 302
-    ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)
-  } else {
-    await next()
-  }
-})
+// user.use(async (ctx, next) => {
+//   // FIXME we shouldn't have special catches for specific requests probably
+//   if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
+//     // 302
+//     // FIXME this probably doesn't work considering we don't root at api
+//     ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)
+//   } else {
+//     await next()
+//   }
+// })
 
 // Anything in the user folder requires authorization, but
 // we skip the allowlist
