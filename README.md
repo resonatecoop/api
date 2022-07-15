@@ -59,3 +59,9 @@ Poke around the resonate db
 docker ps # look for the resonate pgsql container name
 docker exec -it <resonate-pgsql-container-name> psql -U resonate
 ```
+
+### Conflicting PGSQL
+
+It might be that you already have postgres installed on your machine, in which case the exposed postgres port by docker causes a conflict. 
+
+In that case set `POSTGRES_LOCAL_MACHINE_PORT` in `.env` so a different number, like `5433`

@@ -54,6 +54,8 @@ const origins = [
   'https://localhost:8080'
 ]
 
+// console.log(process.env.REDIS_HOST)
+
 app
   .use(logger())
   .use(ratelimit({
