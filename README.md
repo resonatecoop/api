@@ -11,11 +11,7 @@ cp .env.example .env
 docker-compose up
 ```
 
-Run migrations
-
-```
-yarn migrate
-```
+Migrations should have run as part of `docker-compose up`
 
 Seed the data
 
@@ -35,12 +31,8 @@ http://localhost:4000/docs
 
 * Fix tests
 * More seeding data
-* Authentication, we probably need to set up our own OAuth and client set-up
-* Move acceptable CORS endpoints into database
-* Image & music uploading
 * Payment processing
 * Replace moment with date-fns
-* Go through the FIXMEs to re-activate uninstalled things from during flight time
 * Look at `dashboard` roles and see how they work. Example in `api/src/user/plays.js`
 * Investigate what the `user/admin` stuff copied over from `dashboard` is for, and why it needs to be separate from the other endpoints.
 * Investigate whether the AJV validation is still needed alongside Swagger stuff
