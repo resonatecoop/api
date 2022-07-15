@@ -54,8 +54,8 @@ module.exports = {
       status: {
         type: DataTypes.INTEGER,
         validate: {
-          min: 0,
-          max: 4
+          minimum: 0,
+          maximum: 4
         },
         defaultValue: 1, // hidden
         field: 'status'
@@ -70,7 +70,6 @@ module.exports = {
       tableName: 'tracks'
     })
   },
-
 
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('tracks')

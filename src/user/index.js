@@ -62,6 +62,8 @@ user.use(async (ctx, next) => {
   }
 })
 
+// Anything in the user folder requires authorization, but
+// we skip the allowlist
 user.use(async (ctx, next) => {
   if (allowlist.includes(ctx.path)) return await next()
 

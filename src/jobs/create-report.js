@@ -1,0 +1,94 @@
+const createReport = require('../scripts/reports')
+const winston = require('winston')
+const Queue = require('bull')
+const path = require('path')
+const { File } = require('../db/models')
+const moment = require('moment')
+const sendEmailJob = require('./send-mail')
+
+const sendEmailQueue = new Queue('send-email', {
+  redis: {
+    port: process.env.REDIS_PORT || 6379,
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    password: process.env.REDIS_PASSWORD
+  }
+})
+
+sendEmailQueue.on('completed', (job, result) => {
+  logger.info('Email sent')
+})
+
+sendEmailQueue.process(sendEmailJob)
+
+const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  defaultMeta: { service: 'convert-audio' },
+  transports: [
+    new winston.transports.Console({
+      level: 'debug',
+      format: winston.format.simple()
+    }),
+    new winston.transports.File({
+      filename: 'error.log',
+      level: 'error'
+    })
+  ]
+})
+
+module.exports = async (job) => {
+  const { from, to, id: artistId = job.profile.id, labelId, profile } = job.data
+
+  try {
+    const profiler = logger.startTimer()
+
+    logger.info('starting creating report')
+
+    const { id: fileId } = await File.create({
+      owner_id: profile.id,
+      mime: 'text/csv',
+      status: 'processing'
+    }, { raw: true })
+
+    const { stats, sha1sum } = await createReport(from, to, { filename: fileId, artistId, labelId })
+
+    File.update({
+      hash: sha1sum,
+      size: stats.size,
+      status: 'ok'
+    }, {
+      where: {
+        id: fileId,
+        owner_id: profile.id
+      },
+      raw: true
+    })
+
+    sendEmailQueue.add({
+      template: 'earnings-report',
+      message: {
+        to: job.data.email || profile.email,
+        attachments: [
+          {
+            filename: `report_${from}_${to}-${artistId}.csv`,
+            path: path.resolve(path.join(BASE_DATA_DIR, '/data/reports'), fileId)
+          }
+        ]
+      },
+      locals: {
+        name: profile.nickname,
+        firstName: profile.first_name,
+        from: moment(from).format('LL'),
+        to: moment(to).format('LL')
+      }
+    })
+
+    profiler.done({ message: 'Done creating report. An email will be sent.' })
+
+    return Promise.resolve()
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}

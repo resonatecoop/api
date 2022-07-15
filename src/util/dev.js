@@ -22,4 +22,4 @@ module.exports.isEnv = (allowed = ['development', 'test']) => {
   }
 }
 
-module.exports = module.exports.isDev
+// module.exports = module.exports.isDev

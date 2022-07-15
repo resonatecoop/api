@@ -26,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
         return types[type]
       },
       validate: {
-        min: 0,
-        max: 1
+        minimum: 0,
+        maximum: 1
       },
       defaultValue: 0,
       field: 'event'

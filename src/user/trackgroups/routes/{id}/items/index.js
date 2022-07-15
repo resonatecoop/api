@@ -1,5 +1,10 @@
 const { TrackGroup, TrackGroupItem, Track } = require('../../../../../db/models')
 
+const {
+  validateTrackgroupItems,
+  validateParams
+} = require('../../../../../schemas/trackgroup')
+
 module.exports = function () {
   const operations = {
     PUT,
@@ -16,7 +21,23 @@ module.exports = function () {
   }
 
   async function PUT (ctx, next) {
+    let isValid = validateParams(ctx.params)
+
+    if (!isValid) {
+      const { message, dataPath } = validateParams.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
     const body = ctx.request.body
+
+    isValid = validateTrackgroupItems(body)
+
+    if (!isValid) {
+      const { message, dataPath } = validateTrackgroupItems.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
 
     try {
       let result = await TrackGroup.findOne({

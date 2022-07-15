@@ -12,7 +12,7 @@ const createLogger = (options) => {
       development: 'info',
       test: 'debug'
     }[process.env.NODE_ENV],
-    format = winston.formaton(),
+    format = winston.format,
     service = 'resonate-logger'
   } = options
 

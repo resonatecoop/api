@@ -66,8 +66,8 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.INTEGER,
       validate: {
-        min: 0,
-        max: 4
+        minimum: 0,
+        maximum: 4
       },
       set (status) {
         this.setDataValue('status', statusValues.indexOf(status))

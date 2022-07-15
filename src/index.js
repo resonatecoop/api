@@ -11,6 +11,8 @@ const session = require('koa-session')
 const koaCash = require('koa-cash')
 const { koaSwagger } = require('koa2-swagger-ui')
 const cors = require('@koa/cors')
+const ratelimit = require('koa-ratelimit')
+const Redis = require('ioredis')
 
 const KeyGrip = require('keygrip')
 
@@ -54,6 +56,29 @@ const origins = [
 
 app
   .use(logger())
+  .use(ratelimit({
+    db: new Redis({
+      port: process.env.REDIS_PORT || 6379,
+      host: process.env.REDIS_HOST || '127.0.0.1',
+      password: process.env.REDIS_PASSWORD
+    }),
+    duration: 60000,
+    errorMessage: 'Dashboard api is rate limited',
+    id: (ctx) => ctx.ip,
+    headers: {
+      remaining: 'Rate-Limit-Remaining',
+      reset: 'Rate-Limit-Reset',
+      total: 'Rate-Limit-Total'
+    },
+    max: 100,
+    disableHeader: false,
+    whitelist: (ctx) => {
+      // some logic that returns a boolean
+    },
+    blacklist: (ctx) => {
+      // some logic that returns a boolean
+    }
+  }))
   .use(session(sessionConfig, app))
   .use(compress(compressConfig()))
   .use(error(errorConfig()))

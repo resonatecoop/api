@@ -1,6 +1,11 @@
-const { WpUser, UserMeta, TrackGroup, TrackGroupItem, Track, File } = require('../../../../db/models')
+const { WpUser, UserMeta, TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../util/cover-src')
+
+const {
+  validateParams,
+  validateTrackgroup
+} = require('../../../../schemas/trackgroup')
 
 module.exports = function () {
   const operations = {
@@ -20,6 +25,14 @@ module.exports = function () {
   }
 
   async function DELETE (ctx, next) {
+    const isValid = validateParams(ctx.params)
+
+    if (!isValid) {
+      const { message, dataPath } = validateParams.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
     try {
       const result = await TrackGroup.findOne({
         attributes: [
@@ -91,6 +104,22 @@ module.exports = function () {
 
   async function PUT (ctx, next) {
     const body = ctx.request.body
+
+    let isValid = validateParams(ctx.params)
+
+    if (!isValid) {
+      const { message, dataPath } = validateParams.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
+    isValid = validateTrackgroup(body)
+
+    if (!isValid) {
+      const { message, dataPath } = validateTrackgroup.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
 
     try {
       let result = await TrackGroup.findOne({
@@ -188,6 +217,58 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
+    const isValid = validateParams(ctx.params)
+
+    if (!isValid) {
+      const { message, dataPath } = validateParams.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
+    const { type } = ctx.request.query
+
+    const where = {
+      creator_id: ctx.profile.id,
+      id: ctx.params.id
+    }
+
+    if (type) {
+      where.type = type
+    }
+
+    if (ctx.profile.role === 'label-owner') {
+      const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
+        attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
+        where: {
+          [Op.or]: [
+            {
+              [Op.and]: [
+                {
+                  user_id: ctx.profile.id
+                }
+              ]
+            },
+            {
+              [Op.and]: [
+                {
+                  meta_value: ctx.profile.id
+                },
+                {
+                  meta_key: {
+                    [Op.in]: ['mylabel']
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }).slice(0, -1)
+
+      where.creator_id = {
+        [Op.in]: sequelize.literal('(' + subQuery + ')')
+      }
+    }
+
     try {
       const result = await TrackGroup.findOne({
         attributes: [
@@ -204,10 +285,7 @@ module.exports = function () {
           'title',
           'type'
         ],
-        where: {
-          id: ctx.params.id,
-          creator_id: ctx.profile.id
-        },
+        where,
         order: [
           [{ model: TrackGroupItem, as: 'items' }, 'index', 'asc']
         ],

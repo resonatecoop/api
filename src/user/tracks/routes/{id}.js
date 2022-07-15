@@ -1,6 +1,7 @@
 const { UserMeta, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../util/cover-src')
+const { validate } = require('../../../schemas/tracks')
 
 module.exports = function () {
   const operations = {
@@ -20,6 +21,13 @@ module.exports = function () {
 
   async function PUT (ctx, next) {
     const body = ctx.request.body
+    const isValid = validate(body)
+
+    if (!isValid) {
+      const { message, dataPath } = validate.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
 
     try {
       const result = await Track.update(body, {
@@ -96,6 +104,8 @@ module.exports = function () {
     await next()
   }
 
+  // TODO: Add Swagger Docs
+
   async function GET (ctx, next) {
     try {
       const result = await Track.findOne({
@@ -116,12 +126,12 @@ module.exports = function () {
         include: [
           {
             model: File,
-            attributes: ['id'],
+            attributes: ['id', 'size', 'owner_id'],
             as: 'cover'
           },
           {
             model: File,
-            attributes: ['id'],
+            attributes: ['id', 'size', 'owner_id'],
             as: 'audiofile'
           },
           {

@@ -1,10 +1,12 @@
 const { Resonate: Sequelize, UserMeta, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
+const { validate } = require('../../../schemas/tracks')
 
 module.exports = function (trackService) {
   const operations = {
-    GET
+    GET,
+    POST
   }
 
   async function GET (ctx, next) {
@@ -32,12 +34,12 @@ module.exports = function (trackService) {
       include: [
         {
           model: File,
-          attributes: ['id'],
+          attributes: ['id', 'owner_id'],
           as: 'cover'
         },
         {
           model: File,
-          attributes: ['id'],
+          attributes: ['id', 'owner_id'],
           as: 'audiofile'
         },
         {
@@ -129,6 +131,37 @@ module.exports = function (trackService) {
       }
     ]
   }
+
+  async function POST (ctx, next) {
+    const body = ctx.request.body
+    const isValid = validate(body)
+
+    if (!isValid) {
+      const { message, dataPath } = validate.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
+    try {
+      const data = Object.assign(body, { creator_id: ctx.profile.id })
+
+      const result = await Track.create(data)
+
+      ctx.status = 201
+      ctx.body = {
+        data: result.get({
+          plain: true
+        }),
+        status: 201
+      }
+    } catch (err) {
+      ctx.throw(ctx.status, err.message)
+    }
+
+    await next()
+  }
+
+  // TODO: Swagger dogs for POST
 
   return operations
 }

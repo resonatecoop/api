@@ -1,6 +1,11 @@
-// TODO this can be consolidated with ./settings.js
-
+// TODO this can be consolidated with ./privacy.js
 const { TrackGroup } = require('../../../../db/models')
+
+const {
+  validateTrackgroupItems
+} = require('../schemas/trackgroup')
+
+const AJV = require('ajv')
 
 module.exports = function () {
   const operations = {
@@ -19,16 +24,42 @@ module.exports = function () {
 
   async function PUT (ctx, next) {
     const body = ctx.request.body
+    const isValid = new AJV({
+      allErrors: true,
+      removeAdditional: true
+    }).compile({
+      type: 'object',
+      properties: {
+        creator_id: {
+          type: 'number',
+          minimum: 1
+        },
+        private: {
+          type: 'boolean'
+        },
+        download: {
+          type: 'boolean'
+        }
+      }
+    })
+
+    if (!isValid) {
+      const { message, dataPath } = validateTrackgroupItems.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
+    const where = {
+      id: ctx.params.id
+    }
+
+    if (!body.creator_id) {
+      where.creator_id = ctx.profile.id
+    }
 
     try {
-      await TrackGroup.update({
-        private: body.private
-      }, {
-        where: {
-          id: ctx.params.id,
-          creator_id: ctx.profile.id,
-          type: 'playlist'
-        }
+      await TrackGroup.update(body, {
+        where
       })
 
       ctx.body = {
@@ -43,8 +74,9 @@ module.exports = function () {
   }
 
   PUT.apiDoc = {
-    operationId: 'updateTrackgroupPrivacy',
-    description: 'Update trackgroup privacy setting',
+    operationId: 'updateTrackgroupSettings',
+    description: 'Update download and privacy of trackgroup',
+    summary: '',
     tags: ['trackgroups'],
     parameters: [
       {
@@ -64,6 +96,21 @@ module.exports = function () {
           required: ['private'],
           properties: {
             private: {
+              type: 'boolean',
+              default: true
+            }
+          }
+        }
+      },
+      {
+        in: 'body',
+        name: 'trackgroupDownload',
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['download'],
+          properties: {
+            download: {
               type: 'boolean',
               default: true
             }

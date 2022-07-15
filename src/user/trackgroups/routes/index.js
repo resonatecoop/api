@@ -2,6 +2,10 @@ const { TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../util/cover-src')
+const {
+  validateTrackgroup,
+  validateQuery
+} = require('../../../schemas/trackgroup')
 
 module.exports = function () {
   const operations = {
@@ -11,10 +15,17 @@ module.exports = function () {
 
   async function POST (ctx, next) {
     const body = ctx.request.body
+    const isValid = validateTrackgroup(body)
+
+    if (!isValid) {
+      const { message, dataPath } = validateTrackgroup.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
 
     try {
       const result = await TrackGroup.create(Object.assign(body, {
-        enabled: body.type === 'playlist',
+        enabled: body.type === 'playlist', // FIXME: what's this enforcing?
         creator_id: ctx.profile.id
       }))
 
@@ -67,8 +78,16 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
+    const isValid = validateQuery(ctx.request.query)
+
+    if (!isValid) {
+      const { message, dataPath } = validateQuery.errors[0]
+      ctx.status = 400
+      ctx.throw(400, `${dataPath}: ${message}`)
+    }
+
     try {
-      const { type, limit = 100, page = 1, includes } = ctx.request.query
+      const { type, limit = 100, page = 1, featured, private: _private, download, enabled, includes } = ctx.request.query
 
       const where = {
         creator_id: ctx.profile.id,
@@ -80,7 +99,7 @@ module.exports = function () {
         }
       }
 
-      if (ctx.profile.role === 'label') {
+      if (ctx.profile.role === 'label-owner') {
         const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
           attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
           where: {
@@ -115,6 +134,22 @@ module.exports = function () {
 
       if (type) {
         where.type = type
+      }
+
+      if (download) {
+        where.download = true
+      }
+
+      if (_private) {
+        where.private = true
+      }
+
+      if (featured) {
+        where.featured = true
+      }
+
+      if (enabled) {
+        where.enabled = true
       }
 
       const whereTrackGroupItem = {}

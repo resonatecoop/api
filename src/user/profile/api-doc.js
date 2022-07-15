@@ -22,6 +22,17 @@ const apiDoc = {
         'code',
         'message'
       ]
+    },
+    Profile: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string'
+        },
+        nickname: {
+          type: 'string'
+        }
+      }
     }
   },
   responses: {

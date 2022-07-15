@@ -1,5 +1,12 @@
-const { Play, Resonate: sequelize } = require('../../../db/models')
-const { Op } = require('sequelize')
+const { findAllPlayCounts } = require('../../../scripts/reports/plays')
+
+const getDateFormat = (period = 'monthly') => {
+  return {
+    yearly: '%Y',
+    monthly: '%Y-%m',
+    daily: '%Y-%m-%d'
+  }[period]
+}
 
 module.exports = function () {
   const operations = {
@@ -9,40 +16,21 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    const { from = '2020-01-01', to = '2020-12-01' } = ctx.request.query
+    const { from = '2020-01-01', to = '2020-12-01', type = 'paid' } = ctx.request.query
+    const format = getDateFormat(ctx.request.period)
+    const isLabel = ctx.profile.role === 'label-owner'
 
     try {
-      const result = await Play.findAll({
-        attributes: [
-          [sequelize.fn('FROM_UNIXTIME', sequelize.col('date'), '%Y-%m-%d'), 'd'],
-          [sequelize.fn('IF', [sequelize.fn('count', sequelize.col('pid')), 'count'] > 8, 9, sequelize.fn('count', sequelize.col('pid'))), 'count']
-        ],
-        where: {
-          event: 1,
-          uid: ctx.profile.id,
-          date: {
-            [Op.and]: {
-              [Op.gt]: sequelize.fn('UNIX_TIMESTAMP', from),
-              [Op.lt]: sequelize.fn('UNIX_TIMESTAMP', to)
-            }
-          }
-        },
-        group: [
-          sequelize.fn('FROM_UNIXTIME', sequelize.col('date'), '%Y-%m-%d')
-        ],
-        order: [
-          [[sequelize.literal('d'), 'desc']]
-        ],
-        raw: true
-      })
+      const res = await findAllPlayCounts(ctx.profile.id, from, to, format, type, isLabel)
 
       ctx.body = {
-        data: result.map(item => ({ date: item.d, plays: item.count }))
+        data: res
       }
     } catch (err) {
-      ctx.status = err.status
       ctx.throw(ctx.status, err.message)
     }
+
+    await next()
   }
 
   GET.apiDoc = {
@@ -61,6 +49,11 @@ module.exports = function () {
         name: 'to',
         type: 'string',
         format: 'date'
+      },
+      {
+        in: 'query',
+        name: 'period',
+        type: 'string'
       }
     ],
     responses: {
