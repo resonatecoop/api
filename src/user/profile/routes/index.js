@@ -1,9 +1,6 @@
 const { UserMeta, User, OauthUser, Resonate: sequelize } = require('../../../db/models')
 const profileImage = require('../../../util/profile-image')
 const { Op } = require('sequelize')
-const AJV = require('ajv')
-const ajvKeywords = require('ajv-keywords')
-const ajvFormats = require('ajv-formats')
 const gravatar = require('gravatar')
 const queryBuilder = require('../../../util/query')
 
@@ -235,38 +232,8 @@ module.exports = function () {
     }
   }
 
-  const ajv = new AJV({
-    allErrors: true,
-    removeAdditional: true
-  })
-
-  ajvKeywords(ajv)
-  ajvFormats(ajv)
-
   async function PUT (ctx, next) {
     const body = ctx.request.body
-    const validate = ajv.compile({
-      type: 'object',
-      additionalProperties: false,
-      required: ['email'],
-      properties: {
-        email: {
-          type: 'string',
-          format: 'email'
-        },
-        nickname: {
-          type: 'string' // user meta value
-        }
-      }
-    })
-
-    const isValid = validate(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validate.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
 
     try {
       if (body.email && body.email !== ctx.profile.email) {

@@ -27,15 +27,6 @@ Swagger generates docs, you can see them at:
 http://localhost:4000/docs
 ```
 
-## TODO
-
-* Fix tests
-* More seeding data
-* Payment processing
-* Replace moment with date-fns
-* Look at `dashboard` roles and see how they work. Example in `api/src/user/plays.js`
-* Investigate what the `user/admin` stuff copied over from `dashboard` is for, and why it needs to be separate from the other endpoints.
-* Investigate whether the AJV validation is still needed alongside Swagger stuff
 
 ## Docker tips & tricks
 

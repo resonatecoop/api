@@ -1,12 +1,6 @@
 // TODO this can be consolidated with ./privacy.js
 const { TrackGroup } = require('../../../../db/models')
 
-const {
-  validateTrackgroupItems
-} = require('../schemas/trackgroup')
-
-const AJV = require('ajv')
-
 module.exports = function () {
   const operations = {
     PUT,
@@ -24,30 +18,6 @@ module.exports = function () {
 
   async function PUT (ctx, next) {
     const body = ctx.request.body
-    const isValid = new AJV({
-      allErrors: true,
-      removeAdditional: true
-    }).compile({
-      type: 'object',
-      properties: {
-        creator_id: {
-          type: 'number',
-          minimum: 1
-        },
-        private: {
-          type: 'boolean'
-        },
-        download: {
-          type: 'boolean'
-        }
-      }
-    })
-
-    if (!isValid) {
-      const { message, dataPath } = validateTrackgroupItems.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
 
     const where = {
       id: ctx.params.id
