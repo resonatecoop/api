@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const resolveProfileImage = require('../../util/profile-image')
-const { WpUser, Track, TrackGroup, File } = require('../../db/models')
+const { User, Track, TrackGroup, File } = require('../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../util/cover-src')
 const he = require('he')
@@ -27,7 +27,7 @@ module.exports = function () {
 
       const data = await Promise.all(response.data.map(async (item) => {
         if (['artist', 'band', 'label'].includes(item.kind)) {
-          const result = await WpUser.findOne({ id: item.user_id })
+          const result = await User.findOne({ id: item.user_id })
 
           if (!result) {
             return false
@@ -62,7 +62,7 @@ module.exports = function () {
                 }
               },
               {
-                model: WpUser,
+                model: User,
                 required: false,
                 as: 'user'
               }

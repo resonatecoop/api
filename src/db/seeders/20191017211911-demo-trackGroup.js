@@ -1,3 +1,5 @@
+const { faker } = require('@faker-js/faker')
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('track_groups', [
@@ -6,7 +8,7 @@ module.exports = {
         title: 'Best album ever',
         type: 'lp',
         about: 'this is the best album',
-        creator_id: 2124,
+        creator_id: faker.datatype.uuid(),
         display_artist: '@auggod',
         release_date: new Date('2019-01-01'),
         created_at: new Date(),
@@ -17,7 +19,7 @@ module.exports = {
         title: 'Best album ever 2',
         type: 'lp',
         about: 'this is the best album',
-        creator_id: 2124,
+        creator_id: faker.datatype.uuid(),
         display_artist: '@auggod',
         release_date: new Date('2019-01-01'),
         created_at: new Date(),
@@ -28,7 +30,7 @@ module.exports = {
         title: 'Best album ever 2',
         type: 'lp',
         about: 'this is the best album',
-        creator_id: 2124,
+        creator_id: faker.datatype.uuid(),
         display_artist: '@auggod',
         performers: ['auggod'],
         release_date: new Date('2019-01-01'),

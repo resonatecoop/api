@@ -31,8 +31,6 @@ router.get('/:id', isEnv(['development', 'test']), async (ctx, next) => {
       ]
     })
 
-    console.log(track)
-
     if (!track) {
       ctx.status = 404
       ctx.throw(ctx.status, 'Not found')

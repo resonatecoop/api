@@ -1,4 +1,4 @@
-const { Resonate: sequelize, WpUser } = require('../../../db/models')
+const { Resonate: sequelize, User } = require('../../../db/models')
 const resolveProfileImage = require('../../../util/profile-image')
 const map = require('awaity/map')
 const he = require('he')
@@ -58,7 +58,7 @@ module.exports = function () {
           offset
         },
         mapToModel: true,
-        model: WpUser
+        model: User
       })
 
       if (!result) {

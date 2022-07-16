@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'umeta_id'
     },
     userId: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.UUID,
       field: 'user_id'
     },
     meta_key: {
@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   UserMeta.associate = function (models) {
-    UserMeta.belongsTo(models.WpUser, { as: 'UserMeta', targetKey: 'id', foreignKey: 'userId' })
+    UserMeta.belongsTo(models.User, { as: 'UserMeta', targetKey: 'id', foreignKey: 'userId' })
   }
 
   return UserMeta

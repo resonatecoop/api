@@ -1,5 +1,5 @@
 const models = require('../../db/models')
-const { WpUser, Resonate: sequelize } = models
+const { User, Resonate: sequelize } = models
 const resolveProfileImage = require('../../util/profile-image')
 
 module.exports = function () {
@@ -36,7 +36,7 @@ module.exports = function () {
           featured: true,
           limit: 10
         },
-        model: WpUser,
+        model: User,
         raw: true
       })
 
