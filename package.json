@@ -9,7 +9,7 @@
   "scripts": {
     "start-dev": "./node_modules/nodemon/bin/nodemon.js --trace-warnings ./server.js --config nodemon.json",
     "start": "node src/index.js",
-    "migrate":"NODE_ENV=development sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
+    "migrate": "NODE_ENV=development sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:migrate": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:seed": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders",
     "test": "npm run test:lint src",
@@ -51,7 +51,6 @@
     "koa-session": "^5.13.1",
     "koa-useragent": "^4.0.0",
     "koa2-swagger-ui": "^5.0.5",
-    "moment": "^2.24.0",
     "ms": "^2.1.3",
     "node-cache": "^5.1.2",
     "node-fetch": "^2.6.1",

@@ -1,9 +1,10 @@
-const createReport = require('../scripts/reports')
-const winston = require('winston')
 const Queue = require('bull')
+const DateFns = require('date-fns')
 const path = require('path')
+const winston = require('winston')
+
 const { File } = require('../db/models')
-const moment = require('moment')
+const createReport = require('../scripts/reports')
 const sendEmailJob = require('./send-mail')
 
 const sendEmailQueue = new Queue('send-email', {
@@ -80,8 +81,8 @@ module.exports = async (job) => {
       locals: {
         name: profile.nickname,
         firstName: profile.first_name,
-        from: moment(from).format('LL'),
-        to: moment(to).format('LL')
+        from: DateFns.format(from, 'PP'),
+        to: DateFns.format(to, 'PP'),
       }
     })
 

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
-const yargs = require('yargs')
-const path = require('path')
 const { createObjectCsvWriter } = require('csv-writer')
+const DateFns = require('date-fns')
 const { promises: fs } = require('fs')
+const path = require('path')
 const shasum = require('shasum')
-const moment = require('moment')
+const yargs = require('yargs')
+
 const createReport = require('./create-report')
 const { createLogger } = require('../../util/logger')
 
@@ -17,18 +18,16 @@ yargs // eslint-disable-line
       .positional('start', {
         alias: 'from',
         type: 'string',
-        default: moment()
-          .startOf('month')
-          .format('YYYY-MM-DD'),
+        default: DateFns.format(DateFns.startOfMonth(new Date()), 'yyyy-MM-dd'),
         describe: 'report start date'
       })
       .positional('end', {
         alias: 'to',
         type: 'string',
-        default: moment()
-          .add(1, 'month')
-          .startOf('month')
-          .format('YYYY-MM-DD'),
+        default: DateFns.format(
+          DateFns.addMonths(DateFns.startOfMonth(new Date()), 1),
+          'yyyy-MM-dd'
+        ),
         describe: 'report end date'
       })
   }, (argv) => {
