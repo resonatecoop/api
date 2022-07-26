@@ -1,3 +1,5 @@
+const { SwaggerError } = require('../util/swagger')
+
 const apiDoc = {
   swagger: '2.0',
   info: {
@@ -5,21 +7,7 @@ const apiDoc = {
     version: '2.0.0-1'
   },
   definitions: {
-    Error: {
-      type: 'object',
-      properties: {
-        code: {
-          type: 'string'
-        },
-        message: {
-          type: 'string'
-        }
-      },
-      required: [
-        'code',
-        'message'
-      ]
-    }
+    Error: SwaggerError
   },
   responses: {
     BadRequest: {

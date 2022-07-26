@@ -1,3 +1,5 @@
+const { SwaggerError } = require('../../util/swagger')
+
 const apiDoc = {
   swagger: '2.0',
   info: {
@@ -8,21 +10,7 @@ const apiDoc = {
     Bearer: { type: 'apiKey', name: 'Authorization', in: 'header' }
   },
   definitions: {
-    Error: {
-      type: 'object',
-      properties: {
-        code: {
-          type: 'string'
-        },
-        message: {
-          type: 'string'
-        }
-      },
-      required: [
-        'code',
-        'message'
-      ]
-    },
+    Error: SwaggerError,
     Plays: {
       type: 'object',
       required: ['ids'],
