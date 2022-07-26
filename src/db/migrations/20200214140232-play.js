@@ -12,7 +12,7 @@ module.exports = {
         field: 'tid'
       },
       listener_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         field: 'uid'
       },
       type: {

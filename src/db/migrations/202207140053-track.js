@@ -8,7 +8,7 @@ module.exports = {
         field: 'tid'
       },
       creator_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         field: 'uid'
       },
       title: {

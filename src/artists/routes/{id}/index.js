@@ -1,5 +1,5 @@
 const models = require('../../../db/models')
-const { WpUser, User, UserMeta, UserGroup, Resonate: sequelize } = models
+const { User, UserMeta, UserGroup, Resonate: sequelize } = models
 const resolveProfileImage = require('../../../util/profile-image')
 const links = require('../../../util/links')
 const he = require('he')
@@ -54,7 +54,7 @@ module.exports = function () {
             id: ctx.params.id
           },
           mapToModel: true,
-          model: WpUser,
+          model: User,
           raw: true
         })
 

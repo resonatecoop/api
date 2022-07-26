@@ -20,12 +20,12 @@ db.Tag = require(path.join(__dirname, '/resonate', 'tag.js'))(db.Resonate, DataT
 db.TrackGroupItem = require(path.join(__dirname, '/resonate', 'track_group_item.js'))(db.Resonate, DataTypes)
 db.TrackGroup = require(path.join(__dirname, '/resonate', 'track_group.js'))(db.Resonate, DataTypes)
 db.Track = require(path.join(__dirname, '/resonate', 'track.js'))(db.Resonate, DataTypes)
-db.UserMeta = require(path.join(__dirname, '/resonate', 'user_meta.js'))(db.Resonate, DataTypes)
-db.WpUser = require(path.join(__dirname, '/resonate', 'user.js'))(db.Resonate, DataTypes)
 
+db.UserMeta = require(path.join(__dirname, '/userapi', 'user_meta.js'))(db.Resonate, DataTypes)
 db.Credit = require(path.join(__dirname, '/userapi', 'credit.js'))(db.Resonate, DataTypes)
 db.User = require(path.join(__dirname, '/userapi', 'user.js'))(db.Resonate, DataTypes)
 db.UserGroup = require(path.join(__dirname, '/userapi', 'usergroup.js'))(db.Resonate, DataTypes)
+db.Client = require(path.join(__dirname, '/userapi', 'client.js'))(db.Resonate, DataTypes)
 
 // fs
 //   .readdirSync(path.join(__dirname, './resonate'))

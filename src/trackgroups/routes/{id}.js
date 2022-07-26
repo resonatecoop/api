@@ -1,4 +1,4 @@
-const { WpUser, UserMeta, TrackGroup, TrackGroupItem, Track, File } = require('../../db/models')
+const { User, UserMeta, TrackGroup, TrackGroupItem, Track, File } = require('../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../util/cover-src')
 const ms = require('ms')
@@ -65,7 +65,7 @@ module.exports = function () {
         ],
         include: [
           {
-            model: WpUser,
+            model: User,
             required: false,
             attributes: ['id', 'display_name'],
             as: 'user'

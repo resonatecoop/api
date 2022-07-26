@@ -1,4 +1,4 @@
-const { WpUser, TrackGroup } = require('../../db/models')
+const { User, TrackGroup } = require('../../db/models')
 const ms = require('ms')
 
 module.exports = function () {
@@ -18,9 +18,9 @@ module.exports = function () {
 
       const id = parts[2].split('-')[0]
 
-      const key = Number(id) ? 'id' : 'nicename'
+      const key = Number(id) ? 'id' : 'displayName'
 
-      const user = await WpUser.findOne({
+      const user = await User.findOne({
         attributes: [
           'id'
         ],

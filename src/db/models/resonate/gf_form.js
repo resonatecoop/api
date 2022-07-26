@@ -57,15 +57,15 @@ module.exports = (sequelize, DataTypes) => {
       field: 'transaction_id'
     },
     is_fulfilled: {
-      type: DataTypes.TINYINT(1),
+      type: DataTypes.TINYINT,
       field: 'is_fulfilled'
     },
     created_by: {
-      type: DataTypes.BIGINT(20),
+      type: DataTypes.UUID,
       field: 'created_by'
     },
     transaction_type: {
-      type: DataTypes.TINYINT(1),
+      type: DataTypes.TINYINT,
       field: 'transaction_type'
     },
     status: {

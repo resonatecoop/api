@@ -50,9 +50,9 @@ module.exports = function () {
       const result = await User.findOne({
         attributes: [
           'id',
-          'login',
-          'email',
-          'registered'
+          'displayName',
+          'email'
+          // 'registered'
         ],
         where: {
           id: ctx.profile.id
@@ -65,7 +65,7 @@ module.exports = function () {
         include: [
           {
             model: UserMeta,
-            as: 'meta',
+            as: 'UserMeta',
             required: true,
             attributes: ['meta_key', 'meta_value'],
             where: {
@@ -154,7 +154,7 @@ module.exports = function () {
               attributes: ['meta_key', 'meta_value'],
               where: {
                 meta_key: {
-                  [Op.in]: ['nickname', 'role']
+                  [Op.in]: ['displayName', 'role']
                 }
               }
             }
@@ -195,6 +195,7 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
+      console.error('err', err)
       ctx.status = err.status
       ctx.throw(ctx.status, err.message)
     }

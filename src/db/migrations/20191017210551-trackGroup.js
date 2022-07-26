@@ -46,7 +46,7 @@ module.exports = {
         field: 'display_artist'
       },
       creator_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         field: 'creator_id'
       },
       composers: {
@@ -60,6 +60,10 @@ module.exports = {
       tags: {
         type: Sequelize.TEXT,
         field: 'tags'
+      },
+      slug: {
+        type: Sequelize.STRING,
+        field: 'slug'
       },
       release_date: {
         type: Sequelize.DATEONLY,

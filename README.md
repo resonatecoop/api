@@ -8,6 +8,9 @@ A rewrite of the Resonate tracks api, but with one database to rule them all.
 git clone <repo>
 cd <repo>
 cp .env.example .env
+cp jwk-keys.json.example jwk-keys.json
+cp cookies-keys.json.example cookies-keys.json
+
 docker-compose up
 ```
 
@@ -48,3 +51,7 @@ docker exec -it <resonate-pgsql-container-name> psql -U resonate
 It might be that you already have postgres installed on your machine, in which case the exposed postgres port by docker causes a conflict. 
 
 In that case set `POSTGRES_LOCAL_MACHINE_PORT` in `.env` so a different number, like `5433`
+
+## Authentication
+
+We use OpenID and the oidc-provider library to provide identity. Check out the documentation in `src/auth/README.md`

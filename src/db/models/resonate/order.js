@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'oid'
     },
     user_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       field: 'uid'
     },
     amount: {

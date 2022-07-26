@@ -1,5 +1,5 @@
 const models = require('../../db/models')
-const { WpUser, Resonate: sequelize } = models
+const { User, Resonate: sequelize } = models
 const resolveProfileImage = require('../../util/profile-image')
 const map = require('awaity/map')
 const he = require('he')
@@ -66,7 +66,7 @@ module.exports = function () {
           offset
         },
         mapToModel: true,
-        model: WpUser
+        model: User
       })
 
       ctx.lastModified = new Date()

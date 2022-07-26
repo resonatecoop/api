@@ -1,7 +1,5 @@
 const Koa = require('koa')
 const mount = require('koa-mount')
-const request = require('superagent')
-const { validate: isValidUUID } = require('uuid')
 
 /**
  * Oauth grant config
@@ -9,6 +7,7 @@ const { validate: isValidUUID } = require('uuid')
 
 const grant = require('grant-koa')
 const grantConfig = require('../config/grant')
+const { User } = require('../db/models')
 
 /**
  * User routing
@@ -26,7 +25,7 @@ const stream = require('./stream')
 /**
  * Swagger client for user-api
  */
-const SwaggerClient = require('swagger-client')
+const RedisAdapter = require('../auth/redis-adapter')
 
 const user = new Koa()
 
@@ -53,86 +52,44 @@ const allowlist = [
   '/tracks/apiDocs'
 ]
 
-// user.use(async (ctx, next) => {
-//   // FIXME we shouldn't have special catches for specific requests probably
-//   if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
-//     // 302
-//     // FIXME this probably doesn't work considering we don't root at api
-//     ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)
-//   } else {
-//     await next()
-//   }
-// })
+user.use(async (ctx, next) => {
+  if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
+    // 302
+    ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)
+  } else {
+    await next()
+  }
+})
+
+const adapter = new RedisAdapter('AccessToken')
 
 // Anything in the user folder requires authorization, but
 // we skip the allowlist
 user.use(async (ctx, next) => {
   if (allowlist.includes(ctx.path)) return await next()
-
   if (!ctx.accessToken) {
     ctx.status = 401
     ctx.throw(401, 'Missing required access token')
   }
 
-  if (!isValidUUID(ctx.accessToken)) {
-    ctx.status = 401
-    ctx.throw(401, 'Invalid access token')
-  }
-
   try {
-    let response
-
-    const requestUrl = new URL('/v1/oauth/introspect', process.env.OAUTH_HOST)
-
-    response = await request
-      .post(requestUrl.href)
-      .auth(process.env.OAUTH_CLIENT, process.env.OAUTH_SECRET)
-      .type('form')
-      .send({
-        token: ctx.accessToken,
-        token_type_hint: 'access_token'
+    // let response
+    // const adapter = new RedisAdapter('AccessToken')
+    const session = await adapter.find(ctx.accessToken)
+    if (session.accountId) {
+      const user = await User.findOne({
+        where: {
+          id: session.accountId
+        },
+        raw: true
       })
 
-    const { user_id: userId, scope } = response.body
-
-    const specUrl = new URL('/user/user.swaggeron', process.env.USER_API_HOST) // user-api swagger docs
-    const client = await new SwaggerClient({
-      url: specUrl.href,
-      authorizations: {
-        bearer: 'Bearer ' + ctx.accessToken
+      if (user) {
+        ctx.profile = user
       }
-    })
-
-    response = await client.apis.Users.ResonateUser_GetUser({
-      id: userId
-    })
-
-    const {
-      legacyId,
-      username: email,
-      fullName,
-      firstName,
-      lastName,
-      country,
-      member = false
-    } = response.body
-
-    const [role] = scope.split(' ').slice(-1) // expect last part of scope to be role
-
-    ctx.profile = {
-      userId, // user api user id (uuid)
-      role: role,
-      legacyId: legacyId,
-      id: legacyId, // id defaults to legacyId for compat, use ctx.profile.userId for user api id
-      uid: legacyId, // extra fallback
-      email,
-      fullName,
-      firstName,
-      lastName,
-      country,
-      member
     }
   } catch (err) {
+    console.error(err)
     let message = err.message
     if (err.response) {
       // handle token expiration

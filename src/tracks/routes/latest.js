@@ -20,7 +20,7 @@ module.exports = function (trackService) {
         INNER JOIN track_group_items as item ON(item.track_group_id = trackgroup.id)
         INNER JOIN tracks as track ON(item.track_id = track.tid AND track.status IN (0, 2, 3))
         INNER JOIN rsntr_usermeta as meta ON(meta.user_id = track.uid AND meta.meta_key = 'nickname')
-        ${order === 'plays' ? 'INNER JOIN (SELECT tid, count(distinct uid) as uids FROM plays WHERE FROM_UNIXTIME(plays.date) > now() - INTERVAL 4 YEAR GROUP BY tid) AS play ON (play.tid = track.tid)' : ''}
+        ${order === 'plays' ? 'INNER JOIN (SELECT tid, count(distinct uid) as uids FROM plays WHERE plays.date > now() - INTERVAL \'4 YEAR\' GROUP BY tid) AS play ON (play.tid = track.tid)' : ''}
         WHERE (trackgroup.type IS NULL OR trackgroup.type NOT IN ('playlist', 'compilation'))
         AND trackgroup.private = false
         AND trackgroup.enabled = true
@@ -39,7 +39,7 @@ module.exports = function (trackService) {
         INNER JOIN tracks as track ON(item.track_id = track.tid AND track.status IN(0, 2, 3))
         INNER JOIN rsntr_usermeta as meta ON(meta.user_id = track.uid AND meta.meta_key = 'nickname')
         LEFT JOIN files as file ON(file.id = track.track_url)
-        ${order === 'plays' ? 'INNER JOIN (SELECT tid, count(distinct uid) as uids FROM plays WHERE FROM_UNIXTIME(plays.date) > now() - INTERVAL 4 HOUR GROUP BY tid) AS play ON (play.tid = track.tid)' : ''}
+        ${order === 'plays' ? 'INNER JOIN (SELECT tid, count(distinct uid) as uids FROM plays WHERE plays.date > now() - INTERVAL \'4 HOUR\' GROUP BY tid) AS play ON (play.tid = track.tid)' : ''}
         WHERE (trackgroup.type IS NULL OR trackgroup.type NOT IN ('playlist', 'compilation'))
         AND trackgroup.private = false
         AND trackgroup.enabled = true
