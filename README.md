@@ -16,7 +16,7 @@ Migrations should have run as part of `docker-compose up`
 Seed the data
 
 ```
-yarn docker:seed
+yarn docker:seed:all
 ```
 
 ## Docs
