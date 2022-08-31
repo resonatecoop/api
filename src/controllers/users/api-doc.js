@@ -1,4 +1,4 @@
-const { SwaggerError } = require('../util/swagger')
+const { SwaggerError } = require('../../util/swagger')
 
 const apiDoc = {
   swagger: '2.0',
