@@ -29,17 +29,17 @@ const sessionConfig = require('./config/session')
  * Koa apps
  */
 
-const user = require('./user/index')
+const user = require('./controllers/user/index')
 const { provider, routes: authRoutes } = require('./auth/index')
-const trackgroups = require('./trackgroups/index')
-const tracks = require('./tracks/index')
-const artists = require('./artists/index')
-const users = require('./users/index')
-const labels = require('./labels/index')
-const search = require('./search/index')
-const tag = require('./tag/index')
-const resolve = require('./resolve/index')
-const stream = require('./stream/index')
+const trackgroups = require('./controllers/trackgroups/index')
+const tracks = require('./controllers/tracks/index')
+const artists = require('./controllers/artists/index')
+const users = require('./controllers/users/index')
+const labels = require('./controllers/labels/index')
+const search = require('./controllers/search/index')
+const tag = require('./controllers/tag/index')
+const resolve = require('./controllers/resolve/index')
+const stream = require('./controllers/stream/index')
 const Router = require('@koa/router')
 
 const app = new Koa({
