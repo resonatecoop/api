@@ -12,8 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'tid'
     },
     creator_id: {
-      type: DataTypes.INTEGER,
-
+      type: DataTypes.UUID,
       field: 'uid'
     },
     title: {
@@ -93,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
     Track.hasMany(models.Play, { as: 'play', foreignKey: 'tid', sourceKey: 'id' })
     Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
     Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
-    Track.hasOne(models.WpUser, { as: 'creator', sourceKey: 'creator_id', foreignKey: 'id' })
+    Track.hasOne(models.User, { as: 'creator', sourceKey: 'creator_id', foreignKey: 'id' })
     Track.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'track_cover_art', foreignKey: 'id' })
     Track.belongsTo(models.File, { as: 'audiofile', foreignKey: 'track_url' })
     Track.belongsTo(models.File, { as: 'cover', foreignKey: 'track_cover_art' })

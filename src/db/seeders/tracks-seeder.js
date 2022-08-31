@@ -11,7 +11,7 @@ const generateTracks = () => {
     .fill()
     .map((v, i) => {
       return {
-        uid: getRandomInt(1, 1000),
+        uid: faker.datatype.uuid(),
         track_name: faker.company.catchPhrase(),
         track_artist: faker.name.findName(),
         track_album: 'Best album ever',

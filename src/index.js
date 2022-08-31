@@ -7,6 +7,9 @@ const compress = require('koa-compress')
 const error = require('koa-json-error')
 const mount = require('koa-mount')
 const etag = require('koa-etag')
+const render = require('koa-ejs')
+const path = require('path')
+
 const session = require('koa-session')
 const koaCash = require('koa-cash')
 const { koaSwagger } = require('koa2-swagger-ui')
@@ -26,16 +29,18 @@ const sessionConfig = require('./config/session')
  * Koa apps
  */
 
-const user = require('./user/index')
-const trackgroups = require('./trackgroups/index')
-const tracks = require('./tracks/index')
-const artists = require('./artists/index')
-const users = require('./users/index')
-const labels = require('./labels/index')
-const search = require('./search/index')
-const tag = require('./tag/index')
-const resolve = require('./resolve/index')
-const stream = require('./stream/index')
+const user = require('./controllers/user/index')
+const { provider, routes: authRoutes } = require('./auth/index')
+const trackgroups = require('./controllers/trackgroups/index')
+const tracks = require('./controllers/tracks/index')
+const artists = require('./controllers/artists/index')
+const users = require('./controllers/users/index')
+const labels = require('./controllers/labels/index')
+const search = require('./controllers/search/index')
+const tag = require('./controllers/tag/index')
+const resolve = require('./controllers/resolve/index')
+const stream = require('./controllers/stream/index')
+const Router = require('@koa/router')
 
 const app = new Koa({
   keys: new KeyGrip([process.env.APP_KEY, process.env.APP_KEY_2], 'sha256'),
@@ -95,15 +100,29 @@ app
     headers: ['Content-Type', 'Authorization']
   }))
 
-app.use(artists.routes())
-app.use(labels.routes())
-app.use(resolve.routes())
-app.use(search.routes())
-app.use(tag.routes())
-app.use(trackgroups.routes())
-app.use(tracks.routes())
-app.use(users.routes())
-app.use(mount('/stream', stream))
-app.use(mount('/user', user))
+const apiRouter = new Router()
+apiRouter.use('/api/v3', tracks.routes())
+apiRouter.use('/api/v3', artists.routes())
+apiRouter.use('/api/v3', labels.routes())
+apiRouter.use('/api/v3', resolve.routes())
+apiRouter.use('/api/v3', search.routes())
+apiRouter.use('/api/v3', tag.routes())
+apiRouter.use('/api/v3', trackgroups.routes())
+apiRouter.use('/api/v3', tracks.routes())
+apiRouter.use('/api/v3', users.routes())
+app.use(apiRouter.routes())
+
+app.use(authRoutes(provider).routes(), authRoutes(provider).allowedMethods({ throw: true }))
+app.use(mount('/', provider.app))
+app.use(mount('/api/v3/stream', stream)) // TODO: put this in the API
+app.use(mount('/api/v3/user', user)) // TODO: put this in the API
+
+// These are the views needed for the authentication
+render(app, {
+  cache: false,
+  viewExt: 'ejs',
+  layout: '_layout',
+  root: path.join(__dirname, 'auth/views')
+})
 
 module.exports = app

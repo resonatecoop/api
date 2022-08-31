@@ -62,7 +62,7 @@ module.exports.resolveProfileImage = async (id) => {
 
     return assets
   } catch (err) {
-    console.log(err)
+    console.error(err)
   } // do not throw
 }
 

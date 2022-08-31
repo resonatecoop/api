@@ -9,6 +9,8 @@ services:
       - "yes"
     image: redis
     container_name: resonate-redis
+    expose:
+      - 6379
     ports:
       - "${REDIS_PORT}:6379"
 

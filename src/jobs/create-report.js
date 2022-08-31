@@ -82,7 +82,7 @@ module.exports = async (job) => {
         name: profile.nickname,
         firstName: profile.first_name,
         from: DateFns.format(from, 'PP'),
-        to: DateFns.format(to, 'PP'),
+        to: DateFns.format(to, 'PP')
       }
     })
 

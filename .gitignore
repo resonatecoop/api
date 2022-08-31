@@ -4,3 +4,6 @@ node_modules
 
 data
 yarn-error.log
+
+jwk-keys.json
+cookies-keys.json

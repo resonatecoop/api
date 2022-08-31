@@ -21,7 +21,7 @@ module.exports = {
         field: 'filename_prefix'
       },
       owner_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         allowNull: false,
         field: 'owner_id'
       },

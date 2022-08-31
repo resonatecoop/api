@@ -8,7 +8,7 @@ module.exports = {
         field: 'umeta_id'
       },
       userId: {
-        type: DataTypes.BIGINT,
+        type: DataTypes.UUID,
         field: 'user_id'
       },
       meta_key: {

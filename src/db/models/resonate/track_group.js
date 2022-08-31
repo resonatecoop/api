@@ -63,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'display_artist'
     },
     creator_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       field: 'creator_id'
     },
     composers: {
@@ -164,7 +164,7 @@ module.exports = (sequelize, DataTypes) => {
 
   TrackGroup.associate = function (models) {
     TrackGroup.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'cover', foreignKey: 'id' })
-    TrackGroup.hasOne(models.WpUser, { as: 'user', sourceKey: 'creator_id', foreignKey: 'id' })
+    TrackGroup.hasOne(models.User, { as: 'user', sourceKey: 'creator_id', foreignKey: 'id' })
     TrackGroup.hasMany(models.UserMeta, { as: 'usermeta', sourceKey: 'creator_id', foreignKey: 'user_id' })
     TrackGroup.hasMany(models.TrackGroupItem, { as: 'items', foreignKey: 'trackgroupId', sourceKey: 'id' })
   }

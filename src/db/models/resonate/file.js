@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'filename_prefix'
     },
     owner_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       field: 'owner_id'
     },
