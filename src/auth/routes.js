@@ -3,6 +3,7 @@ const { strict: assert } = require('assert')
 const querystring = require('querystring')
 const { inspect } = require('util')
 const { User } = require('../db/models')
+const RedisAdapter = require('./redis-adapter')
 
 const isEmpty = require('lodash/isEmpty')
 const bodyParser = require('koa-body')
@@ -22,6 +23,8 @@ const debug = (obj) => querystring.stringify(Object.entries(obj).reduce((acc, [k
 const body = bodyParser({
   text: false, json: false, patchNode: true, patchKoa: true
 })
+
+const adapter = new RedisAdapter('Session')
 
 module.exports = (provider) => {
   const router = new Router()
@@ -81,6 +84,34 @@ module.exports = (provider) => {
         title: 'Registration',
         session: {},
         dbg: { params: debug({}), prompt: debug({ }) }
+      })
+    } else {
+      next()
+    }
+  })
+
+  router.get('/account', async (ctx, next) => {
+    // Ideally this gets moved into a front-end app.
+    const cookie = ctx.cookies.get('_session')
+    // const interactionDetails = await provider.interactionDetails(ctx.req, ctx.res)
+    // console.log(interactionDetails)
+    const session = await adapter.find(cookie)
+    const user = await User.findOne({
+      where: {
+        id: session.accountId
+      },
+      raw: true
+    })
+    console.log('user', user)
+    if (user) {
+      return ctx.render('account', {
+        title: 'Account',
+        uid: session.uid,
+        client: undefined,
+        user,
+        session: session,
+        params: {},
+        dbg: { params: debug({}), prompt: debug({}) }
       })
     } else {
       next()

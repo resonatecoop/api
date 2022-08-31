@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'id'
     },
     form_id: {
-      type: DataTypes.MEDIUMINT,
+      type: DataTypes.INTEGER,
       field: 'form_id'
     },
     date_created: {
@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'transaction_id'
     },
     is_fulfilled: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.INTEGER,
       field: 'is_fulfilled'
     },
     created_by: {
@@ -65,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'created_by'
     },
     transaction_type: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.INTEGER,
       field: 'transaction_type'
     },
     status: {
