@@ -98,7 +98,6 @@ user.use(async (ctx, next) => {
     }
     ctx.throw(ctx.status, message)
   }
-
   await next()
 })
 
@@ -109,6 +108,6 @@ user.use(profile.routes())
 user.use(plays.routes())
 user.use(trackgroups.routes())
 user.use(tracks.routes())
-user.use(mount('/stream', stream))
+user.use(stream.routes())
 
 module.exports = user

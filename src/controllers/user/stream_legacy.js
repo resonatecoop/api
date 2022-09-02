@@ -16,6 +16,7 @@ const router = new Router()
  */
 
 router.get('/:id', isEnv(['development', 'test']), async (ctx, next) => {
+  console.log('wh')
   try {
     const track = await Track.findOne({
       where: {
@@ -53,6 +54,7 @@ router.get('/:id', isEnv(['development', 'test']), async (ctx, next) => {
 
     await send(ctx, `/${fileid}.m4a`, { root: path.join(BASE_DATA_DIR, '/data/media/audio') })
   } catch (err) {
+    console.log('err', err)
     ctx.throw(ctx.status, err.message)
   }
 

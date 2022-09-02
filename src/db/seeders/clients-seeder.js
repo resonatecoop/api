@@ -4,7 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Seeds something for a local client
     return queryInterface.bulkInsert('clients', [{
-      key: faker.datatype.uuid(),
+      key: '81b4671a-f40a-4479-a449-c87499904ddf', // faker.datatype.uuid(),
       secret: 'matron-fling-raging-send-herself-ninth',
       grant_types: ['authorization_code'],
       response_types: ['code'],

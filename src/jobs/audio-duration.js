@@ -3,9 +3,10 @@ const getAudioDuration = require('../util/get-audio-duration')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
-export default async job => {
+module.exports = async job => {
+  console.log('job', job)
   const { filename } = job.data
-
+  console.log('audio')
   try {
     // fallback for file with no headers?
     // see: https://github.com/Borewit/music-metadata/issues/543

@@ -1,7 +1,7 @@
 const path = require('path')
 const winston = require('winston')
 const ffmpeg = require('fluent-ffmpeg')
-const { fs } = require('fs')
+const { promises: fs } = require('fs')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
@@ -21,14 +21,14 @@ const logger = winston.createLogger({
   ]
 })
 
-export default async job => {
+module.exports = async job => {
   const { filename } = job.data
 
   try {
     const result = await Promise.all([
       new Promise((resolve, reject) => {
         const profiler = logger.startTimer()
-
+        logger.info('starting processing')
         return ffmpeg(path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`))
           .noVideo()
           .outputOptions('-movflags', '+faststart', '-f', 'ipod')

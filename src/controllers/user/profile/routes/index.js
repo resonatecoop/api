@@ -1,10 +1,10 @@
-const { UserMeta, User, OauthUser, Resonate: sequelize } = require('../../../../db/models')
+const { UserMeta, User, OauthUser /* Resonate: sequelize */ } = require('../../../../db/models')
 const profileImage = require('../../../../util/profile-image')
 const { Op } = require('sequelize')
 const gravatar = require('gravatar')
-const queryBuilder = require('../../../../util/query')
+// const queryBuilder = require('../../../../util/query')
 
-const query = queryBuilder(sequelize)
+// const query = queryBuilder(sequelize)
 
 module.exports = function () {
   const operations = {
@@ -61,20 +61,20 @@ module.exports = function () {
           [Op.in]: ['member', 'listener', 'admin']
         }
         */
-        },
-        include: [
-          {
-            model: UserMeta,
-            as: 'UserMeta',
-            required: true,
-            attributes: ['meta_key', 'meta_value'],
-            where: {
-              meta_key: {
-                [Op.in]: ['role', 'nickname', 'mylabel', 'mybands']
-              }
-            }
-          }
-        ]
+        }
+        // include: [
+        //   {
+        //     model: UserMeta,
+        //     as: 'UserMeta',
+        //     required: true,
+        //     attributes: ['meta_key', 'meta_value'],
+        //     where: {
+        //       meta_key: {
+        //         [Op.in]: ['role', 'nickname', 'mylabel', 'mybands']
+        //       }
+        //     }
+        //   }
+        // ]
       })
 
       if (!result) {
@@ -82,23 +82,23 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
-      const { id, login, registered, email, meta } = result
+      const { id, login, registered, email } = result
 
-      const { role: umRole, mylabel, mybands, nickname } = Object.fromEntries(Object.entries(meta)
-        .map(([key, value]) => {
-          const metaKey = value.meta_key
-          let metaValue = value.meta_value
+      // const { role: umRole, mylabel, mybands, nickname } = Object.fromEntries(Object.entries(meta)
+      //   .map(([key, value]) => {
+      //     const metaKey = value.meta_key
+      //     let metaValue = value.meta_value
 
-          if (!isNaN(Number(metaValue))) {
-            metaValue = Number(metaValue)
-          }
+      //     if (!isNaN(Number(metaValue))) {
+      //       metaValue = Number(metaValue)
+      //     }
 
-          return [metaKey, metaValue]
-        }))
+      //     return [metaKey, metaValue]
+      //   }))
 
       const data = {
-        role: umRole.replace('um_', ''),
-        nickname,
+        // role: umRole.replace('um_', ''),
+        nickname: login ?? email,
         token: ctx.accessToken, // for upload endpoint, may replace with upload specific token
         id,
         login,
@@ -110,85 +110,85 @@ module.exports = function () {
 
       data.avatar = await profileImage(ctx.profile.id)
 
-      if (data.role === 'bands') {
-      // fetch band members
-        const result = await query(`
-        SELECT distinct u.ID as id, um.meta_value as nickname, um2.meta_value as role
-        FROM rsntr_users AS u
-        INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
-        INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' AND um2.meta_value = :role)
-        WHERE u.ID IN (SELECT user_id FROM rsntr_usermeta WHERE meta_key = 'mybands' AND meta_value = :bandId)
-        LIMIT :limit
-      `, { bandId: id, limit: 20, role: 'member' })
+      // if (data.role === 'bands') {
+      // // fetch band members
+      //   const result = await query(`
+      //   SELECT distinct u.ID as id, um.meta_value as nickname, um2.meta_value as role
+      //   FROM rsntr_users AS u
+      //   INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
+      //   INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' AND um2.meta_value = :role)
+      //   WHERE u.ID IN (SELECT user_id FROM rsntr_usermeta WHERE meta_key = 'mybands' AND meta_value = :bandId)
+      //   LIMIT :limit
+      // `, { bandId: id, limit: 20, role: 'member' })
 
-        data.profiles = data.profiles.concat(result)
-      }
+      //   data.profiles = data.profiles.concat(result)
+      // }
 
-      if (data.role === 'label-owner') {
-      // fetch first 20 artists and bands
-        const result = await query(`
-        SELECT distinct u.ID as id, um.meta_value as nickname, um2.meta_value as role
-        FROM rsntr_users AS u
-        INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
-        INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' AND um2.meta_value IN('member', 'bands'))
-        WHERE u.ID IN (SELECT user_id FROM rsntr_usermeta WHERE meta_key = 'mylabel' AND meta_value = :labelId)
-        LIMIT :limit
-      `, { labelId: id, limit: 20 })
+      // if (data.role === 'label-owner') {
+      // // fetch first 20 artists and bands
+      //   const result = await query(`
+      //   SELECT distinct u.ID as id, um.meta_value as nickname, um2.meta_value as role
+      //   FROM rsntr_users AS u
+      //   INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
+      //   INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' AND um2.meta_value IN('member', 'bands'))
+      //   WHERE u.ID IN (SELECT user_id FROM rsntr_usermeta WHERE meta_key = 'mylabel' AND meta_value = :labelId)
+      //   LIMIT :limit
+      // `, { labelId: id, limit: 20 })
 
-        data.profiles = data.profiles.concat(result)
-      }
+      //   data.profiles = data.profiles.concat(result)
+      // }
 
-      if (mylabel) {
-        const label = await User.findOne({
-          attributes: [
-            'id'
-          ],
-          where: {
-            id: mylabel
-          },
-          include: [
-            {
-              model: UserMeta,
-              as: 'meta',
-              required: true,
-              attributes: ['meta_key', 'meta_value'],
-              where: {
-                meta_key: {
-                  [Op.in]: ['displayName', 'role']
-                }
-              }
-            }
-          ]
-        })
+      // if (mylabel) {
+      //   const label = await User.findOne({
+      //     attributes: [
+      //       'id'
+      //     ],
+      //     where: {
+      //       id: mylabel
+      //     },
+      //     include: [
+      //       {
+      //         model: UserMeta,
+      //         as: 'meta',
+      //         required: true,
+      //         attributes: ['meta_key', 'meta_value'],
+      //         where: {
+      //           meta_key: {
+      //             [Op.in]: ['displayName', 'role']
+      //           }
+      //         }
+      //       }
+      //     ]
+      //   })
 
-        data.profiles.push(label)
-      }
+      //   data.profiles.push(label)
+      // }
 
-      if (mybands) {
-        const band = await User.findOne({
-          attributes: [
-            'id'
-          ],
-          where: {
-            id: mybands
-          },
-          include: [
-            {
-              model: UserMeta,
-              as: 'meta',
-              required: true,
-              attributes: ['meta_key', 'meta_value'],
-              where: {
-                meta_key: {
-                  [Op.in]: ['nickname', 'role']
-                }
-              }
-            }
-          ]
-        })
+      // if (mybands) {
+      //   const band = await User.findOne({
+      //     attributes: [
+      //       'id'
+      //     ],
+      //     where: {
+      //       id: mybands
+      //     },
+      //     include: [
+      //       {
+      //         model: UserMeta,
+      //         as: 'meta',
+      //         required: true,
+      //         attributes: ['meta_key', 'meta_value'],
+      //         where: {
+      //           meta_key: {
+      //             [Op.in]: ['nickname', 'role']
+      //           }
+      //         }
+      //       }
+      //     ]
+      //   })
 
-        data.profiles.push(band)
-      }
+      //   data.profiles.push(band)
+      // }
 
       ctx.body = {
         data,

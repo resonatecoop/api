@@ -13,7 +13,7 @@ module.exports = function () {
       const result = await Favorite.findAll({
         attributes: ['track_id'],
         where: {
-          type: 1,
+          type: true,
           user_id: ctx.profile.id,
           track_id: {
             [Op.in]: body.ids
@@ -29,6 +29,7 @@ module.exports = function () {
         data: result
       }
     } catch (err) {
+      console.log('err', err)
       ctx.status = err.status || 500
       ctx.throw(ctx.status, err.message)
     }

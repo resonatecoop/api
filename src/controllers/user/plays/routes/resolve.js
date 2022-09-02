@@ -12,7 +12,7 @@ module.exports = function () {
     try {
       const result = await Play.findAll({
         attributes: [
-          [sequelize.fn('IF', [sequelize.fn('count', sequelize.col('pid')), 'count'] > 8, 9, sequelize.fn('count', sequelize.col('pid'))), 'count'],
+          [sequelize.fn('count', sequelize.col('pid')), 'count'],
           ['tid', 'track_id']
         ],
         where: {
@@ -32,6 +32,7 @@ module.exports = function () {
         data: result
       }
     } catch (err) {
+      console.log('err', err)
       ctx.status = err.status || 500
       ctx.throw(ctx.status, err.message)
     }

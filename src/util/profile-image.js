@@ -1,10 +1,10 @@
-const fs = require('fs')
-const path = require('path')
+// const fs = require('fs')
+// const path = require('path')
 const NodeCache = require('node-cache')
 
 const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
-const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
+// const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
 /**
  *
@@ -16,8 +16,9 @@ module.exports.resolveProfileImage = async (id) => {
 
     if (cached) return cached
 
-    const dirContent = await fs.readdir(path.resolve(path.join(BASE_DATA_DIR, '/data/ultimatemember'), `./${id}`))
-
+    // TODO: Figure out a way to read documents
+    // const dirContent = await fs.readdir(path.resolve(path.join(BASE_DATA_DIR, '/data/ultimatemember'), `./${id}`))
+    const dirContent = []
     const assets = {}
 
     const variants = {

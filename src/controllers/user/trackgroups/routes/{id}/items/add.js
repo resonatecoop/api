@@ -1,11 +1,6 @@
 const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
 
-const {
-  validateTrackgroupItems,
-  validateParams
-} = require('../../../../../../schemas/trackgroup')
-
 module.exports = function () {
   const operations = {
     PUT,
@@ -22,23 +17,7 @@ module.exports = function () {
   }
 
   async function PUT (ctx, next) {
-    let isValid = validateParams(ctx.params)
-
-    if (!isValid) {
-      const { message, dataPath } = validateParams.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     const body = ctx.request.body
-    isValid = validateTrackgroupItems(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validateTrackgroupItems.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     try {
       let result = await TrackGroup.findOne({
         attributes: ['id'],
@@ -70,7 +49,6 @@ module.exports = function () {
       }
 
       const count = result.items.length
-
       // assign trackgroup id ref to each track group item
       const trackGroupItems = body.tracks.map((item, index) => {
         const o = Object.assign(item, {
@@ -83,7 +61,6 @@ module.exports = function () {
       })
 
       await TrackGroupItem.bulkCreate(trackGroupItems)
-
       result = await TrackGroupItem.findAll({
         where: {
           trackgroupId: ctx.params.id

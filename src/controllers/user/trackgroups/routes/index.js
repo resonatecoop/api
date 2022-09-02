@@ -2,10 +2,6 @@ const { TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
-const {
-  validateTrackgroup,
-  validateQuery
-} = require('../../../../schemas/trackgroup')
 
 module.exports = function () {
   const operations = {
@@ -14,14 +10,8 @@ module.exports = function () {
   }
 
   async function POST (ctx, next) {
+    console.log('validating', ctx.request.body)
     const body = ctx.request.body
-    const isValid = validateTrackgroup(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validateTrackgroup.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
 
     try {
       const result = await TrackGroup.create(Object.assign(body, {
@@ -37,6 +27,7 @@ module.exports = function () {
         status: 201
       }
     } catch (err) {
+      console.log(err)
       ctx.status = err.status || 500
       ctx.throw(ctx.status, err.message)
     }
@@ -78,14 +69,6 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    const isValid = validateQuery(ctx.request.query)
-
-    if (!isValid) {
-      const { message, dataPath } = validateQuery.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     try {
       const { type, limit = 100, page = 1, featured, private: _private, download, enabled, includes } = ctx.request.query
 
@@ -169,6 +152,7 @@ module.exports = function () {
           'creator_id',
           'about',
           'private',
+          'enabled',
           'display_artist',
           'composers',
           'performers',
