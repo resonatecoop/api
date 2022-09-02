@@ -135,9 +135,8 @@ module.exports = function (trackService) {
     const body = ctx.request.body
 
     try {
-      const data = Object.assign(body, { creator_id: ctx.profile.id })
-      console.log('data', data)
-      const result = await Track.create(data)
+      // const data = Object.assign(body, { creator_id: ctx.profile.id })
+      const result = await Track.create(body)
       ctx.status = 201
       ctx.body = {
         data: result.get({
@@ -146,7 +145,7 @@ module.exports = function (trackService) {
         status: 201
       }
     } catch (err) {
-      console.log('er', err)
+      console.error('er', err)
       ctx.throw(ctx.status, err.message)
     }
 

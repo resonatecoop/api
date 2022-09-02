@@ -149,7 +149,7 @@ const imageQueue = new Queue3('convert', queueOptions)
 const imageQueueEvents = new QueueEvents('convert', queueOptions)
 
 imageQueueEvents.on('global:completed', async (jobId) => {
-  console.log(`Job with id ${jobId} has been completed`)
+  logger.info(`Job with id ${jobId} has been completed`)
 
   try {
     const job = await imageQueue.getJob(jobId)
@@ -210,7 +210,7 @@ const processFile = ctx => {
         path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`)
       )
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
 
     if (process.env.NODE_ENV !== 'development') {

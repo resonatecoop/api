@@ -1,6 +1,7 @@
 // const fs = require('fs')
 const path = require('path')
 require('dotenv').config()
+require('pg').defaults.parseInt8 = true
 const sequelize = require('sequelize')
 const { Sequelize, DataTypes } = sequelize
 // const basename = path.basename(__filename)
@@ -20,34 +21,13 @@ db.Tag = require(path.join(__dirname, '/resonate', 'tag.js'))(db.Resonate, DataT
 db.TrackGroupItem = require(path.join(__dirname, '/resonate', 'track_group_item.js'))(db.Resonate, DataTypes)
 db.TrackGroup = require(path.join(__dirname, '/resonate', 'track_group.js'))(db.Resonate, DataTypes)
 db.Track = require(path.join(__dirname, '/resonate', 'track.js'))(db.Resonate, DataTypes)
+db.Artist = require(path.join(__dirname, '/resonate', 'artist.js'))(db.Resonate, DataTypes)
 
 db.UserMeta = require(path.join(__dirname, '/userapi', 'user_meta.js'))(db.Resonate, DataTypes)
 db.Credit = require(path.join(__dirname, '/userapi', 'credit.js'))(db.Resonate, DataTypes)
 db.User = require(path.join(__dirname, '/userapi', 'user.js'))(db.Resonate, DataTypes)
 db.UserGroup = require(path.join(__dirname, '/userapi', 'usergroup.js'))(db.Resonate, DataTypes)
 db.Client = require(path.join(__dirname, '/userapi', 'client.js'))(db.Resonate, DataTypes)
-
-// fs
-//   .readdirSync(path.join(__dirname, './resonate'))
-//   .filter(file => {
-//     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '')
-//   })
-//   .forEach(file => {
-//     const model = require(path.join(__dirname, '/resonate', file))(db.Resonate, DataTypes)
-
-//     db[model.name] = model
-//   })
-
-// fs
-//   .readdirSync(path.join(__dirname, './userapi'))
-//   .filter(file => {
-//     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '')
-//   })
-//   .forEach(file => {
-//     const model = require(path.join(__dirname, '/userapi', file))(db.UserAPI, DataTypes)
-
-//     db[model.name] = model
-//   })
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

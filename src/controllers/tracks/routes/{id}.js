@@ -1,4 +1,4 @@
-const { User, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
+const { Artist, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../util/cover-src')
 
@@ -95,7 +95,7 @@ module.exports = function () {
       }
 
       // FIXME: This should refer an artist, not the original uploader
-      const user = await User.findOne({ where: { id: result.creator_id } })
+      const artist = await Artist.findOne({ where: { id: result.creator_id } })
 
       let ext = '.jpg'
 
@@ -113,7 +113,7 @@ module.exports = function () {
           duration: result.duration,
           album: result.album,
           year: result.year,
-          artist: user.displayName,
+          artist: artist.display_name,
           cover: !result.cover_art
             ? coverSrc(cover, '600', ext, false)
             : coverSrc(result.cover_art, '600', ext, !result.dataValues.cover),
