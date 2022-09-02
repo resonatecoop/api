@@ -62,4 +62,4 @@ const sendMail = async (job) => {
   }
 }
 
-export default sendMail
+module.exports = sendMail

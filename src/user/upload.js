@@ -1,31 +1,24 @@
-import Koa from 'koa'
-import Queue from 'bull'
-import Roles from 'koa-roles'
-import Router from '@koa/router'
-import FileType from 'file-type'
-import { promises as fs } from 'fs'
-import koaBody from 'koa-body'
-import path from 'path'
-import shasum from 'shasum'
-import winston from 'winston'
-import bytes from 'bytes'
-import dimensions from 'image-size'
-import * as mm from 'music-metadata'
+// const { Queue } = require('bullmq') // TODO: phase this out
+const { Queue3, Queue, QueueEvents } = require('bullmq')
+const FileType = require('file-type')
+const { promises: fs } = require('fs')
+const path = require('path')
+const shasum = require('shasum')
+const winston = require('winston')
+const dimensions = require('image-size')
+const mm = require('music-metadata')
 
-import { Track, File } from '../db/models'
+const { Track, File } = require('../db/models')
 
-import sendEmailJob from '../jobs/send-mail'
-import uploadJob from '../jobs/upload-b2'
-import sharpConfig from '../config/sharp' // TODO publish this
+const sendEmailJob = require('../jobs/send-mail')
+const uploadJob = require('../jobs/upload-b2')
+const sharpConfig = require('../config/sharp') // TODO publish this)
 
-import {
-  REDIS_CONFIG
-} from '../config/redis'
-
-import {
+const {
   HIGH_RES_AUDIO_MIME_TYPES,
   SUPPORTED_IMAGE_MIME_TYPES
-} from '../config/supported-media-types'
+} = require('../config/supported-media-types')
+const { REDIS_CONFIG } = require('../config/redis')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
@@ -46,13 +39,16 @@ const logger = winston.createLogger({
 })
 
 const queueOptions = {
-  redis: REDIS_CONFIG
+  prefix: 'resonate',
+  connection: REDIS_CONFIG
 }
 
 const audioQueue = new Queue('convert-audio', queueOptions)
 
-audioQueue.on('global:completed', async (jobId) => {
-  console.log(`Job with id ${jobId} has been completed`)
+const audioQueueEvents = new QueueEvents('convert-audio', queueOptions)
+
+audioQueueEvents.on('global:completed', async (jobId) => {
+  logger.log(`Job with id ${jobId} has been completed`)
 
   try {
     const job = await audioQueue.getJob(jobId)
@@ -89,15 +85,19 @@ audioQueue.on('global:completed', async (jobId) => {
   }
 })
 
-const sendEmailQueue = new Queue('send-email', queueOptions)
+const sendEmailQueue = new Queue3('send-email', queueOptions)
 
-sendEmailQueue.on('completed', (job, result) => {
+const sendEmailQueueEvents = new QueueEvents('send-email', queueOptions)
+
+sendEmailQueueEvents.on('completed', (job, result) => {
   logger.info(`Email sent to ${job.data.message.to}`)
 })
 
-const uploadQueue = new Queue('upload', queueOptions)
+const uploadQueue = new Queue3('upload', queueOptions)
 
-uploadQueue.on('completed', async (job, result) => {
+const uploadQueueEvents = new QueueEvents('upload', queueOptions)
+
+uploadQueueEvents.on('completed', async (job, result) => {
   const { profile } = job.data
 
   try {
@@ -116,9 +116,11 @@ uploadQueue.on('completed', async (job, result) => {
   }
 })
 
-const audioDurationQueue = new Queue('audio-duration', queueOptions)
+const audioDurationQueue = new Queue3('audio-duration', queueOptions)
 
-audioDurationQueue.on('global:completed', async (jobId) => {
+const audioDurationQueueEvents = new QueueEvents('audio-duration', queueOptions)
+
+audioDurationQueueEvents.on('global:completed', async (jobId) => {
   try {
     const job = await audioDurationQueue.getJob(jobId)
 
@@ -142,9 +144,11 @@ audioDurationQueue.on('global:completed', async (jobId) => {
   }
 })
 
-const imageQueue = new Queue('convert', queueOptions)
+const imageQueue = new Queue3('convert', queueOptions)
 
-imageQueue.on('global:completed', async (jobId) => {
+const imageQueueEvents = new QueueEvents('convert', queueOptions)
+
+imageQueueEvents.on('global:completed', async (jobId) => {
   console.log(`Job with id ${jobId} has been completed`)
 
   try {
@@ -165,28 +169,6 @@ imageQueue.on('global:completed', async (jobId) => {
 sendEmailQueue.process(sendEmailJob)
 uploadQueue.process(uploadJob)
 
-const user = new Roles()
-const router = new Router()
-const upload = new Koa()
-
-upload.use(user.middleware())
-
-user.use((ctx, action) => {
-  return ctx.profile || action === 'upload'
-})
-
-user.use('upload', async (ctx, action) => {
-  return ctx.profile.scope.includes('read_write')
-})
-
-user.use((ctx, action) => {
-  const allowed = ['admin', 'superadmin']
-
-  if (allowed.includes(ctx.profile.role)) {
-    return true
-  }
-})
-
 /*
  * Process a file then queue it for upload
  * @param {object} ctx Koa context
@@ -197,7 +179,6 @@ const processFile = ctx => {
     const { size: fileSize, path: filePath } = file
     const type = await FileType.fromFile(filePath)
     const mime = type !== null ? type.mime : file.type
-
     const isImage = SUPPORTED_IMAGE_MIME_TYPES
       .includes(mime)
 
@@ -223,10 +204,14 @@ const processFile = ctx => {
 
     const { id: filename, filename: originalFilename } = result.dataValues // uuid/v4
 
-    await fs.rename(
-      file.path,
-      path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`)
-    )
+    try {
+      await fs.rename(
+        file.path,
+        path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`)
+      )
+    } catch (e) {
+      console.log(e)
+    }
 
     if (process.env.NODE_ENV !== 'development') {
       uploadQueue.add({
@@ -254,29 +239,28 @@ const processFile = ctx => {
 
       logger.info('Creating new track')
 
-      const track = await Track.create({
-        title: metadata.common.title || originalFilename,
-        creator_id: ctx.profile.id,
-        url: filename,
-        duration: metadata.format.duration || 0,
-        artist: metadata.common.artist,
-        album: metadata.common.album,
-        year: metadata.common.year,
-        album_artist: metadata.common.albumartist,
-        number: metadata.common.track.no,
-        createdAt: new Date().getTime() / 1000 | 0
-      })
+      // const track = await Track.create({
+      //   title: metadata.common.title || originalFilename,
+      //   creator_id: ctx.profile.id,
+      //   url: filename,
+      //   duration: metadata.format.duration || 0,
+      //   artist: metadata.common.artist,
+      //   album: metadata.common.album,
+      //   year: metadata.common.year,
+      //   album_artist: metadata.common.albumartist,
+      //   number: metadata.common.track.no,
+      //   createdAt: new Date().getTime() / 1000 | 0
+      // })
 
       if (!metadata.format.duration) {
         audioDurationQueue.add({ filename })
       }
 
       data.metadata = metadata.common
-      data.track = track.get({ plain: true })
+      // data.track = track.get({ plain: true })
 
       logger.info('Adding audio to queue')
-
-      audioQueue.add({ filename })
+      audioQueue.add('convert', { filename })
     }
 
     if (isImage) {
@@ -306,69 +290,4 @@ const processFile = ctx => {
   }
 }
 
-router.get('/', user.can('upload'), async (ctx, next) => {
-  ctx.set('Content-Type', 'text/html')
-
-  ctx.body = `
-    <!doctype html>
-    <html>
-      <body>
-        <form action="/api/user/upload" enctype="multipart/form-data" method="post">
-        <input type="file" name="uploads" multiple="multiple"><br>
-        <button type="submit">Upload</button>
-      </body>
-    </html>
-  `
-
-  await next()
-})
-
-router.get('/:id', user.can('upload'), async (ctx, next) => {
-  try {
-    ctx.body = await File.findOne({ where: { id: ctx.params.id } })
-  } catch (err) {
-    ctx.throw(ctx.status, err.message)
-  }
-
-  await next()
-})
-
-router.post('/', user.can('upload'), async (ctx, next) => {
-  try {
-    const uploads = ctx.request.files.uploads
-
-    ctx.status = 202
-
-    ctx.body = {
-      data: Array.isArray(uploads)
-        ? await Promise.all(uploads.map(processFile(ctx)))
-        : await processFile(ctx)(uploads),
-      status: 202
-    }
-  } catch (err) {
-    ctx.throw(ctx.status, err.message)
-  }
-
-  await next()
-})
-
-upload
-  .use(koaBody({
-    multipart: true,
-    formidable: {
-      uploadDir: path.join(BASE_DATA_DIR, '/data/media/incoming/'),
-      maxFileSize: bytes('2 GB')
-    },
-    onError: (err, ctx) => {
-      if (/maxFileSize/.test(err.message)) {
-        ctx.status = 400
-        ctx.throw(400, err.message)
-      }
-    }
-  }))
-  .use(router.routes())
-  .use(router.allowedMethods({
-    throw: true
-  }))
-
-module.exports = upload
+module.exports = { processFile }

@@ -29,6 +29,7 @@
     "backblaze-b2": "^0.9.12",
     "bluebird": "^3.7.2",
     "bull": "^4.8.4",
+    "bullmq": "^1.90.0",
     "bytes": "^3.1.0",
     "csv-writer": "^1.5.0",
     "date-fns": "^2.22.1",

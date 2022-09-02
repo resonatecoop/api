@@ -75,4 +75,4 @@ function genAudio (dest, metadata) {
   })
 }
 
-module.exports = genAudio;
+module.exports = genAudio

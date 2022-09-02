@@ -1,4 +1,4 @@
-const { UserMeta, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
+const { User, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../util/cover-src')
 
@@ -18,7 +18,6 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     if (await ctx.cashed()) return
-
     try {
       const result = await Track.findOne({
         where: {
@@ -47,14 +46,14 @@ module.exports = function () {
             model: File,
             attributes: ['id'],
             as: 'audiofile'
-          },
-          {
-            model: UserMeta,
-            attributes: ['meta_key', 'meta_value'],
-            required: false,
-            where: { meta_key: { [Op.in]: ['nickname'] } },
-            as: 'meta'
           }
+          // {
+          //   model: UserMeta,
+          //   attributes: ['meta_key', 'meta_value'],
+          //   required: false,
+          //   where: { meta_key: { [Op.in]: ['nickname'] } },
+          //   as: 'meta'
+          // }
         ]
       })
 
@@ -95,17 +94,8 @@ module.exports = function () {
         cover = trackgroup.cover
       }
 
-      const { nickname } = Object.fromEntries(Object.entries(result.meta)
-        .map(([key, value]) => {
-          const metaKey = value.meta_key
-          let metaValue = value.meta_value
-
-          if (!isNaN(Number(metaValue))) {
-            metaValue = Number(metaValue)
-          }
-
-          return [metaKey, metaValue]
-        }))
+      // FIXME: This should refer an artist, not the original uploader
+      const user = await User.findOne({ where: { id: result.creator_id } })
 
       let ext = '.jpg'
 
@@ -123,7 +113,7 @@ module.exports = function () {
           duration: result.duration,
           album: result.album,
           year: result.year,
-          artist: nickname,
+          artist: user.displayName,
           cover: !result.cover_art
             ? coverSrc(cover, '600', ext, false)
             : coverSrc(result.cover_art, '600', ext, !result.dataValues.cover),

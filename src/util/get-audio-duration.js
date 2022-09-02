@@ -11,4 +11,4 @@ function getAudioDurationInSeconds (filepath) {
   })
 }
 
-module.exports = getAudioDurationInSeconds;
+module.exports = getAudioDurationInSeconds

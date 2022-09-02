@@ -9,6 +9,7 @@ services:
       - "yes"
     image: redis
     container_name: resonate-redis
+    restart: always
     expose:
       - 6379
     ports:
@@ -19,7 +20,6 @@ services:
       - api-network
       - redis-network
     build: .
-    # command: yarn start
     command: /bin/sh -c "yarn && yarn migrate && yarn start-dev"
     container_name: resonate-api
     environment:
@@ -29,10 +29,12 @@ services:
       - pgsql
     ports:
       - "4000:4000"
-    # restart: always
+    restart: always
     volumes:
-      # - /var/www/api/node_modules
+      - ./node_modules:/var/www/api/node_modules
       - ./:/var/www/api
+      - ./data/media/incoming:/data/media/incoming
+      - ./data/media/audio:/data/media/audio
 
   pgsql:
     image: postgres:14-alpine

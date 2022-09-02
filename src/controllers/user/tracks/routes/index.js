@@ -1,7 +1,6 @@
 const { Resonate: Sequelize, UserMeta, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
-const { validate } = require('../../../../schemas/tracks')
 
 module.exports = function (trackService) {
   const operations = {
@@ -134,19 +133,11 @@ module.exports = function (trackService) {
 
   async function POST (ctx, next) {
     const body = ctx.request.body
-    const isValid = validate(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validate.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
 
     try {
       const data = Object.assign(body, { creator_id: ctx.profile.id })
-
+      console.log('data', data)
       const result = await Track.create(data)
-
       ctx.status = 201
       ctx.body = {
         data: result.get({
@@ -155,6 +146,7 @@ module.exports = function (trackService) {
         status: 201
       }
     } catch (err) {
+      console.log('er', err)
       ctx.throw(ctx.status, err.message)
     }
 

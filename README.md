@@ -30,6 +30,15 @@ Swagger generates docs, you can see them at:
 http://localhost:4000/docs
 ```
 
+## Workers (Uploading Music, Images, Etc)
+
+If you want to upload music, you'll need a worker running.
+
+```
+docker exec -it resonate-api node src/jobs/audio-process-queue.js run convert-audio
+```
+
+> TODO: we should look into setting this up so that it starts running automatically on `docker-compose up`. The _right_ way to do this is probably to set up a container that launches the job.
 
 ## Docker tips & tricks
 

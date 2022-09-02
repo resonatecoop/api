@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 
+const dotenv = require('dotenv-safe')
+dotenv.config()
+
 const yargs = require('yargs')
 const { Worker } = require('bullmq')
 const winston = require('winston')
-const convertAudioJob = require('./jobs/convert-audio')
-const audioDurationJob = require('./jobs/audio-duration')
+const convertAudioJob = require('./convert-audio')
+const audioDurationJob = require('./audio-duration')
+
+const {
+  REDIS_CONFIG
+} = require('../config/redis')
 
 const logger = winston.createLogger({
   level: 'info',
@@ -24,11 +31,7 @@ const logger = winston.createLogger({
 
 const workerOptions = {
   prefix: 'resonate',
-  connection: {
-    port: process.env.REDIS_PORT || 6379,
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    password: process.env.REDIS_PASSWORD
-  }
+  connection: REDIS_CONFIG
 }
 
 yargs // eslint-disable-line
@@ -40,16 +43,24 @@ yargs // eslint-disable-line
         default: 'convert-audio'
       })
   }, (argv) => {
-    audioQueue(argv.name)
+    audioQueue()
     audioDurationQueue()
   })
   .help()
   .argv
 
-function audioQueue (name) {
-  const worker = new Worker(name, convertAudioJob, workerOptions)
+async function audioQueue () {
+  const worker = new Worker('convert-audio', convertAudioJob, workerOptions)
 
   logger.info('Worker is running')
+
+  worker.on('progress', (job) => {
+    console.log('failing')
+  })
+
+  worker.on('active', (job) => {
+    logger.info(JSON.stringify(job))
+  })
 
   worker.on('completed', (job) => {
     logger.info(job)
@@ -58,11 +69,14 @@ function audioQueue (name) {
   worker.on('failed', (job, err) => {
     logger.error(err)
   })
+
+  worker.on('error', err => {
+    logger.error(err)
+  })
 }
 
 function audioDurationQueue () {
   const worker = new Worker('audio-duration', audioDurationJob, workerOptions)
-
   logger.info('Audio duration worker started')
 
   worker.on('completed', (job) => {
