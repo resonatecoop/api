@@ -46,7 +46,7 @@ module.exports = {
         field: 'display_artist'
       },
       creator_id: {
-        type: Sequelize.UUID,
+        type: Sequelize.BIGINT,
         field: 'creator_id'
       },
       composers: {

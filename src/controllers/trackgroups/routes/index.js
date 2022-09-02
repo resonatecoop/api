@@ -1,4 +1,4 @@
-const { User, Resonate: Sequelize, TrackGroup, File } = require('../../../db/models')
+const { Artist, Resonate: Sequelize, TrackGroup, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../util/cover-src')
@@ -57,10 +57,10 @@ module.exports = function () {
             }
           },
           {
-            model: User,
+            model: Artist,
             required: false,
-            attributes: ['id', 'displayName'],
-            as: 'user'
+            attributes: ['id', 'display_name'],
+            as: 'artist'
           }
         ],
         order: [

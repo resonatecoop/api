@@ -40,7 +40,6 @@ router.get('/:id', async (ctx, next) => {
 
     ctx.body = null
   } catch (err) {
-    console.log('trying to stream', err)
     ctx.throw(ctx.status, err.message)
   }
 

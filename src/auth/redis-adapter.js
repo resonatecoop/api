@@ -87,9 +87,7 @@ class RedisAdapter {
 
     if (this.name === 'Client') {
       // For clients we go to our postgres database
-      console.log('checking client')
       const dbClient = await Client.findOne({ where: { key: id }, raw: true })
-      console.log('found', dbClient)
 
       if (dbClient) {
         return {

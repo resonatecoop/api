@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'tid'
     },
     creator_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.BIGINT,
       field: 'uid'
     },
     title: {

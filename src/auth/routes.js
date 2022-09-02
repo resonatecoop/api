@@ -102,7 +102,6 @@ module.exports = (provider) => {
       },
       raw: true
     })
-    console.log('user', user)
     if (user) {
       return ctx.render('account', {
         title: 'Account',

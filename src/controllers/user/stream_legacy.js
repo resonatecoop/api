@@ -16,7 +16,6 @@ const router = new Router()
  */
 
 router.get('/:id', isEnv(['development', 'test']), async (ctx, next) => {
-  console.log('wh')
   try {
     const track = await Track.findOne({
       where: {

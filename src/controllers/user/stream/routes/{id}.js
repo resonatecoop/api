@@ -13,7 +13,6 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     try {
-      console.log('getting stream')
       const track = await Track.findOne({
         where: {
           id: ctx.params.id
@@ -32,7 +31,6 @@ module.exports = function () {
         ctx.status = 404
         ctx.throw(ctx.status, 'Not found')
       }
-      console.log('got a trakc', track)
 
       const wallet = await Credit.findOne({
         where: {
@@ -40,13 +38,10 @@ module.exports = function () {
         }
       })
 
-      console.log('wallet', ctx.profile.id)
-
       if (!wallet) {
         ctx.status = 404
         ctx.throw(ctx.status, 'Not found')
       }
-      console.log('got plays')
       const currentCount = await Play.count({
         where: {
           track_id: track.id,
@@ -60,7 +55,6 @@ module.exports = function () {
       if (track.get('status') !== 'free' && currentCount < 9) {
         cost = calculateCost(currentCount)
       }
-      console.log('hi', cost, wallet.total)
 
       if (wallet.total < cost) {
         // 302
@@ -71,8 +65,6 @@ module.exports = function () {
         //   ? 'blank-audio'
         //   : track.url
         const filename = track.url
-
-        console.log('filename', filename)
 
         ctx.set({
           'Content-Type': 'audio/mp4',
@@ -88,7 +80,6 @@ module.exports = function () {
       ctx.throw(ctx.status, err.message)
     }
 
-    console.log('next')
     await next()
   }
 

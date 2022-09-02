@@ -1,4 +1,4 @@
-const { TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../db/models')
+const { TrackGroup, Artist, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
@@ -10,13 +10,18 @@ module.exports = function () {
   }
 
   async function POST (ctx, next) {
-    console.log('validating', ctx.request.body)
     const body = ctx.request.body
 
     try {
+      // FIXME: We should allow the user to select an artist to add the album to
+      const artist = await Artist.findOne({
+        where: {
+          userId: ctx.profile.id
+        }
+      })
       const result = await TrackGroup.create(Object.assign(body, {
         enabled: body.type === 'playlist', // FIXME: what's this enforcing?
-        creator_id: ctx.profile.id
+        creator_id: artist.id
       }))
 
       ctx.status = 201
@@ -72,8 +77,15 @@ module.exports = function () {
     try {
       const { type, limit = 100, page = 1, featured, private: _private, download, enabled, includes } = ctx.request.query
 
+      // FIXME: Allow filtering by artist
+      const userArtists = await Artist.findAll({
+        where: {
+          userId: ctx.profile.id
+        }
+      })
+
       const where = {
-        creator_id: ctx.profile.id,
+        creator_id: userArtists.map(a => a.id),
         type: {
           [Op.or]: {
             [Op.eq]: null,
@@ -197,6 +209,7 @@ module.exports = function () {
         ext = '.webp'
       }
 
+      console.log('results', result)
       const variants = [120, 600]
 
       ctx.body = {
@@ -215,7 +228,6 @@ module.exports = function () {
           o.uri = `${process.env.APP_HOST}/v3/trackgroups/${item.id}`
 
           o.performers = item.get('performers')
-
           o.creator_id = item.get('creator_id')
 
           o.composers = item.get('composers')

@@ -34,7 +34,6 @@ const B2_APPLICATION_KEY = process.env.B2_APPLICATION_KEY
  * @returns {Promise} Promise object containing image
  */
 const uploadFile = async (filename, mime, data) => {
-  console.log('uploading file')
   const b2 = new B2({
     accountId: B2_APPLICATION_KEY_ID,
     applicationKey: B2_APPLICATION_KEY
@@ -128,7 +127,6 @@ const uploadParts = async (filename, mime, data) => {
 
 const uploadB2 = async (job) => {
   const { filename, filesize, mime } = job.data
-  console.log('uploading', job.data)
   logger.info('Starting upload to b2')
 
   try {

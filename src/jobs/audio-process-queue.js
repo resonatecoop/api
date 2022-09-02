@@ -54,14 +54,6 @@ async function audioQueue () {
 
   logger.info('Worker is running')
 
-  worker.on('progress', (job) => {
-    console.log('failing')
-  })
-
-  worker.on('active', (job) => {
-    logger.info(JSON.stringify(job))
-  })
-
   worker.on('completed', (job) => {
     logger.info(job)
   })
