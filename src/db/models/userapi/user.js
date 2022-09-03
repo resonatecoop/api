@@ -70,6 +70,10 @@ module.exports = (sequelize, DataTypes) => {
     lastPasswordChange: {
       type: DataTypes.DATE
     },
+    roleId: {
+      type: DataTypes.INTEGER,
+      field: 'role_id'
+    },
     updatedAt: {
       field: 'updated_at',
       allowNull: false,
@@ -101,7 +105,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   User.associate = (models) => {
-    User.hasOne(models.UserMeta, { as: 'UserMeta', sourceKey: 'id', foreignKey: 'userId' })
+    User.hasMany(models.Artist, { as: 'artists', targetKey: 'id', foreignKey: 'userId' })
+    User.hasOne(models.Role, { as: 'role', sourceKey: 'roleId', foreignKey: 'id' })
   }
 
   User.hashPassword = hashPassword

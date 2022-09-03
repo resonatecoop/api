@@ -47,7 +47,7 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'creator_id',
+          'artistId',
           'display_artist',
           'download',
           'id',
@@ -173,7 +173,7 @@ module.exports = function () {
           cover_metadata: {
             id: data.cover
           },
-          creator_id: data.creator_id,
+          artistId: data.artistId,
           display_artist: data.display_artist,
           user: {
             name: data.artist.display_name,
@@ -204,7 +204,7 @@ module.exports = function () {
                 status: item.track.status,
                 album: item.track.album,
                 duration: item.track.duration,
-                creator_id: item.track.creator_id,
+                artistId: item.track.artistId,
                 artist: item.track.artist,
                 cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
                 images: variants.reduce((o, key) => {

@@ -195,7 +195,7 @@ module.exports = function () {
           o.uri = `${process.env.APP_HOST}/v3/trackgroups/${item.id}`
 
           o.performers = item.get('performers')
-          o.creator_id = item.get('creator_id')
+          o.artistId = item.get('artistId')
 
           o.composers = item.get('composers')
           o.tags = item.get('tags')
