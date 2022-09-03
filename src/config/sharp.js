@@ -1,30 +1,30 @@
-// const defaultOptions = {
-//   webp: {
-//     ext: '.webp',
-//     outputOptions: {
-//       chromaSubsampling: '4:4:4',
-//       lossless: true,
-//       optimiseCoding: true,
-//       quantisationTable: 3,
-//       progressive: false,
-//       smartSubsample: true
-//     }
-//   },
-//   jpeg: {
-//     ext: '.jpg',
-//     outputOptions: {
-//       chromaSubsampling: '4:4:4',
-//       optimiseCoding: true,
-//       quantisationTable: 3,
-//       progressive: false,
-//       optimiseScans: false, // required mozjpeg support
-//       trellisQuantisation: true, // required mozjpeg support
-//       overshootDeringing: true // required mozjpeg support
-//     }
-//   }
-// }
+module.exports.defaultOptions = {
+  webp: {
+    ext: '.webp',
+    outputOptions: {
+      chromaSubsampling: '4:4:4',
+      lossless: true,
+      optimiseCoding: true,
+      quantisationTable: 3,
+      progressive: false,
+      smartSubsample: true
+    }
+  },
+  jpeg: {
+    ext: '.jpg',
+    outputOptions: {
+      chromaSubsampling: '4:4:4',
+      optimiseCoding: true,
+      quantisationTable: 3,
+      progressive: false,
+      optimiseScans: false, // required mozjpeg support
+      trellisQuantisation: true, // required mozjpeg support
+      overshootDeringing: true // required mozjpeg support
+    }
+  }
+}
 
-const config = {
+module.exports.config = {
   banner: {
     webp: {
       variants: [
@@ -90,5 +90,3 @@ const config = {
     }
   }
 }
-
-module.export = config

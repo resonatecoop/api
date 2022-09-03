@@ -31,10 +31,10 @@ services:
       - "4000:4000"
     restart: always
     volumes:
-      - ./node_modules:/var/www/api/node_modules
       - ./:/var/www/api
       - ./data/media/incoming:/data/media/incoming
       - ./data/media/audio:/data/media/audio
+      - ./data/media/images:/data/media/images
 
   pgsql:
     image: postgres:14-alpine
@@ -44,50 +44,40 @@ services:
       - ./data/pgsql:/var/lib/postgresql/data
       - ./data/pgsql_backups:/backups
     container_name: resonate-pgsql
-    # expose:
-    #   - '5432'
     networks:
       api-network:
         aliases:
           - pgsql
     ports:
       - '${POSTGRES_LOCAL_MACHINE_PORT}:5432'
-  # webserver:
-  #   image: nginx:mainline-alpine
-  #   container_name: webserver
-  #   restart: unless-stopped
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - web-root:/var/www/html
-  #     - ./nginx-conf:/etc/nginx/conf.d
-  #     - certbot-etc:/etc/letsencrypt
-  #     - certbot-var:/var/lib/letsencrypt
-  #     - dhparam:/etc/ssl/certs
-  #     - htpasswd:/etc/nginx/htpasswd
-  #   depends_on:
-  #     - api
-  #   networks:
-  #     - app-network
-  #     - api-network
-
-  # certbot:
-  #   image: certbot/certbot
-  #   container_name: certbot
-  #   volumes:
-  #     - certbot-etc:/etc/letsencrypt
-  #     - certbot-var:/var/lib/letsencrypt
-  #     - web-root:/var/www/html
-  #   depends_on:
-  #     - webserver
-  #   command: certonly --webroot --webroot-path=/var/www/html --email auggod@resonate.is --agree-tos --no-eff-email --force-renewal -d beta.stream.resonate.coop
+    # volumes:
+    #   - web-root:/var/www/html
+    #   - ./nginx-conf:/etc/nginx/conf.d
+    # - certbot-etc:/etc/letsencrypt
+    # - certbot-var:/var/lib/letsencrypt
+    # - dhparam:/etc/ssl/certs
+    # - htpasswd:/etc/nginx/htpasswd
+    # depends_on:
+    # - api
+    # networks:
+    # - app-network
+    # - api-network
+    # certbot:
+    #   image: certbot/certbot
+    #   container_name: certbot
+    #   volumes:
+    #     - certbot-etc:/etc/letsencrypt
+    #     - certbot-var:/var/lib/letsencrypt
+    #     - web-root:/var/www/html
+    #   depends_on:
+    #     - webserver
+    #   command: certonly --webroot --webroot-path=/var/www/html --email auggod@resonate.is --agree-tos --no-eff-email --force-renewal -d beta.stream.resonate.coop
 
 networks:
   api-network:
     driver: bridge
-  app-network:
-    driver: bridge
+  # app-network:
+  #   driver: bridge
   redis-network:
     driver: bridge
 

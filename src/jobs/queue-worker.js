@@ -8,6 +8,7 @@ const { Worker } = require('bullmq')
 const winston = require('winston')
 const convertAudioJob = require('./convert-audio')
 const audioDurationJob = require('./audio-duration')
+const optimizeImage = require('./optimize-image')
 
 const {
   REDIS_CONFIG
@@ -16,7 +17,7 @@ const {
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { service: 'audio-process-queue' },
+  defaultMeta: { service: 'file-process-queue' },
   transports: [
     new winston.transports.Console({
       level: 'debug',
@@ -35,19 +36,31 @@ const workerOptions = {
 }
 
 yargs // eslint-disable-line
-  .command('run [name]', 'starts audio processing queue', (yargs) => {
-    yargs
-      .positional('name', {
-        type: 'string',
-        describe: 'queue name',
-        default: 'convert-audio'
-      })
-  }, (argv) => {
+  .command('run', 'starts file processing queue', (argv) => {
     audioQueue()
     audioDurationQueue()
+    imageQueue()
   })
   .help()
   .argv
+
+async function imageQueue () {
+  const worker = new Worker('optimize-image', optimizeImage, workerOptions)
+
+  logger.info('Worker is running')
+
+  worker.on('completed', (job) => {
+    logger.info(job)
+  })
+
+  worker.on('failed', (job, err) => {
+    logger.error('optimize-image', err)
+  })
+
+  worker.on('error', err => {
+    logger.error('optimize-image', err)
+  })
+}
 
 async function audioQueue () {
   const worker = new Worker('convert-audio', convertAudioJob, workerOptions)

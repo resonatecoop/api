@@ -1,3 +1,4 @@
+const { SwaggerError } = require('../../../util/swagger')
 
 const apiDoc = {
   swagger: '2.0',
@@ -7,6 +8,9 @@ const apiDoc = {
   },
   securityDefinitions: {
     Bearer: { type: 'apiKey', name: 'Authorization', in: 'header' }
+  },
+  definitions: {
+    Error: SwaggerError
   },
   responses: {
     BadRequest: {

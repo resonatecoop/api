@@ -1,4 +1,4 @@
-const { User, UserMeta, TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../../db/models')
+const { User, TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 
@@ -40,7 +40,7 @@ module.exports = function () {
           'type'
         ],
         where: {
-          creator_id: ctx.profile.id,
+          userId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -57,7 +57,7 @@ module.exports = function () {
 
       await TrackGroup.destroy({
         where: {
-          creator_id: ctx.profile.id,
+          userId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -105,29 +105,13 @@ module.exports = function () {
   async function PUT (ctx, next) {
     const body = ctx.request.body
 
-    let isValid = validateParams(ctx.params)
-
-    if (!isValid) {
-      const { message, dataPath } = validateParams.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
-    isValid = validateTrackgroup(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validateTrackgroup.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     try {
       let result = await TrackGroup.findOne({
         attributes: [
-          'creator_id'
+          'artistId'
         ],
         where: {
-          creator_id: ctx.profile.id,
+          userId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -139,7 +123,7 @@ module.exports = function () {
 
       result = await TrackGroup.update(body, {
         where: {
-          creator_id: ctx.profile.id,
+          userId: ctx.profile.id,
           id: ctx.params.id
         },
         returning: true
@@ -155,7 +139,7 @@ module.exports = function () {
           'about',
           'composers',
           'cover',
-          'creator_id',
+          'artistId',
           'display_artist',
           'download',
           'id',
@@ -167,7 +151,7 @@ module.exports = function () {
           'type'
         ],
         where: {
-          creator_id: ctx.profile.id,
+          userId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -217,64 +201,56 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    const isValid = validateParams(ctx.params)
-
-    if (!isValid) {
-      const { message, dataPath } = validateParams.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
-    const { type } = ctx.request.query
-
-    const where = {
-      creator_id: ctx.profile.id,
-      id: ctx.params.id
-    }
-
-    if (type) {
-      where.type = type
-    }
-
-    if (ctx.profile.role === 'label-owner') {
-      const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
-        attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
-        where: {
-          [Op.or]: [
-            {
-              [Op.and]: [
-                {
-                  user_id: ctx.profile.id
-                }
-              ]
-            },
-            {
-              [Op.and]: [
-                {
-                  meta_value: ctx.profile.id
-                },
-                {
-                  meta_key: {
-                    [Op.in]: ['mylabel']
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      }).slice(0, -1)
-
-      where.creator_id = {
-        [Op.in]: sequelize.literal('(' + subQuery + ')')
-      }
-    }
-
     try {
+      const { type } = ctx.request.query
+
+      const where = {
+        userId: ctx.profile.id,
+        id: ctx.params.id
+      }
+
+      if (type) {
+        where.type = type
+      }
+
+      // if (ctx.profile.role === 'label-owner') {
+      //   const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
+      //     attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
+      //     where: {
+      //       [Op.or]: [
+      //         {
+      //           [Op.and]: [
+      //             {
+      //               user_id: ctx.profile.id
+      //             }
+      //           ]
+      //         },
+      //         {
+      //           [Op.and]: [
+      //             {
+      //               meta_value: ctx.profile.id
+      //             },
+      //             {
+      //               meta_key: {
+      //                 [Op.in]: ['mylabel']
+      //               }
+      //             }
+      //           ]
+      //         }
+      //       ]
+      //     }
+      //   }).slice(0, -1)
+
+      //   where.creator_id = {
+      //     [Op.in]: sequelize.literal('(' + subQuery + ')')
+      //   }
+      // }
+
       const result = await TrackGroup.findOne({
         attributes: [
           'about',
           'cover',
-          'creator_id',
+          'artistId',
           'display_artist',
           'download',
           'id',
@@ -295,16 +271,6 @@ module.exports = function () {
             required: false,
             attributes: ['id', 'display_name'],
             as: 'user'
-          },
-          {
-            model: UserMeta,
-            attributes: ['meta_key', 'meta_value'],
-            where: {
-              meta_key: {
-                [Op.in]: ['nickname', 'role']
-              }
-            },
-            as: 'usermeta'
           },
           {
             model: File,
@@ -331,14 +297,6 @@ module.exports = function () {
                 }
               },
               include: [
-                {
-                  model: UserMeta,
-                  attributes: ['meta_key', 'meta_value'],
-                  where: {
-                    meta_key: 'nickname'
-                  },
-                  as: 'meta'
-                },
                 {
                   model: File,
                   required: false,
@@ -371,20 +329,6 @@ module.exports = function () {
         plain: true
       })
 
-      const { usermeta } = data
-
-      const { nickname, role } = Object.fromEntries(Object.entries(usermeta)
-        .map(([key, value]) => {
-          const metaKey = value.meta_key
-          let metaValue = value.meta_value
-
-          if (!isNaN(Number(metaValue))) {
-            metaValue = Number(metaValue)
-          }
-
-          return [metaKey, metaValue]
-        }))
-
       let ext = '.jpg'
 
       if (ctx.accepts('image/webp')) {
@@ -400,28 +344,14 @@ module.exports = function () {
           cover_metadata: {
             id: data.cover
           },
-          creator_id: data.creator_id,
+          artistId: data.artistId,
           display_artist: data.display_artist,
           user: {
-            name: nickname,
-            role: role,
             id: data.user.id
           },
           download: data.download,
           id: data.id,
           items: data.items.map((item) => {
-            const { nickname } = Object.fromEntries(Object.entries(item.track.meta)
-              .map(([key, value]) => {
-                const metaKey = value.meta_key
-                let metaValue = value.meta_value
-
-                if (!isNaN(Number(metaValue))) {
-                  metaValue = Number(metaValue)
-                }
-
-                return [metaKey, metaValue]
-              }))
-
             const fallback = !item.track.cover_art ? false : !item.track.cover_metadata
 
             return {
@@ -433,7 +363,7 @@ module.exports = function () {
                 album: item.track.album,
                 duration: item.track.duration,
                 creator_id: item.track.creator_id,
-                artist: item.track.artist || nickname,
+                artist: item.track.artist,
                 cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
                 images: variants.reduce((o, key) => {
                   const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
@@ -476,6 +406,7 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 

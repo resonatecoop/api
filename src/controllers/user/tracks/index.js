@@ -26,22 +26,20 @@ initialize({
   }
 })
 
-tracks.use((ctx, next) => {
-  return koaBody({
-    multipart: true,
-    formidable: {
-      uploadDir: path.join(BASE_DATA_DIR, '/data/media/incoming/'),
-      maxFileSize: bytes('2 GB')
-    },
-    onError: (err, ctx) => {
-      console.log(err)
-      if (/maxFileSize/.test(err.message)) {
-        ctx.status = 400
-        ctx.throw(400, err.message)
-      }
+tracks.use(koaBody({
+  multipart: true,
+  formidable: {
+    uploadDir: path.join(BASE_DATA_DIR, '/data/media/incoming/'),
+    maxFileSize: bytes('2 GB')
+  },
+  onError: (err, ctx) => {
+    console.log(err)
+    if (/maxFileSize/.test(err.message)) {
+      ctx.status = 400
+      ctx.throw(400, err.message)
     }
-  })(ctx, next)
-})
+  }
+}))
 tracks.use(cors())
 tracks.use('/tracks', router.routes(), router.allowedMethods({ throw: true }))
 

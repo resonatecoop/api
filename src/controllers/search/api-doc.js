@@ -6,7 +6,7 @@ const apiDoc = {
     title: 'Resonate Search API.',
     version: '2.0.0-1'
   },
-  definitions: SwaggerError,
+  definitions: { Error: SwaggerError },
   responses: {
     BadRequest: {
       description: 'Bad request',

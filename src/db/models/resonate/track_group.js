@@ -169,6 +169,7 @@ module.exports = (sequelize, DataTypes) => {
   TrackGroup.associate = function (models) {
     TrackGroup.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'cover', foreignKey: 'id' })
     TrackGroup.hasOne(models.Artist, { as: 'artist', sourceKey: 'artistId', foreignKey: 'id' })
+    TrackGroup.hasOne(models.User, { as: 'user', sourceKey: 'userId', foreignKey: 'id' })
     // TrackGroup.hasMany(models.UserMeta, { as: 'usermeta', sourceKey: 'creator_id', foreignKey: 'user_id' })
     TrackGroup.hasMany(models.TrackGroupItem, { as: 'items', foreignKey: 'trackgroupId', sourceKey: 'id' })
   }

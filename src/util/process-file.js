@@ -144,9 +144,9 @@ audioDurationQueueEvents.on('global:completed', async (jobId) => {
   }
 })
 
-const imageQueue = new Queue3('convert', queueOptions)
+const imageQueue = new Queue('optimize-image', queueOptions)
 
-const imageQueueEvents = new QueueEvents('convert', queueOptions)
+const imageQueueEvents = new QueueEvents('optimize-image', queueOptions)
 
 imageQueueEvents.on('global:completed', async (jobId) => {
   logger.info(`Job with id ${jobId} has been completed`)
@@ -239,6 +239,7 @@ const processFile = ctx => {
 
       logger.info('Creating new track')
 
+      // TODO: extract metadata from file and put it on the
       // const track = await Track.create({
       //   title: metadata.common.title || originalFilename,
       //   creator_id: ctx.profile.id,
@@ -260,7 +261,7 @@ const processFile = ctx => {
       // data.track = track.get({ plain: true })
 
       logger.info('Adding audio to queue')
-      audioQueue.add('convert', { filename })
+      audioQueue.add('convert-audio', { filename })
     }
 
     if (isImage) {
@@ -283,7 +284,7 @@ const processFile = ctx => {
 
       data.image = file.dataValues
 
-      imageQueue.add({ filename, config: sharpConfig[config] })
+      imageQueue.add('optimize-image', { filename, config: sharpConfig[config] })
     }
 
     return data
