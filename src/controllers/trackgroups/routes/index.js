@@ -65,7 +65,7 @@ module.exports = function () {
         ],
         order: [
           ['createdAt', 'DESC'],
-          ['creator_id', 'ASC'],
+          ['artistId', 'ASC'],
           ['title', 'ASC']
         ]
       }
@@ -75,7 +75,7 @@ module.exports = function () {
       } else if (order === 'oldest') {
         query.order = [
           ['createdAt', 'ASC'],
-          ['creator_id', 'ASC'],
+          ['artistId', 'ASC'],
           ['title', 'ASC']
         ]
       }

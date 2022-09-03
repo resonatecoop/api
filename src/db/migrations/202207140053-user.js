@@ -57,6 +57,11 @@ module.exports = {
       lastPasswordChange: {
         type: DataTypes.DATE
       },
+      roleId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'role_id'
+      },
       updatedAt: {
         field: 'updated_at',
         allowNull: false,

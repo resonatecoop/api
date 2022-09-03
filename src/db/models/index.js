@@ -28,6 +28,7 @@ db.Credit = require(path.join(__dirname, '/userapi', 'credit.js'))(db.Resonate, 
 db.User = require(path.join(__dirname, '/userapi', 'user.js'))(db.Resonate, DataTypes)
 db.UserGroup = require(path.join(__dirname, '/userapi', 'usergroup.js'))(db.Resonate, DataTypes)
 db.Client = require(path.join(__dirname, '/userapi', 'client.js'))(db.Resonate, DataTypes)
+db.Role = require(path.join(__dirname, '/userapi', 'role.js'))(db.Resonate, DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

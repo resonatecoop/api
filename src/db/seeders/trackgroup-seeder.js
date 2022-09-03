@@ -1,15 +1,41 @@
 const { faker } = require('@faker-js/faker')
-const { User, Artist } = require('../models')
+const { User, Artist, TrackGroup, Track, TrackGroupItem, Role } = require('../models')
+
+const generateTracks = async (trackgroup) => {
+  await Promise.all(Array(10)
+    .fill()
+    .map(async (v, i) => {
+      const track = await Track.create({
+        uid: 1,
+        title: faker.company.catchPhrase(),
+        artist: faker.name.findName(),
+        album: faker.hacker.noun(),
+        status: 'free',
+        date: faker.date.past(1)
+      })
+      await TrackGroupItem.create({
+        trackgroupId: trackgroup.id,
+        track_id: track.id,
+        index: i
+      })
+    }))
+}
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
+      const role = await Role.findOne({
+        where: {
+          name: 'artist'
+        }
+      })
       await queryInterface.bulkInsert('users', [{
         id: faker.datatype.uuid(),
         email: 'artist@admin.com',
         password: User.hashPassword({ password: 'test1234' }),
         email_confirmed: true,
         display_name: 'artist',
+        role_id: role.id,
         created_at: faker.date.past(1),
         updated_at: faker.date.past(1)
       }])
@@ -68,12 +94,23 @@ module.exports = {
           updated_at: new Date()
         }
       ])
+
+      const albums = await TrackGroup.findAll({
+        where: { userId: artistUser.id }
+      })
+
+      await Promise.all(albums.map(async album => {
+        return generateTracks(album)
+      }))
     } catch (e) {
       console.error(e)
     }
   },
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('track_groups', null, {})
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('track_groups', null, {})
+    await queryInterface.bulkDelete('tracks', null, {})
+    await queryInterface.bulkDelete('track_group_items', null, {})
+    return queryInterface.bulkDelete('users', null, {})
   }
 }
