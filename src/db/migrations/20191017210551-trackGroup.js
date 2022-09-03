@@ -45,9 +45,14 @@ module.exports = {
         type: Sequelize.STRING,
         field: 'display_artist'
       },
-      creator_id: {
+      artistId: {
         type: Sequelize.BIGINT,
-        field: 'creator_id'
+        field: 'artist_id'
+      },
+      userId: {
+        type: Sequelize.UUID,
+        field: 'user_id',
+        allowNull: false
       },
       composers: {
         type: Sequelize.TEXT,

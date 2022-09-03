@@ -1,4 +1,4 @@
-const { TrackGroup, Artist, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../db/models')
+const { TrackGroup, Artist, TrackGroupItem, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
@@ -21,7 +21,8 @@ module.exports = function () {
       })
       const result = await TrackGroup.create(Object.assign(body, {
         enabled: body.type === 'playlist', // FIXME: what's this enforcing?
-        creator_id: artist.id
+        artistId: artist.id,
+        userId: ctx.profile.id
       }))
 
       ctx.status = 201
@@ -85,45 +86,12 @@ module.exports = function () {
       })
 
       const where = {
-        creator_id: userArtists.map(a => a.id),
+        artistId: userArtists.map(a => a.id),
         type: {
           [Op.or]: {
             [Op.eq]: null,
             [Op.notIn]: ['playlist', 'compilation'] // hide playlists and compilations
           }
-        }
-      }
-
-      if (ctx.profile.role === 'label-owner') {
-        const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
-          attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
-          where: {
-            [Op.or]: [
-              {
-                [Op.and]: [
-                  {
-                    user_id: ctx.profile.id
-                  }
-                ]
-              },
-              {
-                [Op.and]: [
-                  {
-                    meta_value: ctx.profile.id
-                  },
-                  {
-                    meta_key: {
-                      [Op.in]: ['mylabel']
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        }).slice(0, -1)
-
-        where.creator_id = {
-          [Op.in]: sequelize.literal('(' + subQuery + ')')
         }
       }
 
@@ -161,7 +129,7 @@ module.exports = function () {
           'cover',
           'title',
           'type',
-          'creator_id',
+          'artistId',
           'about',
           'private',
           'enabled',
@@ -209,7 +177,6 @@ module.exports = function () {
         ext = '.webp'
       }
 
-      console.log('results', result)
       const variants = [120, 600]
 
       ctx.body = {

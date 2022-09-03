@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   Artist.associate = function (models) {
     Artist.hasOne(models.User, { as: 'user', sourceKey: 'userId', foreignKey: 'id' })
     // Artist.hasMany(models.UserMeta, { as: 'meta', targetKey: 'id', foreignKey: 'userId' })
-    Artist.hasMany(models.TrackGroup, { as: 'trackgroup', targetKey: 'id', foreignKey: 'creatorId' })
+    Artist.hasMany(models.TrackGroup, { as: 'trackgroups', targetKey: 'id', foreignKey: 'artistId' })
     Artist.hasMany(models.Track, { as: 'track', targetKey: 'id', foreignKey: 'uid' })
   }
 

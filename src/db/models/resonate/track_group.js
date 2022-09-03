@@ -62,9 +62,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'display_artist'
     },
-    creator_id: {
+    artistId: {
       type: DataTypes.BIGINT,
-      field: 'creator_id'
+      field: 'artist_id'
+    },
+    userId: {
+      type: DataTypes.UUID,
+      field: 'user_id'
     },
     composers: {
       type: DataTypes.TEXT,
@@ -149,7 +153,7 @@ module.exports = (sequelize, DataTypes) => {
     const result = await TrackGroup.findOne({
       attributes: ['id'],
       where: {
-        creator_id: trackGroup.creator_id,
+        artistId: trackGroup.artistId,
         slug: slugTitle // slug needs to be unique within user scope
       }
     })
@@ -164,7 +168,7 @@ module.exports = (sequelize, DataTypes) => {
 
   TrackGroup.associate = function (models) {
     TrackGroup.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'cover', foreignKey: 'id' })
-    TrackGroup.hasOne(models.Artist, { as: 'artist', sourceKey: 'creator_id', foreignKey: 'id' })
+    TrackGroup.hasOne(models.Artist, { as: 'artist', sourceKey: 'artistId', foreignKey: 'id' })
     // TrackGroup.hasMany(models.UserMeta, { as: 'usermeta', sourceKey: 'creator_id', foreignKey: 'user_id' })
     TrackGroup.hasMany(models.TrackGroupItem, { as: 'items', foreignKey: 'trackgroupId', sourceKey: 'id' })
   }

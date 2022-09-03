@@ -36,7 +36,7 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'creator_id',
+          'artistId',
           'display_artist',
           'id',
           'slug',
