@@ -22,6 +22,9 @@ const apiDoc = {
         display_artist: {
           type: 'string'
         },
+        artistId: {
+          type: 'number'
+        },
         release_date: {
           type: 'string',
           format: 'date'
