@@ -73,6 +73,15 @@ services:
     #     - webserver
     #   command: certonly --webroot --webroot-path=/var/www/html --email auggod@resonate.is --agree-tos --no-eff-email --force-renewal -d beta.stream.resonate.coop
 
+  nginx:
+    restart: always
+    networks:
+      - api-network
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+
 networks:
   api-network:
     driver: bridge
