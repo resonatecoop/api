@@ -6,15 +6,15 @@ const ajvFormats = require('ajv-formats')
 const Roles = require('koa-roles')
 const Router = require('@koa/router')
 const koaBody = require('koa-body')
-const { TrackGroup, TrackGroupItem, Track, File } = require('../../db/models')
+const { TrackGroup, TrackGroupItem, Track, File, Role } = require('../../../db/models')
 const { Op } = require('sequelize')
-const coverSrc = require('../../util/cover-src')
+const coverSrc = require('../../../util/cover-src')
 
 const {
-  validateTrackgroupItems,
-  validateParams,
-  validateQuery
-} = require('../../schemas/trackgroup')
+  validateTrackgroupItems
+  // validateParams
+  // validateQuery
+} = require('../../../schemas/trackgroup')
 
 const ajv = new AJV({
   allErrors: true,
@@ -93,55 +93,73 @@ user.use((ctx, action) => {
   return ctx.profile || action === 'access trackgroups'
 })
 
-user.use((ctx, action) => {
+user.use('access trackgroups', async (ctx, action) => {
   const allowed = ['admin', 'superadmin']
+  const role = await Role.findOne({
+    where: {
+      id: ctx.profile.roleId
+    }
+  })
+  if (allowed.includes(role.name)) {
+    return true
+  }
+})
 
-  if (allowed.includes(ctx.profile.role)) {
+user.use(async (ctx, action) => {
+  const allowed = ['admin', 'superadmin']
+  const role = await Role.findOne({
+    where: {
+      id: ctx.profile.roleId
+    }
+  })
+  if (allowed.includes(role)) {
     return true
   }
 })
 
 router.get('/', user.can('access trackgroups'), async (ctx, next) => {
-  const isValid = validateQuery(ctx.request.query)
-
-  if (!isValid) {
-    const { message, dataPath } = validateQuery.errors[0]
-    ctx.status = 400
-    ctx.throw(400, `${dataPath}: ${message}`)
-  }
-
-  const { type, limit = 20, page = 1, featured, private: _private, download, enabled } = ctx.request.query
-
-  const where = {
-    type: {
-      [Op.or]: {
-        [Op.eq]: null,
-        [Op.notIn]: ['playlist', 'compilation'] // hide playlists and compilations
-      }
-    }
-  }
-
-  if (download) {
-    where.download = true
-  }
-
-  if (_private) {
-    where.private = true
-  }
-
-  if (enabled) {
-    where.enabled = true
-  }
-
-  if (featured) {
-    where.featured = true
-  }
-
-  if (type) {
-    where.type = type
-  }
+  console.log('accessing trackgroups')
 
   try {
+    // FIXME Add query validation
+    // const isValid = validateQuery(ctx.request.query)
+
+    // if (!isValid) {
+    //   const { message, dataPath } = validateQuery.errors[0]
+    //   ctx.status = 400
+    //   ctx.throw(400, `${dataPath}: ${message}`)
+    // }
+
+    const { type, limit = 20, page = 1, featured, private: _private, download, enabled } = ctx.request.query
+
+    const where = {
+      type: {
+        [Op.or]: {
+          [Op.eq]: null,
+          [Op.notIn]: ['playlist', 'compilation'] // hide playlists and compilations
+        }
+      }
+    }
+
+    if (download) {
+      where.download = true
+    }
+
+    if (_private) {
+      where.private = true
+    }
+
+    if (enabled) {
+      where.enabled = true
+    }
+
+    if (featured) {
+      where.featured = true
+    }
+
+    if (type) {
+      where.type = type
+    }
     const { rows: result, count } = await TrackGroup.findAndCountAll({
       limit,
       offset: page > 1 ? (page - 1) * limit : 0,
@@ -155,7 +173,8 @@ router.get('/', user.can('access trackgroups'), async (ctx, next) => {
         'display_artist',
         'composers',
         'performers',
-        'release_date'
+        'release_date',
+        'enabled'
       ],
       include: [
         {
@@ -226,13 +245,13 @@ router.get('/', user.can('access trackgroups'), async (ctx, next) => {
  */
 
 router.get('/:id', user.can('access trackgroups'), async (ctx, next) => {
-  const isValid = validateParams(ctx.params)
+  // const isValid = validateParams(ctx.params)
 
-  if (!isValid) {
-    const { message, dataPath } = validateParams.errors[0]
-    ctx.status = 400
-    ctx.throw(400, `${dataPath}: ${message}`)
-  }
+  // if (!isValid) {
+  //   const { message, dataPath } = validateParams.errors[0]
+  //   ctx.status = 400
+  //   ctx.throw(400, `${dataPath}: ${message}`)
+  // }
 
   const { type } = ctx.request.query
 

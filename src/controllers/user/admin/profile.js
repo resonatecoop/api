@@ -1,7 +1,7 @@
 const Koa = require('koa')
 const Router = require('@koa/router')
 const Roles = require('koa-roles')
-const { User, UserMeta } = require('../../db/models')
+const { User, UserMeta } = require('../../../db/models')
 const AJV = require('ajv')
 const ajvKeywords = require('ajv-keywords')
 const ajvFormats = require('ajv-formats')

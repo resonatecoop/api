@@ -6,17 +6,17 @@ const Koa = require('koa')
 const Roles = require('koa-roles')
 const Router = require('@koa/router')
 const koaBody = require('koa-body')
-const { User, UserMeta, Resonate: sequelize } = require('../../db/models')
-const { Op } = require('sequelize')
-const profileImage = require('../../util/profile-image')
+const { User, Role } = require('../../../db/models')
+// const { Op } = require('sequelize')
+const profileImage = require('../../../util/profile-image')
 const gravatar = require('gravatar')
 
-const query = (query, values) => {
-  return sequelize.query(query, {
-    type: sequelize.QueryTypes.SELECT,
-    replacements: values
-  })
-}
+// const query = (query, values) => {
+//   return sequelize.query(query, {
+//     type: sequelize.QueryTypes.SELECT,
+//     replacements: values
+//   })
+// }
 
 const ajv = new AJV({
   coerceTypes: true,
@@ -59,20 +59,20 @@ const validateQuery = ajv.compile({
   }
 })
 
-const validateParams = new AJV({
-  coerceTypes: true,
-  allErrors: true,
-  removeAdditional: true
-}).compile({
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    id: {
-      type: 'number',
-      minimum: 1
-    }
-  }
-})
+// const validateParams = new AJV({
+//   coerceTypes: true,
+//   allErrors: true,
+//   removeAdditional: true
+// }).compile({
+//   type: 'object',
+//   additionalProperties: false,
+//   properties: {
+//     id: {
+//       type: 'number',
+//       minimum: 1
+//     }
+//   }
+// })
 
 const users = new Koa()
 const user = new Roles({
@@ -92,10 +92,14 @@ user.use((ctx, action) => {
   return ctx.profile || action === 'access users'
 })
 
-user.use('access users', (ctx, action) => {
+user.use('access users', async (ctx, action) => {
   const allowed = ['admin', 'superadmin']
-
-  if (allowed.includes(ctx.profile.role)) {
+  const role = await Role.findOne({
+    where: {
+      id: ctx.profile.roleId
+    }
+  })
+  if (allowed.includes(role.name)) {
     return true
   }
 })
@@ -134,38 +138,43 @@ router.get('/', user.can('access users'), async (ctx, next) => {
       parameters.q = '%' + q + '%'
     }
 
-    const count = (await query(`
-      SELECT count(*) as count
-      FROM rsntr_users AS u
-      INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
-      INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' ${role ? 'AND um2.meta_value = :role' : ''})
-      ${q ? 'WHERE user_email LIKE :q OR user_login LIKE :q OR user_nicename LIKE :q OR display_name LIKE :q' : ''}
-      LIMIT 1
-    `, parameters))[0].count
+    const { rows: result, count } = await User.findAndCountAll({
+      limit,
+      attributes: ['id', 'displayName', 'email', 'emailConfirmed', 'country', 'fullName', 'member'],
+      order: [['displayName', 'asc']],
+      offset: page > 1 ? (page - 1) * limit : 0,
+      include: [
+        {
+          model: Role,
+          as: 'role'
+        }
+      ]
+    })
 
-    const result = await query(`
-      SELECT distinct u.ID as id, u.user_registered as date, u.user_email as email, u.display_name, u.user_nicename, um.meta_value as nickname, um2.meta_value as role
-      FROM rsntr_users AS u
-      INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
-      INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' ${role ? 'AND um2.meta_value = :role' : ''})
-      ${q ? 'WHERE user_email LIKE :q OR user_login LIKE :q OR user_nicename LIKE :q OR display_name LIKE :q OR um.meta_value LIKE :q' : ''}
-      ORDER BY u.user_registered DESC
-      LIMIT :limit
-      OFFSET :offset
-    `, parameters)
+    // const count = (await query(`
+    //   SELECT count(*) as count
+    //   FROM rsntr_users AS u
+    //   INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
+    //   INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' ${role ? 'AND um2.meta_value = :role' : ''})
+    //   ${q ? 'WHERE user_email LIKE :q OR user_login LIKE :q OR user_nicename LIKE :q OR display_name LIKE :q' : ''}
+    //   LIMIT 1
+    // `, parameters))[0].count
+
+    // const result = await query(`
+    //   SELECT distinct u.ID as id, u.user_registered as date, u.user_email as email, u.display_name, u.user_nicename, um.meta_value as nickname, um2.meta_value as role
+    //   FROM rsntr_users AS u
+    //   INNER JOIN rsntr_usermeta AS um ON (um.user_id = u.ID AND um.meta_key = 'nickname')
+    //   INNER JOIN rsntr_usermeta AS um2 ON (um2.user_id = u.ID AND um2.meta_key = 'role' ${role ? 'AND um2.meta_value = :role' : ''})
+    //   ${q ? 'WHERE user_email LIKE :q OR user_login LIKE :q OR user_nicename LIKE :q OR display_name LIKE :q OR um.meta_value LIKE :q' : ''}
+    //   ORDER BY u.user_registered DESC
+    //   LIMIT :limit
+    //   OFFSET :offset
+    // `, parameters)
 
     ctx.body = {
       count: count,
       numberOfPages: Math.ceil(count / limit),
-      data: await Promise.all(result.map(async (item) => {
-        const o = Object.assign({}, item, {
-          gravatar: gravatar.url(item.email, { protocol: 'https' })
-        })
-
-        o.avatar = await profileImage(item.id)
-
-        return o
-      })),
+      data: result,
       status: 'ok'
     }
   } catch (err) {
@@ -176,58 +185,61 @@ router.get('/', user.can('access users'), async (ctx, next) => {
 })
 
 router.get('/:id', user.can('access users'), async (ctx, next) => {
-  const isValid = validateParams(ctx.params)
+  // const isValid = validateParams(ctx.params)
 
-  if (!isValid) {
-    const { message, dataPath } = validateParams.errors[0]
-    ctx.status = 400
-    ctx.throw(400, `${dataPath}: ${message}`)
-  }
+  // if (!isValid) {
+  //   const { message, dataPath } = validateParams.errors[0]
+  //   ctx.status = 400
+  //   ctx.throw(400, `${dataPath}: ${message}`)
+  // }
 
   try {
     const result = await User.findOne({
-      attributes: ['id', 'login', 'nicename', 'email', 'registered', 'display_name'],
+      attributes: ['id', 'displayName', 'email', 'emailConfirmed', 'country', 'fullName', 'member'],
       where: {
         id: ctx.params.id
       },
       include: [
         {
-          model: UserMeta,
-          required: true,
-          attributes: ['meta_key', 'meta_value'],
-          as: 'meta',
-          where: {
-            meta_key: {
-              [Op.in]: ['role', 'nickname', 'country', 'account_status']
-            }
-          }
+          model: Role,
+          as: 'role'
         }
+        // {
+        //   model: UserMeta,
+        //   required: true,
+        //   attributes: ['meta_key', 'meta_value'],
+        //   as: 'meta',
+        //   where: {
+        //     meta_key: {
+        //       [Op.in]: ['role', 'nickname', 'country', 'account_status']
+        //     }
+        //   }
+        // }
       ]
     })
 
-    const { id, login, registered, email, meta } = result
+    // const { id, login, registered, email, meta } = result
 
-    const metaData = Object.fromEntries(Object.entries(meta)
-      .map(([key, value]) => {
-        const metaKey = value.meta_key
-        let metaValue = value.meta_value
+    // const metaData = Object.fromEntries(Object.entries(meta)
+    //   .map(([key, value]) => {
+    //     const metaKey = value.meta_key
+    //     let metaValue = value.meta_value
 
-        if (!isNaN(Number(metaValue))) {
-          metaValue = Number(metaValue)
-        }
+    //     if (!isNaN(Number(metaValue))) {
+    //       metaValue = Number(metaValue)
+    //     }
 
-        return [metaKey, metaValue]
-      }))
+    //     return [metaKey, metaValue]
+    //   }))
 
-    const avatar = await profileImage(id)
+    const user = result.get({ plain: true })
 
-    const data = Object.assign({}, metaData, {
-      id,
-      login,
-      registered,
-      email,
+    const avatar = await profileImage(user.id)
+
+    const data = Object.assign(user, {
+
       avatar,
-      gravatar: gravatar.url(email, { protocol: 'https' })
+      gravatar: gravatar.url(user.email, { protocol: 'https' })
     })
 
     ctx.body = {

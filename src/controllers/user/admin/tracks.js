@@ -6,13 +6,12 @@ const ajvFormats = require('ajv-formats')
 const Roles = require('koa-roles')
 const Router = require('@koa/router')
 const koaBody = require('koa-body')
-const { Track, File, UserMeta } = require('../../db/models')
-const { Op } = require('sequelize')
-const coverSrc = require('../../util/cover-src')
+const { Track, File } = require('../../../db/models')
+const coverSrc = require('../../../util/cover-src')
 
-const {
-  validateQuery
-} = require('../../schemas/trackgroup')
+// const {
+//   validateQuery
+// } = require('../../../schemas/trackgroup')
 
 const ajv = new AJV({
   allErrors: true,
@@ -22,41 +21,42 @@ const ajv = new AJV({
 ajvKeywords(ajv)
 ajvFormats(ajv)
 
-const validateBody = ajv.compile({
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    creator_id: {
-      type: 'number',
-      minimum: 1
-    },
-    title: {
-      type: 'string'
-    },
-    artist: {
-      type: 'string'
-    },
-    album_artist: {
-      type: 'string'
-    },
-    album: {
-      type: 'string'
-    },
-    composer: {
-      type: 'string'
-    },
-    status: {
-      type: 'string',
-      enum: ['paid', 'free', 'free+paid', 'deleted', 'hidden'],
-      default: 'paid'
-    },
-    year: {
-      type: 'number',
-      minimum: 1900,
-      maximum: new Date().getFullYear() + 1
-    }
-  }
-})
+// FIXME: openapi validation
+// const validateBody = ajv.compile({
+//   type: 'object',
+//   additionalProperties: false,
+//   properties: {
+//     creator_id: {
+//       type: 'number',
+//       minimum: 1
+//     },
+//     title: {
+//       type: 'string'
+//     },
+//     artist: {
+//       type: 'string'
+//     },
+//     album_artist: {
+//       type: 'string'
+//     },
+//     album: {
+//       type: 'string'
+//     },
+//     composer: {
+//       type: 'string'
+//     },
+//     status: {
+//       type: 'string',
+//       enum: ['paid', 'free', 'free+paid', 'deleted', 'hidden'],
+//       default: 'paid'
+//     },
+//     year: {
+//       type: 'number',
+//       minimum: 1900,
+//       maximum: new Date().getFullYear() + 1
+//     }
+//   }
+// })
 
 const tracks = new Koa()
 const user = new Roles({
@@ -85,13 +85,14 @@ user.use((ctx, action) => {
 })
 
 router.get('/', user.can('access tracks'), async (ctx, next) => {
-  const isValid = validateQuery(ctx.request.query)
+  // FIXME validation
+  // const isValid = validateQuery(ctx.request.query)
 
-  if (!isValid) {
-    const { message, dataPath } = validateQuery.errors[0]
-    ctx.status = 400
-    ctx.throw(400, `${dataPath}: ${message}`)
-  }
+  // if (!isValid) {
+  //   const { message, dataPath } = validateQuery.errors[0]
+  //   ctx.status = 400
+  //   ctx.throw(400, `${dataPath}: ${message}`)
+  // }
 
   const { limit = 20, page = 1 } = ctx.request.query
 
@@ -122,14 +123,14 @@ router.get('/', user.can('access tracks'), async (ctx, next) => {
           model: File,
           attributes: ['id', 'owner_id'],
           as: 'cover'
-        },
-        {
-          model: UserMeta,
-          attributes: ['meta_key', 'meta_value'],
-          required: true,
-          where: { meta_key: { [Op.in]: ['nickname'] } },
-          as: 'meta'
         }
+        // {
+        //   model: UserMeta,
+        //   attributes: ['meta_key', 'meta_value'],
+        //   required: true,
+        //   where: { meta_key: { [Op.in]: ['nickname'] } },
+        //   as: 'meta'
+        // }
       ],
       order: [
         ['createdAt', 'DESC']
@@ -146,23 +147,23 @@ router.get('/', user.can('access tracks'), async (ctx, next) => {
 
     ctx.body = {
       data: result.map((item) => {
-        const { nickname } = Object.fromEntries(Object.entries(item.meta)
-          .map(([key, value]) => {
-            const metaKey = value.meta_key
-            let metaValue = value.meta_value
+        // const { nickname } = Object.fromEntries(Object.entries(item.meta)
+        //   .map(([key, value]) => {
+        //     const metaKey = value.meta_key
+        //     let metaValue = value.meta_value
 
-            if (!isNaN(Number(metaValue))) {
-              metaValue = Number(metaValue)
-            }
+        //     if (!isNaN(Number(metaValue))) {
+        //       metaValue = Number(metaValue)
+        //     }
 
-            return [metaKey, metaValue]
-          }))
+        //     return [metaKey, metaValue]
+        //   }))
 
         const o = Object.assign({}, {
           id: item.dataValues.id,
           title: item.dataValues.title,
           album: item.dataValues.album,
-          artist: nickname,
+          // artist: nickname,
           album_artist: item.dataValues.album_artist,
           composer: item.get('composer'),
           duration: item.get('duration'),
@@ -198,13 +199,13 @@ router.get('/', user.can('access tracks'), async (ctx, next) => {
 
 router.put('/:id', user.can('access tracks'), async (ctx, next) => {
   const body = ctx.request.body
-  const isValid = validateBody(body)
+  // const isValid = validateBody(body)
 
-  if (!isValid) {
-    const { message, dataPath } = validateBody.errors[0]
-    ctx.status = 400
-    ctx.throw(400, `${dataPath}: ${message}`)
-  }
+  // if (!isValid) {
+  //   const { message, dataPath } = validateBody.errors[0]
+  //   ctx.status = 400
+  //   ctx.throw(400, `${dataPath}: ${message}`)
+  // }
 
   try {
     const result = await Track.update(body, {

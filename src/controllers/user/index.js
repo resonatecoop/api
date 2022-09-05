@@ -22,6 +22,7 @@ const trackgroups = require('./trackgroups')
 const tracks = require('./tracks')
 const stream = require('./stream')
 const artists = require('./artists')
+const admin = require('./admin')
 
 /**
  * Swagger client for user-api
@@ -111,5 +112,6 @@ user.use(trackgroups.routes())
 user.use(tracks.routes())
 user.use(artists.routes())
 user.use(stream.routes())
+user.use(mount('/admin', admin))
 
 module.exports = user

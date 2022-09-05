@@ -5,9 +5,9 @@ const ajvFormats = require('ajv-formats')
 const Koa = require('koa')
 const Roles = require('koa-roles')
 const Router = require('@koa/router')
-const { User, UserMeta } = require('../../db/models')
+const { User, UserMeta } = require('../../../db/models')
 const { Op } = require('sequelize')
-const { findAllPlayCounts } = require('../../scripts/reports/plays')
+const { findAllPlayCounts } = require('../../../scripts/reports/plays')
 
 const ajv = new AJV({
   allErrors: true,

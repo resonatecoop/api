@@ -6,7 +6,7 @@ const ajvFormats = require('ajv-formats')
 const Roles = require('koa-roles')
 const Router = require('@koa/router')
 const koaBody = require('koa-body')
-const { File } = require('../../db/models')
+const { File } = require('../../../db/models')
 
 const ajv = new AJV({
   allErrors: true,
