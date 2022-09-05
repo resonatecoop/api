@@ -75,6 +75,7 @@ services:
 
   nginx:
     restart: always
+    container_name: resonate-nginx
     networks:
       - api-network
     build:
