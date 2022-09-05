@@ -1,10 +1,10 @@
-const { User, TrackGroup, TrackGroupItem, Track, File, Resonate: sequelize } = require('../../../../../db/models')
+const { User, TrackGroup, TrackGroupItem, Track, File } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 
 const {
-  validateParams,
-  validateTrackgroup
+  validateParams
+  // validateTrackgroup
 } = require('../../../../../schemas/trackgroup')
 
 module.exports = function () {
