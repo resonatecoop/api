@@ -118,8 +118,6 @@ user.use(async (ctx, action) => {
 })
 
 router.get('/', user.can('access trackgroups'), async (ctx, next) => {
-  console.log('accessing trackgroups')
-
   try {
     // FIXME Add query validation
     // const isValid = validateQuery(ctx.request.query)

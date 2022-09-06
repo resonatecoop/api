@@ -93,8 +93,6 @@ module.exports = (provider) => {
   router.get('/account', async (ctx, next) => {
     // Ideally this gets moved into a front-end app.
     const cookie = ctx.cookies.get('_session')
-    // const interactionDetails = await provider.interactionDetails(ctx.req, ctx.res)
-    // console.log(interactionDetails)
     const session = await adapter.find(cookie)
     const user = await User.findOne({
       where: {
