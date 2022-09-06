@@ -107,6 +107,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.hasMany(models.Artist, { as: 'artists', targetKey: 'id', foreignKey: 'userId' })
     User.hasOne(models.Role, { as: 'role', sourceKey: 'roleId', foreignKey: 'id' })
+    User.hasOne(models.Credit, { as: 'credit', foreignKey: 'user_id' })
   }
 
   User.hashPassword = hashPassword

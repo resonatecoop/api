@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Play.associate = function (models) {
     Play.hasOne(models.Track, { as: 'track', sourceKey: 'track_id', foreignKey: 'id' })
+    Play.hasOne(models.User, { as: 'user', sourceKey: 'user_id', foreignKey: 'id' })
   }
 
   return Play

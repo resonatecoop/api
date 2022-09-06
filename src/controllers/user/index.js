@@ -23,6 +23,7 @@ const tracks = require('./tracks')
 const stream = require('./stream')
 const artists = require('./artists')
 const admin = require('./admin')
+const products = require('./products')
 
 /**
  * Swagger client for user-api
@@ -51,7 +52,11 @@ const allowlist = [
   '/plays/apiDocs',
   '/profile/apiDocs',
   '/trackgroups/apiDocs',
-  '/tracks/apiDocs'
+  '/tracks/apiDocs',
+  '/products',
+  '/products/checkout',
+  '/products/success',
+  '/products/apiDocs'
 ]
 
 user.use(async (ctx, next) => {
@@ -113,5 +118,6 @@ user.use(tracks.routes())
 user.use(artists.routes())
 user.use(stream.routes())
 user.use(mount('/admin', admin))
+user.use(products.routes())
 
 module.exports = user

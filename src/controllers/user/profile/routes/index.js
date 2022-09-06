@@ -1,4 +1,4 @@
-const { UserMeta, User, Role, OauthUser /* Resonate: sequelize */ } = require('../../../../db/models')
+const { UserMeta, User, Role, OauthUser, Credit /* Resonate: sequelize */ } = require('../../../../db/models')
 const profileImage = require('../../../../util/profile-image')
 const { Op } = require('sequelize')
 const gravatar = require('gravatar')
@@ -51,7 +51,9 @@ module.exports = function () {
         attributes: [
           'id',
           'displayName',
-          'email'
+          'email',
+          'country',
+          'newsletterNotification'
           // 'role'
           // 'registered'
         ],
@@ -67,6 +69,10 @@ module.exports = function () {
           {
             model: Role,
             as: 'role'
+          },
+          {
+            model: Credit,
+            as: 'credit'
           }
         ]
         // include: [
@@ -89,7 +95,7 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
-      const { id, login, registered, email, role } = result
+      const { id, login, newsletterNotification, displayName, country, registered, email, role, credit } = result
 
       // const { role: umRole, mylabel, mybands, nickname } = Object.fromEntries(Object.entries(meta)
       //   .map(([key, value]) => {
@@ -105,13 +111,16 @@ module.exports = function () {
 
       const data = {
         // role: umRole.replace('um_', ''),
-        nickname: login ?? email,
+        nickname: displayName ?? email,
         token: ctx.accessToken, // for upload endpoint, may replace with upload specific token
         id,
         login,
+        country,
+        newsletterNotification,
         registered,
         email,
         role,
+        credit,
         gravatar: gravatar.url(email, { protocol: 'https' }),
         profiles: []
       }
