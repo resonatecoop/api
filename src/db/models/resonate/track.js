@@ -75,23 +75,30 @@ module.exports = (sequelize, DataTypes) => {
         const status = this.getDataValue('status')
         return statusValues[status]
       },
-      defaultValue: 1, // hidden
-      field: 'status'
+      defaultValue: 1 // hidden
+    },
+    updatedAt: {
+      allowNull: false,
+      type: DataTypes.DATE
     },
     createdAt: {
-      type: DataTypes.INTEGER,
-      field: 'date'
+      allowNull: false,
+      type: DataTypes.DATE
+    },
+    deletedAt: {
+      type: DataTypes.DATE
     }
   }, {
-    timestamps: false,
     modelName: 'Track',
+    paranoid: true,
+    underscored: true,
     tableName: 'tracks'
   })
 
   Track.associate = function (models) {
     Track.hasMany(models.Play, { as: 'play', foreignKey: 'tid', sourceKey: 'id' })
     Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
-    Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
+    // Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
     Track.hasOne(models.User, { as: 'creator', sourceKey: 'creator_id', foreignKey: 'id' })
     Track.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'track_cover_art', foreignKey: 'id' })
     Track.belongsTo(models.File, { as: 'audiofile', foreignKey: 'track_url' })

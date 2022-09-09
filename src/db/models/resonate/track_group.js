@@ -10,21 +10,18 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isUUID: 4
       },
-      unique: true,
-      field: 'id'
+      unique: true
     },
     cover: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
         isUUID: 4
-      },
-      field: 'cover'
+      }
     },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: 'title',
       validate: {
         notNull: {
           msg: 'Title is a required field'
@@ -32,8 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     slug: {
-      type: DataTypes.STRING,
-      field: 'slug'
+      type: DataTypes.STRING
     },
     type: {
       type: DataTypes.ENUM,
@@ -45,34 +41,27 @@ module.exports = (sequelize, DataTypes) => {
         'compilation',
         'collection',
         'podcast'
-      ],
-      field: 'type'
+      ]
     },
     about: {
-      type: DataTypes.TEXT,
-      field: 'about'
+      type: DataTypes.TEXT
     },
     private: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
-      allowNull: false,
-      field: 'private'
+      allowNull: false
     },
     display_artist: {
-      type: DataTypes.STRING,
-      field: 'display_artist'
+      type: DataTypes.STRING
     },
     artistId: {
-      type: DataTypes.BIGINT,
-      field: 'artist_id'
+      type: DataTypes.UUID
     },
     userId: {
-      type: DataTypes.UUID,
-      field: 'user_id'
+      type: DataTypes.UUID
     },
     composers: {
       type: DataTypes.TEXT,
-      field: 'composers',
       set (composers) {
         this.setDataValue('composers', composers.join(','))
       },
@@ -83,7 +72,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     performers: {
       type: DataTypes.TEXT,
-      field: 'performers',
       set (performers) {
         this.setDataValue('performers', performers.join(','))
       },
@@ -94,7 +82,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     tags: {
       type: DataTypes.TEXT,
-      field: 'tags',
       set (tags) {
         this.setDataValue('tags', tags.join(','))
       },
@@ -113,37 +100,35 @@ module.exports = (sequelize, DataTypes) => {
     },
     release_date: {
       type: DataTypes.DATEONLY,
-      defaultValue: DataTypes.NOW,
-      field: 'release_date'
+      defaultValue: DataTypes.NOW
     },
     download: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      field: 'download'
+      defaultValue: false
     },
     featured: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      field: 'featured'
+      defaultValue: false
     },
     enabled: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      field: 'enabled'
+      defaultValue: false
     },
     updatedAt: {
-      field: 'updated_at',
       allowNull: false,
       type: DataTypes.DATE
     },
     createdAt: {
-      field: 'created_at',
       allowNull: false,
+      type: DataTypes.DATE
+    },
+    deletedAt: {
       type: DataTypes.DATE
     }
   }, {
     sequelize,
-    timestamps: true,
+    paranoid: true,
+    underscore: true,
     modelName: 'TrackGroup',
     tableName: 'track_groups'
   })
@@ -168,7 +153,7 @@ module.exports = (sequelize, DataTypes) => {
 
   TrackGroup.associate = function (models) {
     TrackGroup.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'cover', foreignKey: 'id' })
-    TrackGroup.hasOne(models.Artist, { as: 'artist', sourceKey: 'artistId', foreignKey: 'id' })
+    TrackGroup.hasOne(models.UserGroup, { as: 'artist', sourceKey: 'artistId', foreignKey: 'id' })
     TrackGroup.hasOne(models.User, { as: 'user', sourceKey: 'userId', foreignKey: 'id' })
     // TrackGroup.hasMany(models.UserMeta, { as: 'usermeta', sourceKey: 'creator_id', foreignKey: 'user_id' })
     TrackGroup.hasMany(models.TrackGroupItem, { as: 'items', foreignKey: 'trackgroupId', sourceKey: 'id' })

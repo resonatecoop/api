@@ -40,6 +40,11 @@ module.exports = {
         field: 'created_at',
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {
+        field: 'deleted_at',
+        allowNull: true,
+        type: Sequelize.DATE
       }
     },
     {

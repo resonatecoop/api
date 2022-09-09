@@ -46,7 +46,7 @@ module.exports = {
         field: 'display_artist'
       },
       artistId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.UUID,
         field: 'artist_id'
       },
       userId: {
@@ -98,6 +98,10 @@ module.exports = {
       createdAt: {
         field: 'created_at',
         allowNull: false,
+        type: Sequelize.DATE
+      },
+      deletedAt: {
+        field: 'deleted_at',
         type: Sequelize.DATE
       }
     },

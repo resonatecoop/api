@@ -12,7 +12,7 @@ module.exports = {
         unique: true,
         field: 'id'
       },
-      ownerID: {
+      ownerId: {
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
@@ -21,6 +21,11 @@ module.exports = {
         },
         unique: true,
         field: 'owner_id'
+      },
+      typeId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'type_id'
       },
       displayName: {
         type: DataTypes.STRING,
@@ -34,6 +39,22 @@ module.exports = {
         type: DataTypes.STRING,
         field: 'short_bio'
       },
+      email: {
+        type: DataTypes.STRING
+      },
+      addressId: {
+        type: DataTypes.UUID,
+        field: 'address_id'
+      },
+      avatar: {
+        type: DataTypes.UUID
+      },
+      banner: {
+        type: DataTypes.UUID
+      },
+      tags: {
+        type: DataTypes.ARRAY(DataTypes.UUID)
+      },
       updatedAt: {
         field: 'updated_at',
         allowNull: false,
@@ -46,7 +67,6 @@ module.exports = {
       },
       deletedAt: {
         field: 'deleted_at',
-        allowNull: false,
         type: DataTypes.DATE
       }
     })

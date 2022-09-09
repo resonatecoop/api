@@ -12,7 +12,7 @@ module.exports = {
         unique: true,
         field: 'id'
       },
-      legacyID: {
+      legacyId: {
         type: DataTypes.INTEGER,
         primaryKey: false,
         autoIncrement: true, // SERIAL on postgres
@@ -42,20 +42,24 @@ module.exports = {
         type: DataTypes.STRING
       },
       fullName: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        field: 'full_name'
       },
       member: {
         type: DataTypes.BOOLEAN
       },
       newsletterNotification: {
         type: DataTypes.BOOLEAN,
-        default: false
+        default: false,
+        field: 'newsletter_notification'
       },
       lastLogin: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        field: 'last_login'
       },
       lastPasswordChange: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        field: 'last_password_change'
       },
       roleId: {
         type: DataTypes.INTEGER,
@@ -76,10 +80,6 @@ module.exports = {
         field: 'deleted_at',
         type: DataTypes.DATE
       }
-    }, {
-      timestamps: false,
-      modelName: 'User',
-      tableName: 'users'
     })
   },
 

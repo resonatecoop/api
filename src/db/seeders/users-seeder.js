@@ -9,6 +9,7 @@ module.exports = {
         name: 'superadmin'
       }
     })
+
     await queryInterface.bulkInsert('users', [{
       id: faker.datatype.uuid(),
       email: 'admin@admin.com',

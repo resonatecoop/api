@@ -3,18 +3,16 @@ module.exports = {
     return queryInterface.createTable('tags', {
       id: {
         primaryKey: true,
-        autoIncrement: true,
-        type: DataTypes.INTEGER,
-        field: 'tagid'
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4
       },
-      trackId: {
-        type: DataTypes.INTEGER,
-        field: 'tid'
-      },
-      tagnames: {
+      type: {
         type: DataTypes.STRING,
-        field: 'tagnames'
-
+        allowNull: false
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
       }
     })
   },

@@ -45,10 +45,15 @@ module.exports = (sequelize, DataTypes) => {
       field: 'created_at',
       allowNull: false,
       type: DataTypes.DATE
+    },
+    deletedAt: {
+      field: 'deleted_at',
+      type: DataTypes.DATE
     }
   }, {
     modelName: 'TrackGroupItem',
-    timestamps: true,
+    paranoid: true,
+    underscore: true,
     tableName: 'track_group_items'
   })
 

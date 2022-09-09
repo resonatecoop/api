@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   UserMeta.associate = function (models) {
-    UserMeta.belongsTo(models.User, { as: 'UserMeta', targetKey: 'id', foreignKey: 'userId' })
+    // UserMeta.belongsTo(models.User, { as: 'UserMeta', targetKey: 'id', foreignKey: 'userId' })
   }
 
   return UserMeta

@@ -8,52 +8,58 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isUUID: 4
       },
-      unique: true,
-      field: 'id'
+      unique: true
     },
-    ownerID: {
+    ownerId: {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
       validate: {
         isUUID: 4
-      },
-      unique: true,
-      field: 'owner_id'
+      }
+    },
+    typeId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     displayName: {
-      type: DataTypes.STRING,
-      field: 'display_name'
+      type: DataTypes.STRING
     },
     description: {
-      type: DataTypes.STRING,
-      field: 'description'
+      type: DataTypes.STRING
     },
     shortBio: {
-      type: DataTypes.STRING,
-      field: 'short_bio'
+      type: DataTypes.STRING
+    },
+    email: {
+      type: DataTypes.STRING
+    },
+    addressId: {
+      type: DataTypes.UUID
     },
     updatedAt: {
-      field: 'updated_at',
       allowNull: false,
       type: DataTypes.DATE
     },
     createdAt: {
-      field: 'created_at',
       allowNull: false,
       type: DataTypes.DATE
     },
     deletedAt: {
-      field: 'deleted_at',
-      allowNull: false,
       type: DataTypes.DATE
     }
   }, {
     sequelize,
     paranoid: true,
     modelName: 'UserGroup',
-    tableName: 'user_groups'
+    tableName: 'user_groups',
+    underscored: true
   })
+
+  UserGroup.associate = function (models) {
+    UserGroup.belongsTo(models.UserGroupType, { foreignKey: 'typeId' })
+    UserGroup.belongsTo(models.User, { foreignKey: 'ownerId' })
+  }
 
   return UserGroup
 }

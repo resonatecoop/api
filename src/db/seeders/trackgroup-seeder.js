@@ -1,5 +1,5 @@
 const { faker } = require('@faker-js/faker')
-const { User, Artist, TrackGroup, Track, TrackGroupItem, Role } = require('../models')
+const { User, UserGroup, UserGroupType, TrackGroup, Track, TrackGroupItem, Role } = require('../models')
 
 const generateTracks = async (trackgroup) => {
   await Promise.all(Array(10)
@@ -46,14 +46,21 @@ module.exports = {
         }
       })
 
-      const artist = await Artist.create({
+      const artistGroupType = await UserGroupType.findOne({
+        where: {
+          name: 'artist'
+        }
+      })
+
+      const artist = await UserGroup.create({
         display_name: faker.hacker.noun(),
-        userId: artistUser.id
+        ownerId: artistUser.id,
+        typeId: artistGroupType.id
       })
 
       await queryInterface.bulkInsert('track_groups', [
         {
-          id: '32573558-eadb-4e44-b008-f6966e474bc2',
+          id: faker.datatype.uuid(),
           title: 'Best album ever',
           type: 'lp',
           about: 'this is the best album',
@@ -66,7 +73,7 @@ module.exports = {
           updated_at: new Date()
         },
         {
-          id: 'f7d32260-934a-4360-b8fa-96c6f8ef309c',
+          id: faker.datatype.uuid(),
           title: 'Best album ever 2',
           type: 'lp',
           about: 'this is the best album2',
@@ -80,7 +87,7 @@ module.exports = {
           updated_at: new Date()
         },
         {
-          id: '2672d378-4d26-4b17-aee7-32dd4b6b050f',
+          id: faker.datatype.uuid(),
           title: 'Best album ever 3',
           type: 'lp',
           about: 'this is the best album3',

@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       field: 'id'
     },
-    user_id: {
+    userId: {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
+    underscore: true,
     paranoid: true,
     modelName: 'Credit',
     tableName: 'credits'

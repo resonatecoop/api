@@ -2,7 +2,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     // Seeds standard roles
-    return queryInterface.bulkInsert('roles', [{
+    await queryInterface.bulkInsert('roles', [{
       name: 'superadmin',
       description: 'SuperAdminRole has all permissions and can assign admins',
       is_default: false
@@ -22,6 +22,34 @@ module.exports = {
       name: 'user',
       description: 'A basic user',
       is_default: true
+    }])
+
+    await queryInterface.bulkInsert('membership_classes', [{
+      name: 'Listener',
+      priceId: 'price_',
+      productId: 'prod_'
+    }, {
+      name: 'Artist',
+      priceId: 'price_',
+      productId: 'prod_'
+    }, {
+      name: 'Label',
+      priceId: 'price_',
+      productId: 'prod_'
+    }])
+
+    await queryInterface.bulkInsert('user_group_types', [{
+      name: 'artist',
+      description: 'Artist'
+    }, {
+      name: 'band',
+      description: 'Band'
+    }, {
+      name: 'label',
+      description: 'Label'
+    }, {
+      name: 'distributor',
+      description: 'Distributor'
     }])
   },
 

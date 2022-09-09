@@ -61,8 +61,18 @@ module.exports = {
         field: 'status'
       },
       createdAt: {
-        type: DataTypes.INTEGER,
-        field: 'date'
+        type: DataTypes.DATE,
+        field: 'created_at',
+        allowNull: false
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        field: 'updated_at',
+        allowNull: false
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        field: 'deleted_at'
       }
     }, {
       timestamps: false,

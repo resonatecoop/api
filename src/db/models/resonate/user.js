@@ -22,34 +22,28 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isUUID: 4
       },
-      unique: true,
-      field: 'id'
+      unique: true
     },
-    legacyID: {
+    legacyId: {
       type: DataTypes.INTEGER,
       primaryKey: false,
-      autoIncrement: true, // SERIAL on postgres
-      field: 'legacy_id'
+      autoIncrement: true // SERIAL on postgres
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
-      field: 'password'
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
       unique: true,
-      field: 'email',
       allowNull: false
     },
     emailConfirmed: {
       type: DataTypes.BOOLEAN,
-      field: 'email_confirmed',
       defaultValue: false
     },
     displayName: {
-      type: DataTypes.STRING,
-      field: 'display_name'
+      type: DataTypes.STRING
     },
     country: {
       type: DataTypes.STRING
@@ -71,26 +65,23 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE
     },
     roleId: {
-      type: DataTypes.INTEGER,
-      field: 'role_id'
+      type: DataTypes.INTEGER
     },
     updatedAt: {
-      field: 'updated_at',
       allowNull: false,
       type: DataTypes.DATE
     },
     createdAt: {
-      field: 'created_at',
       allowNull: false,
       type: DataTypes.DATE
     },
     deletedAt: {
-      field: 'deleted_at',
       type: DataTypes.DATE
     }
   }, {
     sequelize,
     paranoid: true,
+    underscore: true,
     modelName: 'User',
     tableName: 'users',
     hooks: {
@@ -105,9 +96,9 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   User.associate = (models) => {
-    User.hasMany(models.Artist, { as: 'artists', targetKey: 'id', foreignKey: 'userId' })
     User.hasOne(models.Role, { as: 'role', sourceKey: 'roleId', foreignKey: 'id' })
-    User.hasOne(models.Credit, { as: 'credit', foreignKey: 'user_id' })
+    User.hasOne(models.Credit, { as: 'credit', foreignKey: 'userId' })
+    User.hasMany(models.UserGroup, { as: 'user_groups', foreignKey: 'ownerId' })
   }
 
   User.hashPassword = hashPassword

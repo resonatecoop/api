@@ -1,3 +1,7 @@
+/**
+ * Roles are distinct from groups because roles define what a user can do in the system.
+ */
+
 module.exports = (sequelize, DataTypes) => {
   const Role = sequelize.define('Role', {
     id: {
@@ -16,11 +20,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     isDefault: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      field: 'is_default'
+      defaultValue: false
     }
   }, {
     sequelize,
+    underscore: true,
     timestamps: false,
     modelName: 'Role',
     tableName: 'roles'
