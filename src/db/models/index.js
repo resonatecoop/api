@@ -1,10 +1,8 @@
-// const fs = require('fs')
 const path = require('path')
 require('dotenv').config()
 require('pg').defaults.parseInt8 = true
 const sequelize = require('sequelize')
 const { Sequelize, DataTypes } = sequelize
-// const basename = path.basename(__filename)
 const env = process.env.NODE_ENV || 'development'
 const config = require('../../config/databases.js')[env]
 const db = {}
@@ -31,6 +29,7 @@ db.MembershipClass = require(path.join(__dirname, '/resonate', 'membership_class
 db.UserMembership = require(path.join(__dirname, '/resonate', 'user_membership.js'))(db.Resonate, DataTypes)
 db.Link = require(path.join(__dirname, '/resonate', 'link.js'))(db.Resonate, DataTypes)
 db.Address = require(path.join(__dirname, '/resonate', 'address.js'))(db.Resonate, DataTypes)
+db.ShareTransaction = require(path.join(__dirname, '/resonate', 'share_transaction.js'))(db.Resonate, DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

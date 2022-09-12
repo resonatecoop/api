@@ -7,7 +7,9 @@ module.exports = {
         autoIncrement: true
       },
       name: {
-        type: DataTypes.STRING(250)
+        type: DataTypes.STRING(250),
+        allowNull: false,
+        unique: true
       },
       description: {
         type: DataTypes.TEXT,

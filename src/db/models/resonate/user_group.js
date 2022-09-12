@@ -26,10 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     description: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     shortBio: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     email: {
       type: DataTypes.STRING

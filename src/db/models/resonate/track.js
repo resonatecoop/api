@@ -8,12 +8,10 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
-      field: 'tid'
+      autoIncrement: true
     },
-    creator_id: {
-      type: DataTypes.BIGINT,
-      field: 'uid'
+    creatorId: {
+      type: DataTypes.UUID
     },
     title: {
       type: DataTypes.STRING,
@@ -77,6 +75,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       defaultValue: 1 // hidden
     },
+    tags: {
+      type: DataTypes.ARRAY(DataTypes.STRING)
+    },
     updatedAt: {
       allowNull: false,
       type: DataTypes.DATE
@@ -96,10 +97,10 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Track.associate = function (models) {
-    Track.hasMany(models.Play, { as: 'play', foreignKey: 'tid', sourceKey: 'id' })
-    Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
+    Track.hasMany(models.Play, { as: 'play', foreignKey: 'trackId', sourceKey: 'id' })
+    // Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
     // Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
-    Track.hasOne(models.User, { as: 'creator', sourceKey: 'creator_id', foreignKey: 'id' })
+    Track.hasOne(models.User, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })
     Track.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'track_cover_art', foreignKey: 'id' })
     Track.belongsTo(models.File, { as: 'audiofile', foreignKey: 'track_url' })
     Track.belongsTo(models.File, { as: 'cover', foreignKey: 'track_cover_art' })

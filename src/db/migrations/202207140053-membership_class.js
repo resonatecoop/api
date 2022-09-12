@@ -12,11 +12,13 @@ module.exports = {
       },
       priceId: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        field: 'price_id'
       },
       productId: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        field: 'product_id'
       }
     })
   },

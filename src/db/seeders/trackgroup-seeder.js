@@ -6,7 +6,7 @@ const generateTracks = async (trackgroup) => {
     .fill()
     .map(async (v, i) => {
       const track = await Track.create({
-        uid: 1,
+        creatorId: trackgroup.creatorId,
         title: faker.company.catchPhrase(),
         artist: faker.name.findName(),
         album: faker.hacker.noun(),
@@ -32,7 +32,7 @@ module.exports = {
       await queryInterface.bulkInsert('users', [{
         id: faker.datatype.uuid(),
         email: 'artist@admin.com',
-        password: User.hashPassword({ password: 'test1234' }),
+        password: await User.hashPassword({ password: 'test1234' }),
         email_confirmed: true,
         display_name: 'artist',
         role_id: role.id,

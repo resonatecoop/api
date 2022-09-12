@@ -1,6 +1,6 @@
 module.exports = {
   up: (queryInterface, DataTypes) => {
-    return queryInterface.createTable('user_memberships', {
+    return queryInterface.createTable('share_transactions', {
       id: {
         type: DataTypes.UUID,
         allowNull: false,
@@ -14,39 +14,37 @@ module.exports = {
       },
       userId: {
         type: DataTypes.UUID,
+        allowNull: false,
         field: 'user_id'
       },
-      membershipClassId: {
-        type: DataTypes.INTEGER,
-        field: 'membership_class_id',
-        allowNull: false
-      },
-      subscriptionId: { // This is in reference to Stripe codes
+      invoiceId: {
         type: DataTypes.STRING,
-        field: 'subscription_id',
+        allowNull: false,
+        unique: true,
+        field: 'invoice_id'
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
         allowNull: false
       },
-      start: {
-        type: DataTypes.TIME
-      },
-      end: {
-        type: DataTypes.TIME
-      },
-      updated_at: {
+      updatedAt: {
+        field: 'updated_at',
         allowNull: false,
         type: DataTypes.DATE
       },
-      created_at: {
+      createdAt: {
+        field: 'created_at',
         allowNull: false,
         type: DataTypes.DATE
       },
-      deleted_at: {
+      deletedAt: {
+        field: 'deleted_at',
         type: DataTypes.DATE
       }
     })
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('user_memberships')
+    return queryInterface.dropTable('share_transactions')
   }
 }

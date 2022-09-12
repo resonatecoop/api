@@ -3,12 +3,10 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
-      field: 'iid'
+      autoIncrement: true
     },
-    creator_id: {
-      type: DataTypes.INTEGER,
-      field: 'uid'
+    ownerId: {
+      type: DataTypes.UUID
     },
     uuid: {
       type: DataTypes.UUID,
@@ -19,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     timestamps: false,
+    underscore: true,
     modelName: 'Image',
     tableName: 'images'
   })

@@ -4,25 +4,25 @@ module.exports = {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
-        field: 'pid',
+        field: 'id',
         primaryKey: true
       },
-      track_id: {
+      trackId: {
         type: Sequelize.INTEGER,
-        field: 'tid'
+        field: 'track_id'
       },
-      listener_id: {
+      userId: {
         type: Sequelize.UUID,
-        field: 'uid'
+        field: 'user_id'
       },
       type: {
         type: Sequelize.INTEGER,
         field: 'event'
       },
-      date: {
+      createdAt: {
         type: Sequelize.DATE(),
         defaultValue: Sequelize.fn('NOW'),
-        field: 'date'
+        field: 'created_at'
       }
     },
     {

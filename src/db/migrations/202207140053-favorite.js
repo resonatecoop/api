@@ -5,15 +5,15 @@ module.exports = {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: 'fid'
+        field: 'id'
       },
-      user_id: {
+      userId: {
         type: DataTypes.UUID,
-        field: 'uid'
+        field: 'user_id'
       },
-      track_id: {
+      trackid: {
         type: DataTypes.INTEGER,
-        field: 'tid'
+        field: 'track_id'
       },
       type: {
         type: DataTypes.BOOLEAN,

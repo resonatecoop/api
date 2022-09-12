@@ -5,16 +5,13 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
-      field: 'pid'
+      autoIncrement: true
     },
-    track_id: {
-      type: DataTypes.INTEGER,
-      field: 'tid'
+    trackId: {
+      type: DataTypes.INTEGER
     },
-    user_id: {
-      type: DataTypes.UUID,
-      field: 'uid'
+    userId: {
+      type: DataTypes.UUID
     },
     type: {
       type: DataTypes.INTEGER,
@@ -26,25 +23,26 @@ module.exports = (sequelize, DataTypes) => {
         return types[type]
       },
       validate: {
-        minimum: 0,
-        maximum: 1
+        min: 0,
+        max: 1
       },
       defaultValue: 0,
       field: 'event'
     },
     createdAt: {
-      type: DataTypes.INTEGER,
-      field: 'date'
+      type: DataTypes.DATE,
+      field: 'created_at'
     }
   }, {
     timestamps: false,
+    underscore: true,
     modelName: 'Play',
     tableName: 'plays'
   })
 
   Play.associate = function (models) {
-    Play.hasOne(models.Track, { as: 'track', sourceKey: 'track_id', foreignKey: 'id' })
-    Play.hasOne(models.User, { as: 'user', sourceKey: 'user_id', foreignKey: 'id' })
+    // Play.hasOne(models.Track, { as: 'track', sourceKey: 'trackId', foreignKey: 'id' })
+    // Play.hasOne(models.User, { as: 'user', sourceKey: 'userId', foreignKey: 'id' })
   }
 
   return Play
