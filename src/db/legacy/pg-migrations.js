@@ -1,5 +1,3 @@
-const { Op } = require('sequelize')
-
 const { User, Role, UserGroupType, UserGroup, Credit, MembershipClass, UserMembership, ShareTransaction, Client } = require('../models')
 const { keyBy } = require('lodash')
 

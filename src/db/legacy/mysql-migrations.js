@@ -1,4 +1,4 @@
-const { keyBy, groupBy } = require('lodash')
+const { groupBy } = require('lodash')
 const { Op } = require('sequelize')
 const { User, Favorite, Play, File } = require('../models')
 
@@ -8,6 +8,7 @@ function sleep (ms) {
   })
 }
 
+// eslint-disable-next-line
 const migrateFavorites = async (client) => {
   return new Promise((resolve, reject) => {
     client.query('SELECT * FROM favorites', function (error, results, fields) {
@@ -70,6 +71,7 @@ const playsCallback = async (user, results) => {
   }
 }
 
+// eslint-disable-next-line
 const migratePlays = async (client) => {
   const users = await User.findAll({
     where: {
@@ -92,6 +94,7 @@ const migratePlays = async (client) => {
   }))
 }
 
+// eslint-disable-next-line
 const migrateFiles = async (client) => {
   return new Promise((resolve, reject) => {
     client.query('SELECT * FROM files', function (error, results, fields) {
@@ -129,6 +132,7 @@ const migrateFiles = async (client) => {
   })
 }
 
+// eslint-disable-next-line
 const migrateTags = async (client) => {
   return new Promise((resolve, reject) => {
     client.query('SELECT * FROM tags LIMIT 2', function (error, results, fields) {
