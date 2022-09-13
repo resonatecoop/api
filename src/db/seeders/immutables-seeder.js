@@ -17,7 +17,11 @@ module.exports = {
     }, {
       name: 'artist',
       description: 'An artist',
-      is_default: true
+      is_default: false
+    }, {
+      name: 'label',
+      description: 'A label',
+      is_default: false
     }, {
       name: 'user',
       description: 'A basic user',
@@ -26,16 +30,16 @@ module.exports = {
 
     await queryInterface.bulkInsert('membership_classes', [{
       name: 'Listener',
-      priceId: 'price_',
-      productId: 'prod_'
+      price_id: 'price_',
+      product_id: 'prod_'
     }, {
       name: 'Artist',
-      priceId: 'price_',
-      productId: 'prod_'
+      price_id: 'price_',
+      product_id: 'prod_'
     }, {
       name: 'Label',
-      priceId: 'price_',
-      productId: 'prod_'
+      price_id: 'price_',
+      product_id: 'prod_'
     }])
 
     await queryInterface.bulkInsert('user_group_types', [{
@@ -53,7 +57,9 @@ module.exports = {
     }])
   },
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.bulkDelete('roles', null, {})
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('roles', null, {})
+    await queryInterface.bulkDelete('user_group_types', null, {})
+    return queryInterface.bulkDelete('membership_classes', null, {})
   }
 }

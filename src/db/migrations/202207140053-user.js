@@ -14,8 +14,6 @@ module.exports = {
       },
       legacyId: {
         type: DataTypes.INTEGER,
-        primaryKey: false,
-        autoIncrement: true, // SERIAL on postgres
         field: 'legacy_id'
       },
       password: {

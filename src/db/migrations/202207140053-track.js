@@ -5,11 +5,11 @@ module.exports = {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        field: 'tid'
+        field: 'id'
       },
-      creator_id: {
+      creatorId: {
         type: DataTypes.BIGINT,
-        field: 'uid'
+        field: 'creator_id'
       },
       title: {
         type: DataTypes.STRING,
@@ -50,6 +50,9 @@ module.exports = {
       number: {
         type: DataTypes.INTEGER,
         field: 'track_number'
+      },
+      tags: {
+        type: DataTypes.ARRAY(DataTypes.STRING)
       },
       status: {
         type: DataTypes.INTEGER,

@@ -3,23 +3,20 @@ module.exports = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
-      field: 'fid'
+      autoIncrement: true
     },
-    user_id: {
-      type: DataTypes.UUID,
-      field: 'uid'
+    userId: {
+      type: DataTypes.UUID
     },
-    track_id: {
-      type: DataTypes.INTEGER,
-      field: 'tid'
+    trackId: {
+      type: DataTypes.INTEGER
     },
     type: {
-      type: DataTypes.BOOLEAN,
-      field: 'type'
+      type: DataTypes.BOOLEAN
     }
   }, {
     timestamps: false,
+    underscore: true,
     modelName: 'Favorite',
     tableName: 'favorites'
   })

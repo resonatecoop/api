@@ -19,7 +19,6 @@ module.exports = {
         validate: {
           isUUID: 4
         },
-        unique: true,
         field: 'owner_id'
       },
       typeId: {
@@ -32,11 +31,11 @@ module.exports = {
         field: 'display_name'
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         field: 'description'
       },
       shortBio: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         field: 'short_bio'
       },
       email: {

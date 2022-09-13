@@ -8,3 +8,6 @@ error.log
 
 jwk-keys.json
 cookies-keys.json
+
+backups
+src/db/legacy/config.js

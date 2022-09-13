@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const UserMembership = sequelize.define('UserMembership', {
+  const ShareTransaction = sequelize.define('ShareTransaction', {
     id: {
       type: DataTypes.UUID,
       allowNull: false,
@@ -8,24 +8,21 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isUUID: 4
       },
-      unique: true
+      unique: true,
+      field: 'id'
     },
     userId: {
-      type: DataTypes.UUID
+      type: DataTypes.UUID,
+      allowNull: false
     },
-    membershipClassId: {
+    invoiceId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
+    quantity: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    subscriptionId: { // This is in reference to Stripe codes
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    start: {
-      type: DataTypes.TIME
-    },
-    end: {
-      type: DataTypes.TIME
     },
     updatedAt: {
       allowNull: false,
@@ -39,11 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE
     }
   }, {
-    // timestamps: false,
     underscored: true,
-    modelName: 'UserMembership',
-    tableName: 'user_memberships'
+    modelName: 'ShareTransaction',
+    tableName: 'share_transactions'
   })
 
-  return UserMembership
+  return ShareTransaction
 }

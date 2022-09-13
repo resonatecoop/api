@@ -13,7 +13,7 @@ module.exports = {
     await queryInterface.bulkInsert('users', [{
       id: faker.datatype.uuid(),
       email: 'admin@admin.com',
-      password: User.hashPassword({ password: 'test1234' }),
+      password: await User.hashPassword({ password: 'test1234' }),
       email_confirmed: true,
       role_id: role.id,
       display_name: 'admin',

@@ -1,16 +1,17 @@
-const crypto = require('crypto')
+const bcrypt = require('bcryptjs')
 
-function hashPassword ({ password }) {
-  const salt = generateSalt()
-  const hash = crypto
-    .pbkdf2Sync(password, salt, 10000, 512, 'sha512')
-    .toString('base64')
-  return `${hash}:${salt}`
+async function hashPassword ({ password }) {
+  return await bcrypt.hash(password, 3)
+  // const salt = generateSalt()
+  // const hash = crypto
+  //   .pbkdf2Sync(password, salt, 10000, 512, 'sha512')
+  //   .toString('base64')
+  // return `${hash}:${salt}`
 }
 
-function generateSalt () {
-  return crypto.randomBytes(16).toString('base64')
-}
+// function generateSalt () {
+//   return crypto.randomBytes(16).toString('base64')
+// }
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -25,9 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true
     },
     legacyId: {
-      type: DataTypes.INTEGER,
-      primaryKey: false,
-      autoIncrement: true // SERIAL on postgres
+      type: DataTypes.INTEGER
     },
     password: {
       type: DataTypes.STRING,
@@ -104,17 +103,8 @@ module.exports = (sequelize, DataTypes) => {
   User.hashPassword = hashPassword
 
   User.checkPassword = async ({ hash, password }) => {
-    const splitted = hash.split(':')
-    if (splitted[1]) {
-      const salt = splitted[1]
-      const newHash = crypto
-        .pbkdf2Sync(password, salt, 10000, 512, 'sha512')
-        .toString('base64')
-      if (newHash.toString() === splitted[0]) {
-        return true
-      }
-    }
-    return false
+    const res = await bcrypt.compare(password, hash)
+    return res
   }
 
   return User
