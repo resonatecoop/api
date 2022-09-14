@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     trackId: {
       type: DataTypes.INTEGER
+      // FIXME: allowNull: false
     },
     userId: {
       type: DataTypes.UUID

@@ -1,7 +1,8 @@
-const { groupBy } = require('lodash')
+const { groupBy, keyBy } = require('lodash')
 const { Op } = require('sequelize')
 const { User, Favorite, Play, File } = require('../models')
 
+// eslint-disable-next-line
 function sleep (ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
@@ -10,6 +11,10 @@ function sleep (ms) {
 
 // eslint-disable-next-line
 const migrateFavorites = async (client) => {
+  await Favorite.destroy({
+    truncate: true
+  })
+
   return new Promise((resolve, reject) => {
     client.query('SELECT * FROM favorites', function (error, results, fields) {
       if (error) reject(error)
@@ -46,52 +51,42 @@ const migrateFavorites = async (client) => {
   })
 }
 
-/**
- * Rewrite these to be more efficient. Takes way too long.
- */
-const playsCallback = async (user, results) => {
-  await sleep(200)
-  try {
-    const mapped = results.map(r => ({
-      id: r.pid,
-      trackId: r.tid,
-      userId: user.id,
-      type: r.event ? 'paid' : 'free',
-      createdAt: r.date
-    }))
-    await Play.bulkCreate(mapped)
-    console.log('created PLAY', user.legacyId, results.length)
-  } catch (e) {
-    if (e.errors?.[0].message.includes('id must be unique')) {
-      console.log('ALREADY PROCESSED', user.legacyId)
-    } else {
-      console.log('error CREATING PLAY', e)
-      throw (e)
-    }
-  }
-}
-
 // eslint-disable-next-line
 const migratePlays = async (client) => {
+  await Play.destroy({
+    truncate: true
+  })
+
   const users = await User.findAll({
     where: {
       legacyId: {
         [Op.not]: null
       }
-    },
-    limit: 10000,
-    offset: 19900
+    }
   })
-  await Promise.all(users.map(async user => {
-    await new Promise((resolve, reject) => {
-      client.query(`SELECT * FROM plays WHERE uid = ${user.legacyId}`, (error, results) => {
-        if (error) reject(error)
-        if (results.length > 0) {
-          resolve(playsCallback(user, results))
-        }
-      })
+
+  const usersGroupedByLegacyId = keyBy(users, 'legacyId')
+  await new Promise((resolve, reject) => {
+    client.query('SELECT * FROM plays', async (error, results) => {
+      if (error) reject(error)
+
+      try {
+        await Play.bulkCreate(results
+          .map(r => ({
+            id: r.pid,
+            trackId: r.tid,
+            userId: usersGroupedByLegacyId[r.uid]?.id ?? null,
+            type: r.event ? 'paid' : 'free',
+            createdAt: r.date
+          })))
+        console.log('done')
+        resolve()
+      } catch (e) {
+        console.log('e', e)
+        reject(e)
+      }
     })
-  }))
+  })
 }
 
 // eslint-disable-next-line
@@ -143,6 +138,7 @@ const migrateTags = async (client) => {
   })
 }
 
+// eslint-disable-next-line
 const migrateTracks = async (client) => {
   await new Promise((resolve, reject) => {
     client.query('SELECT * FROM tracks LIMIT 2', function (error, results, fields) {
@@ -163,7 +159,6 @@ const migrateTracks = async (client) => {
 
 module.exports = async (client) => {
   // await migrateFavorites(client)
-  // WARNING: this one should only be run once! And can we figure it out to be more efficient?
   // await migratePlays(client)
   // await migrateFiles(client)
   // TODO copy over tag
