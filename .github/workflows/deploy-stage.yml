@@ -1,0 +1,18 @@
+name: Deploy to Stage
+on: [push]
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER}}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            cd api
+            git pull
+            docker-compose up --no-deps -d --force-recreate api
