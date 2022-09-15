@@ -1,8 +1,8 @@
-# Tracks API (v4 lol)
-
 > 🛠 **Status: Active Development | Experimental**
 >
 > This project is currently broken and under very active development.
+
+# Tracks API (v4 lol)
 
 A rewrite of the Resonate tracks api, but with one database to rule them all.
 
