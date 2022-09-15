@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         return numbro.unformat(duration)
       },
       set (duration) {
+        console.log('duration', typeof duration)
         this.setDataValue('duration', numbro(roundTo.down(duration, 2)).format())
       }
     },
