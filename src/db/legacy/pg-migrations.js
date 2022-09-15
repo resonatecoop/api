@@ -19,6 +19,7 @@ const migrateUsers = async (client) => {
 
   try {
     await User.bulkCreate(results.rows.map(result => ({
+      id: result.id,
       legacyId: result.legacy_id,
       password: result.password,
       email: result.username,
@@ -42,6 +43,9 @@ const migrateUsers = async (client) => {
 }
 
 const migrateUserGroups = async (client) => {
+  await UserGroup.destroy({
+    truncate: true
+  })
   const types = await UserGroupType.findAll()
   const typeMap = keyBy(types, 'name')
 
