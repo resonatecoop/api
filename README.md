@@ -1,10 +1,14 @@
 # Tracks API (v4 lol)
 
+> 🛠 **Status: Active Development | Experimental**
+>
+> This project is currently broken and under very active development.
+
 A rewrite of the Resonate tracks api, but with one database to rule them all.
 
 ## Getting started with local dev
 
-```
+```sh
 git clone <repo>
 cd <repo>
 cp .env.example .env
@@ -18,7 +22,7 @@ Migrations should have run as part of `docker-compose up`
 
 Seed the data
 
-```
+```sh
 yarn docker:seed:all
 ```
 
@@ -26,7 +30,7 @@ yarn docker:seed:all
 
 Swagger generates docs, you can see them at: 
 
-```
+```sh
 http://localhost:4000/docs
 ```
 
@@ -34,7 +38,7 @@ http://localhost:4000/docs
 
 If you want to upload music or upload images, you'll need a worker running.
 
-```
+```sh
 docker exec -it resonate-api node src/jobs/queue-worker.js run convert-audio
 ```
 
@@ -44,15 +48,24 @@ docker exec -it resonate-api node src/jobs/queue-worker.js run convert-audio
 
 Hard rebuild the docker container
 
-```
+```sh
 sudo rm -rf data/ && docker-compose up --build
 ``` 
 
 Poke around the resonate db
 
-```
+```sh
 docker ps # look for the resonate pgsql container name
 docker exec -it <resonate-pgsql-container-name> psql -U resonate
+```
+
+### Resetting the database
+This will need to be run to reset the database periodically while migrations are still being squared away.
+
+```sh
+yarn docker:migrate:undo:all
+yarn docker:migrate
+yarn docker:seed:all
 ```
 
 ### Conflicting PGSQL
