@@ -2,10 +2,16 @@ module.exports = {
   up: (queryInterface, DataTypes) => {
     return queryInterface.createTable('tracks', {
       id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4,
+        unique: true,
+        field: 'id',
+        primaryKey: true
+      },
+      legacyId: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-        field: 'id'
+        field: 'legacy_id'
       },
       creatorId: {
         type: DataTypes.UUID,

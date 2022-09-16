@@ -8,7 +8,8 @@ module.exports = {
         autoIncrement: true
       },
       ownerId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        field: 'owner_id'
       },
       uuid: {
         type: Sequelize.UUID,

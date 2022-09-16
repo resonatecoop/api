@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     trackId: {
-      type: DataTypes.INTEGER
+      type: DataTypes.UUID
       // FIXME: allowNull: false
     },
     userId: {

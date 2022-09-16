@@ -1,5 +1,5 @@
 const models = require('../../../../db/models')
-const { User, Artist } = models
+const { User, UserGroup } = models
 // const resolveProfileImage = require('../../../../util/profile-image')
 // const links = require('../../../../util/links')
 // const he = require('he')
@@ -15,7 +15,7 @@ module.exports = function () {
         in: 'path',
         type: 'integer',
         required: true,
-        description: 'Artist id.'
+        description: 'User Group id.'
       }
     ]
   }
@@ -26,7 +26,7 @@ module.exports = function () {
     try {
       // TODO replace all of this with a call to the mongodb Profile data once we have enough data there
 
-      const result = await Artist.findOne({
+      const result = await UserGroup.findOne({
         where: {
           id: ctx.params.id
         },

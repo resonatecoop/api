@@ -20,7 +20,7 @@ module.exports = {
         field: 'track_group_id'
       },
       track_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         field: 'track_id'
       },
       track_performers: {
