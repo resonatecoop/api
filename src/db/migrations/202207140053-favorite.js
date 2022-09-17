@@ -12,7 +12,7 @@ module.exports = {
         field: 'user_id'
       },
       trackid: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         field: 'track_id'
       },
       type: {

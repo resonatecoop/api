@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID
     },
     trackId: {
-      type: DataTypes.INTEGER
+      type: DataTypes.UUID
     },
     type: {
       type: DataTypes.BOOLEAN

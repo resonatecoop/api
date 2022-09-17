@@ -30,6 +30,8 @@ db.UserMembership = require(path.join(__dirname, '/resonate', 'user_membership.j
 db.Link = require(path.join(__dirname, '/resonate', 'link.js'))(db.Resonate, DataTypes)
 db.Address = require(path.join(__dirname, '/resonate', 'address.js'))(db.Resonate, DataTypes)
 db.ShareTransaction = require(path.join(__dirname, '/resonate', 'share_transaction.js'))(db.Resonate, DataTypes)
+db.Image = require(path.join(__dirname, '/resonate', 'image.js'))(db.Resonate, DataTypes)
+db.UserGroupLink = require(path.join(__dirname, '/resonate', 'user_group_link.js'))(db.Resonate, DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

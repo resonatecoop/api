@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true
       },
       trackId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         field: 'track_id'
       },
       userId: {

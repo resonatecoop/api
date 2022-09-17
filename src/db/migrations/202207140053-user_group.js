@@ -14,8 +14,6 @@ module.exports = {
       },
       ownerId: {
         type: DataTypes.UUID,
-        allowNull: false,
-        defaultValue: DataTypes.UUIDV4,
         validate: {
           isUUID: 4
         },

@@ -6,9 +6,17 @@ const statusValues = ['free+paid', 'hidden', 'free', 'paid', 'deleted']
 module.exports = (sequelize, DataTypes) => {
   const Track = sequelize.define('Track', {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       primaryKey: true,
-      autoIncrement: true
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+      validate: {
+        isUUID: 4
+      },
+      unique: true
+    },
+    legacyId: {
+      type: DataTypes.INTEGER
     },
     creatorId: {
       type: DataTypes.UUID
@@ -33,7 +41,6 @@ module.exports = (sequelize, DataTypes) => {
         return numbro.unformat(duration)
       },
       set (duration) {
-        console.log('duration', typeof duration)
         this.setDataValue('duration', numbro(roundTo.down(duration, 2)).format())
       }
     },

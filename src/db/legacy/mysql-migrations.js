@@ -1,6 +1,6 @@
-const { groupBy, keyBy } = require('lodash')
+const { keyBy, uniq } = require('lodash')
 const { Op } = require('sequelize')
-const { User, Favorite, Play, File, UserGroup, Track } = require('../models')
+const { User, Favorite, Play, File, UserGroup, Track, TrackGroupItem, TrackGroup, Image, UserGroupLink } = require('../models')
 
 // eslint-disable-next-line
 function sleep (ms) {
@@ -10,54 +10,15 @@ function sleep (ms) {
 }
 
 // eslint-disable-next-line
-const migrateFavorites = async (client) => {
-  await Favorite.destroy({
-    truncate: true
-  })
-
-  return new Promise((resolve, reject) => {
-    client.query('SELECT * FROM favorites', function (error, results, fields) {
-      if (error) reject(error)
-
-      resolve(Promise.all(results.map(async result => {
-        try {
-          const user = await User.findOne({
-            where: {
-              legacyId: result.uid
-            }
-          })
-          if (user) {
-            const [favorite, newlyCreated] = await Favorite.findOrCreate({
-              where: {
-                userId: user.id,
-                trackId: result.tid
-              },
-              defualts: {
-                userId: user.id,
-                trackId: result.tid,
-                type: result.type
-              }
-            })
-            console.log('created FAVORITE', favorite.userId, favorite.trackId, newlyCreated)
-          } else {
-            console.log('did not find user for', result.uid)
-          }
-        } catch (e) {
-          console.log('error CREATING FAVORITE', e, result)
-          throw e
-        }
-      })))
-    })
-  })
-}
-
-// eslint-disable-next-line
 const migratePlays = async (client) => {
   await Play.destroy({
-    truncate: true
+    truncate: true,
+    force: true
   })
 
-  const users = await User.findAll({
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  const tracks = await Track.findAll({
     where: {
       legacyId: {
         [Op.not]: null
@@ -65,7 +26,7 @@ const migratePlays = async (client) => {
     }
   })
 
-  const usersGroupedByLegacyId = keyBy(users, 'legacyId')
+  const tracksGroupedByLegacyId = keyBy(tracks, 'legacyId')
   await new Promise((resolve, reject) => {
     client.query('SELECT * FROM plays', async (error, results) => {
       if (error) reject(error)
@@ -74,12 +35,12 @@ const migratePlays = async (client) => {
         await Play.bulkCreate(results
           .map(r => ({
             id: r.pid,
-            trackId: r.tid,
+            trackId: tracksGroupedByLegacyId[r.tid]?.id ?? null,
             userId: usersGroupedByLegacyId[r.uid]?.id ?? null,
             type: r.event ? 'paid' : 'free',
             createdAt: r.date
           })))
-        console.log('done')
+        console.log('done with plays')
         resolve()
       } catch (e) {
         console.log('e', e)
@@ -91,49 +52,35 @@ const migratePlays = async (client) => {
 
 // eslint-disable-next-line
 const migrateFiles = async (client) => {
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
   return new Promise((resolve, reject) => {
-    client.query('SELECT * FROM files', function (error, results, fields) {
+    client.query('SELECT * FROM files', async function (error, results, fields) {
       if (error) reject(error)
 
-      const owners = groupBy(results, 'owner_id')
-      resolve(Promise.all(Object.keys(owners).map(async legacyId => {
-        const owner = await User.findOne({
-          where: {
-            legacyId: legacyId
-          }
-        })
-
-        if (owner) {
-          try {
-            await File.bulkCreate(owners[legacyId].map(file => ({
-              filename: file.filename,
-              filename_prefix: file.filename_prefix,
-              owner_id: owner.id,
-              description: file.description,
-              size: file.size,
-              hash: file.hash,
-              status: file.status,
-              mime: file.mime,
-              metadata: file.metadata,
-              updated_at: file.updated_at,
-              created_at: file.created_at
-            })))
-          } catch (e) {
-            console.log('error', e)
-          }
-        }
-      })))
-    })
-  })
-}
-
-// eslint-disable-next-line
-const migrateTags = async (client) => {
-  return new Promise((resolve, reject) => {
-    client.query('SELECT * FROM tags LIMIT 2', function (error, results, fields) {
-      if (error) reject(error)
-
-      console.log('tags', results)
+      try {
+        await File.bulkCreate(results
+          .filter(f => !!usersGroupedByLegacyId[f.owner_id])
+          .map(file => ({
+            filename: file.filename,
+            filename_prefix: file.filename_prefix,
+            // TODO: should this be linked to the UserGroup?
+            owner_id: usersGroupedByLegacyId[file.owner_id].id,
+            description: file.description,
+            size: file.size,
+            hash: file.hash,
+            status: file.status,
+            mime: file.mime,
+            metadata: file.metadata,
+            updated_at: file.updated_at,
+            created_at: file.created_at
+          })))
+      } catch (e) {
+        console.log('error', e)
+        reject(e)
+      }
+      console.log('done with files')
+      resolve()
     })
   })
 }
@@ -141,7 +88,7 @@ const migrateTags = async (client) => {
 // eslint-disable-next-line
 const fetchUserMeta = async (client, id) => {
   return new Promise((resolve, reject) => {
-    client.query(`SELECT * FROM rsntr_usermeta WHERE user_id = ${id}`, function (error, results, fields) {
+    client.query(`SELECT * FROM rsntr_usermeta WHERE user_id = ${id}`, async function (error, results, fields) {
       if (error) reject(error)
 
       resolve(results)
@@ -149,11 +96,79 @@ const fetchUserMeta = async (client, id) => {
   })
 }
 
+const buildUserGroup = async (client, legacyArtistId, newUser) => {
+  const meta = await fetchUserMeta(client, legacyArtistId)
+  if (meta && newUser) {
+    const ug = await UserGroup.create({
+      ownerId: newUser.id,
+      typeId: meta.find(m => m.meta_key === 'role').meta_value === 'member' ? 1 : 2,
+      displayName: meta.find(m => m.meta_key === 'nickname')?.meta_value,
+      description: meta.find(m => m.meta_key === 'description')?.meta_value
+    })
+    return ug
+  }
+  return null
+}
+
+// eslint-disable-next-line
+const fetchLegacyUsers = async (client, id) => {
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_user WHERE ID = ${id}`, async function (error, results, fields) {
+      if (error) reject(error)
+
+      resolve(results)
+    })
+  })
+}
+
+const statusValues = ['free+paid', 'hidden', 'free', 'paid', 'deleted']
+
 // eslint-disable-next-line
 const migrateTracks = async (client) => {
-  Track.destroy({
-    truncate: true
+  await Track.destroy({
+    truncate: true,
+    force: true
   })
+
+  let usersGroupedByLegacyId = await groupUsersByLegacyId()
+  await new Promise((resolve, reject) => {
+    client.query(`SELECT tracks.tid as tid, uid, track_artist, track_name, track_album, track_duration, track_url, track_cover_art, status, event, track_album_artist, track_composer, track_year, date, tagnames FROM tracks 
+    LEFT JOIN tags t ON t.tid = tracks.tid
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      const missingUserGroups = uniq(results.filter(r => {
+        return !usersGroupedByLegacyId[r.uid]?.user_groups?.[0]
+      }).map(r => r.uid))
+      console.log('missingUserGroups', missingUserGroups)
+      await Promise.all(missingUserGroups.map(legacyId =>
+        buildUserGroup(client, legacyId, usersGroupedByLegacyId[legacyId])))
+      console.log('generated new user groups')
+      usersGroupedByLegacyId = await groupUsersByLegacyId()
+      console.log('bulk generating tracks')
+      Track.bulkCreate(results.map(r => ({
+        creatorId: usersGroupedByLegacyId[r.uid]?.user_groups?.[0]?.id,
+        legacyId: r.tid,
+        title: r.track_name,
+        artist: r.track_artist,
+        album: r.track_album,
+        duration: +r.track_duration,
+        album_artist: r.track_album_artist,
+        composer: r.track_composer,
+        year: r.track_year,
+        url: r.track_url,
+        cover_art: r.track_cover_art || r.track_cover_art !== '' ? r.track_cover_art : null,
+        number: r.track_number,
+        tags: r.tagnames?.split(','),
+        status: statusValues[r.status]
+      })))
+
+      resolve()
+    })
+  })
+}
+
+const groupUsersByLegacyId = async () => {
   const users = await User.findAll({
     where: {
       legacyId: {
@@ -165,119 +180,221 @@ const migrateTracks = async (client) => {
       as: 'user_groups'
     }]
   })
-  const usersGroupedByLegacyId = keyBy(users, 'legacyId')
-  // console.log('users', users)
-  const usersWithoutGroups = keyBy(users.filter(u => u.user_groups.length !== 0), 'legacyId')
-  console.log('usersGroupedByLegacyId', Object.keys(usersWithoutGroups).length)
 
-  await new Promise((resolve, reject) => {
-    client.query('SELECT * FROM tracks WHERE status != 4 LIMIT 1', async function (error, results, fields) {
+  return keyBy(users, 'legacyId')
+}
+
+// eslint-disable-next-line
+const migrateTrackGroups = async (client, id) => {
+  await TrackGroup.destroy({
+    truncate: true,
+    force: true
+  })
+
+  let usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query('SELECT * FROM track_groups', async function (error, results, fields) {
       if (error) reject(error)
-      const tracksGroupedByArtist = groupBy(results, 'uid')
-      await Promise.all(Object.keys(tracksGroupedByArtist).map(async legacyArtistId => {
-        const artistTracks = tracksGroupedByArtist[legacyArtistId]
-        console.log('legacyArtistId', legacyArtistId)
-        let user = usersWithoutGroups[legacyArtistId]?.get({ plain: true })
-        if (!user) {
-          console.log('user_group does not exist', legacyArtistId)
-          user = usersGroupedByLegacyId[legacyArtistId].get({ plain: true })
-          // We have to create this user woop woop
-          // Fetch user_meta
-          const meta = await fetchUserMeta(client, legacyArtistId)
-          console.log('meta', meta)
-          if (meta) {
-            const ug = await UserGroup.create({
-              ownerId: user.id,
-              typeId: 1,
-              displayName: meta.find(m => m.meta_key === 'nickname')?.meta_value,
-              description: meta.find(m => m.meta_key === 'description')?.meta_value
-            })
 
-            console.log('artistTracks', artistTracks)
+      const missingUserGroups = uniq(results.filter(r => !usersGroupedByLegacyId[r.creator_id]?.user_groups?.[0]).map(r => r.creator_id))
+      console.log('results', missingUserGroups)
+      const responses = await Promise.all(missingUserGroups.map(legacyId =>
+        buildUserGroup(client, legacyId, usersGroupedByLegacyId[legacyId])))
+      console.log('responses', responses)
+      usersGroupedByLegacyId = await groupUsersByLegacyId()
 
-            try {
-              await Track.bulkCreate(artistTracks.map(r => ({
-                creatorId: ug.id,
-                title: r.track_name,
-                artist: r.track_artist,
-                album: r.track_album,
-                duration: +r.track_duration,
-                album_artist: r.track_album_artist,
-                composer: r.track_composer,
-                year: r.track_year,
-                url: r.track_url,
-                cover_art: r.track_cover_art,
-                number: r.track_number,
-                status: r.status
-              })))
-            } catch (e) {
-              console.log('e', e)
-            }
-          }
-        } else {
-          // console.log('user_group exists for user', legacyArtistId)
-          user = usersGroupedByLegacyId[legacyArtistId].get({ plain: true })
-          const ug = user.user_groups[0]
-          try {
-            await Track.bulkCreate(artistTracks.map(r => ({
-              creatorId: ug.id,
-              title: r.track_name,
-              artist: r.track_artist,
-              album: r.track_album,
-              duration: +r.track_duration,
-              album_artist: r.track_album_artist,
-              composer: r.track_composer,
-              year: r.track_year,
-              url: r.track_url,
-              cover_art: r.track_cover_art,
-              number: r.track_number,
-              status: r.status
-            })))
-          } catch (e) {
-            console.log('e', e)
-          }
-        }
-        // await Promise.all(tracksGroupedByArtist[legacyArtistId].map(result => {
-
-        // }))
-      }))
-      resolve()
-
-      // console.log('tracks', results)
+      try {
+        await TrackGroup.bulkCreate(results.map(r => ({
+          id: r.id,
+          cover: r.cover,
+          title: r.title,
+          slug: r.slug,
+          type: r.type,
+          about: r.about,
+          private: r.private,
+          display_artist: r.display_artist,
+          creatorId: usersGroupedByLegacyId[r.creator_id]?.user_groups?.[0]?.id,
+          composers: r.composers?.split(','),
+          performers: r.performers?.split(','),
+          tags: r.tags?.split(','),
+          release_date: r.release_date,
+          download: r.download,
+          featured: r.featured,
+          enabled: r.enabled,
+          updatedAt: r.updated_at,
+          createdAt: r.created_at
+        })))
+      } catch (e) {
+        console.log(e)
+        throw e
+      }
+      resolve(results)
     })
   })
 }
 
-/**
- * Because apparently the user group migrations weren't done
- */
-// const migrateUsers = async (client) => {
-//   const users = await User.findAll({
-//     where: {
-//       legacyId: {
-//         [Op.not]: null
-//       }
-//     },
-//     include: [{
-//       model: UserGroup,
-//       as: 'user_groups'
-//     }]
-//   })
-//   const usersWithoutGroups = keyBy(users.filter(u => u.user_groups.length === 0), 'legacyId')
+// eslint-disable-next-line
+const migrateTrackGroupItems = async (client, id) => {
+  await TrackGroupItem.destroy({
+    truncate: true,
+    force: true
+  })
 
-// }
+  const tracks = await Track.findAll({
+    where: {
+      legacyId: {
+        [Op.not]: null
+      }
+    }
+  })
+
+  console.log('tracks', tracks.length)
+
+  const tracksGroupedByLegacyId = keyBy(tracks, 'legacyId')
+
+  return new Promise((resolve, reject) => {
+    client.query('SELECT * FROM track_group_items', async function (error, results, fields) {
+      if (error) reject(error)
+      console.log('result', results.length)
+      try {
+        await TrackGroupItem.bulkCreate(results
+          // TODO: Some tracks' legacy artists don't exist in the user-api database because
+          // they didn't have an e-mail associated with them.
+          .filter(r => tracksGroupedByLegacyId[r.track_id])
+          .map(r => {
+            return {
+              id: r.id,
+              index: r.index,
+              cover: r.cover,
+              trackgroupId: r.track_group_id,
+              track_id: tracksGroupedByLegacyId[r.track_id].id ?? null,
+              track_performers: r.track_performers?.split(','),
+              track_composers: r.track_composers?.split(','),
+              updatedAt: r.updated_at,
+              createdAt: r.created_at
+            }
+          }))
+      } catch (e) {
+        console.log(e)
+        throw e
+      }
+      resolve(results)
+    })
+  })
+}
+
+// eslint-disable-next-line
+const migrateFavorites = async (client) => {
+  await Favorite.destroy({
+    truncate: true,
+    force: true
+  })
+
+  const tracks = await Track.findAll({
+    where: {
+      legacyId: {
+        [Op.not]: null
+      }
+    }
+  })
+
+  const tracksGroupedByLegacyId = keyBy(tracks, 'legacyId')
+
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query('SELECT * FROM favorites', async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        await Favorite.bulkCreate(results
+          .filter(r => usersGroupedByLegacyId[r.uid])
+          .map(r => ({
+            userId: usersGroupedByLegacyId[r.uid].id,
+            trackId: tracksGroupedByLegacyId[r.tid].id,
+            type: r.type
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      resolve()
+    })
+  })
+}
+
+// eslint-disable-next-line
+const migrateImages = async (client) => {
+  await Image.destroy({
+    truncate: true,
+    force: true
+  })
+
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query('SELECT * FROM images', async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        await Image.bulkCreate(results
+          .filter(r => usersGroupedByLegacyId[r.uid])
+          .map(r => ({
+            id: r.iid,
+            ownerId: usersGroupedByLegacyId[r.uid].id,
+            name: r.name
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      console.log('done migrating images')
+      resolve()
+    })
+  })
+}
+
+// eslint-disable-next-line
+const migrateLinks = async (client) => {
+  await UserGroupLink.destroy({
+    truncate: true,
+    force: true
+  })
+
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_usermeta WHERE meta_key 
+      IN ('twitter', 'facebook', 'youtube', 'soundcloud', 'instagram', 'Website', 'VimeoMusicians')
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        await UserGroupLink.bulkCreate(results
+          .filter(r => usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id)
+          .map(r => ({
+            uri: r.meta_value,
+            platform: r.meta_key,
+            personalData: false,
+            ownerId: usersGroupedByLegacyId[r.user_id].user_groups?.[0].id
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      resolve()
+    })
+  })
+}
 
 module.exports = async (client) => {
-  // await migrateFavorites(client)
-  // await migratePlays(client)
-  // await migrateFiles(client)
-  // TODO copy over tag
-  // await migrateUsers(client)
   await migrateTracks(client)
-  // await migrateTags(client)
-  // TODO copy over image
-  // TODO copy over links from rsntr_user_meta
-  // TODO copy over track_group_item
-  // TODO copy over track_group
-  // TODO copy over track
+  await migrateTrackGroups(client)
+  await migrateTrackGroupItems(client)
+  await migrateFavorites(client)
+  await migrateFiles(client)
+  await migratePlays(client)
+  await migrateImages(client)
+  await migrateLinks(client)
 }

@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'track_group_id'
     },
     track_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       field: 'track_id'
     },
     track_performers: {

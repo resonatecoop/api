@@ -64,9 +64,8 @@ module.exports = {
           title: 'Best album ever',
           type: 'lp',
           about: 'this is the best album',
-          artist_id: artist.id,
+          creator_id: artist.id,
           private: false,
-          user_id: artistUser.id,
           display_artist: 'Jack',
           release_date: new Date('2019-01-01'),
           created_at: new Date(),
@@ -77,8 +76,7 @@ module.exports = {
           title: 'Best album ever 2',
           type: 'lp',
           about: 'this is the best album2',
-          artist_id: artist.id,
-          user_id: artistUser.id,
+          creator_id: artist.id,
           enabled: true,
           private: false,
           display_artist: 'Jill',
@@ -91,8 +89,7 @@ module.exports = {
           title: 'Best album ever 3',
           type: 'lp',
           about: 'this is the best album3',
-          artist_id: artist.id,
-          user_id: artistUser.id,
+          creator_id: artist.id,
           private: false,
           display_artist: '@auggod',
           performers: ['auggod'],
@@ -103,7 +100,7 @@ module.exports = {
       ])
 
       const albums = await TrackGroup.findAll({
-        where: { userId: artistUser.id }
+        where: { creatorId: artist.id }
       })
 
       await Promise.all(albums.map(async album => {

@@ -54,16 +54,15 @@ module.exports = (sequelize, DataTypes) => {
     display_artist: {
       type: DataTypes.STRING
     },
-    artistId: {
-      type: DataTypes.UUID
-    },
-    userId: {
+    creatorId: {
       type: DataTypes.UUID
     },
     composers: {
       type: DataTypes.TEXT,
       set (composers) {
-        this.setDataValue('composers', composers.join(','))
+        if (composers) {
+          this.setDataValue('composers', composers.join(','))
+        }
       },
       get () {
         const composers = this.getDataValue('composers')
@@ -73,7 +72,9 @@ module.exports = (sequelize, DataTypes) => {
     performers: {
       type: DataTypes.TEXT,
       set (performers) {
-        this.setDataValue('performers', performers.join(','))
+        if (performers) {
+          this.setDataValue('performers', performers.join(','))
+        }
       },
       get () {
         const performers = this.getDataValue('performers')
@@ -83,7 +84,9 @@ module.exports = (sequelize, DataTypes) => {
     tags: {
       type: DataTypes.TEXT,
       set (tags) {
-        this.setDataValue('tags', tags.join(','))
+        if (tags) {
+          this.setDataValue('tags', tags.join(','))
+        }
       },
       get () {
         const tags = this.getDataValue('tags')
@@ -153,8 +156,7 @@ module.exports = (sequelize, DataTypes) => {
 
   TrackGroup.associate = function (models) {
     TrackGroup.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'cover', foreignKey: 'id' })
-    TrackGroup.hasOne(models.UserGroup, { as: 'artist', sourceKey: 'artistId', foreignKey: 'id' })
-    TrackGroup.hasOne(models.User, { as: 'user', sourceKey: 'userId', foreignKey: 'id' })
+    TrackGroup.hasOne(models.UserGroup, { as: 'userGroup', sourceKey: 'creatorId', foreignKey: 'id' })
     // TrackGroup.hasMany(models.UserMeta, { as: 'usermeta', sourceKey: 'creator_id', foreignKey: 'user_id' })
     TrackGroup.hasMany(models.TrackGroupItem, { as: 'items', foreignKey: 'trackgroupId', sourceKey: 'id' })
   }

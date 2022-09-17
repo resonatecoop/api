@@ -44,7 +44,8 @@ const migrateUsers = async (client) => {
 
 const migrateUserGroups = async (client) => {
   await UserGroup.destroy({
-    truncate: true
+    truncate: true,
+    force: true
   })
   const types = await UserGroupType.findAll()
   const typeMap = keyBy(types, 'name')
@@ -52,19 +53,20 @@ const migrateUserGroups = async (client) => {
   const results = await client.query('SELECT * FROM user_groups')
   try {
     await UserGroup.bulkCreate(results.rows
+      // FIXME: we'll want to migrate these over
       .filter(result => result.owner_id !== '00000000-0000-0000-0000-000000000000')
       .map(result => ({
         createdAt: result.created_at,
         displayName: result.display_name,
         updatedAt: result.updated_at ?? result.created_at,
-        ownerId: result.owner_id,
+        ownerId: result.owner_id !== '00000000-0000-0000-0000-000000000000' ? result.owner_id : null,
         description: result.description,
         shortBio: result.short_bio,
         email: result.group_email,
         typeId: typeMap[result.type.Name]?.id ?? typeMap.artist?.id
       })))
   } catch (e) {
-    console.error('error CREATING USER', e)
+    console.error('error CREATING USER GROUP', e)
     throw e
   }
 }
