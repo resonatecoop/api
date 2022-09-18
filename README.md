@@ -6,7 +6,7 @@
 
 A rewrite of the Resonate tracks api, but with one database to rule them all.
 
-View the [product backlog](https://mattermost.resonate.coop/plugins/focalboard/workspace/gr3aqjbmw3d7fp3wukfw7hhppr/shared/bzkz3bnxxsbny3doh9aqhqy8cth/vzfpkzytdq3rkfjjwzagshoyrho?r=kwx8xtyxwcpmqsnh67iz8x74p7a) and [project board](https://github.com/orgs/resonatecoop/projects/11), where work is tracked for this repository.
+View the [product backlog](https://mattermost.resonate.coop/plugins/focalboard/workspace/gr3aqjbmw3d7fp3wukfw7hhppr/shared/bzkz3bnxxsbny3doh9aqhqy8cth/vzfpkzytdq3rkfjjwzagshoyrho?r=kwx8xtyxwcpmqsnh67iz8x74p7a), where work is tracked for this repository.
 
 ## Getting started with local dev
 
