@@ -40,7 +40,7 @@ const validateQuery = ajv.compile({
     },
     order: {
       type: 'string',
-      enum: ['registered', 'display_name']
+      enum: ['registered', 'displayName']
     },
     q: {
       type: 'string',

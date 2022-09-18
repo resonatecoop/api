@@ -13,9 +13,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'User Group id.'
+        description: 'User Group uuid.',
+        format: 'uuid'
       }
     ]
   }
@@ -34,8 +35,7 @@ module.exports = function () {
           {
             model: User,
             required: false,
-            attributes: ['id', 'display_name'],
-            as: 'user'
+            attributes: ['id', 'displayName']
           }
         ]
       })
@@ -58,9 +58,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Artist id'
+        description: 'Artist uuid',
+        format: 'uuid'
       }
     ],
     responses: {

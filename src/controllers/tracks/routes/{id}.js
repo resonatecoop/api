@@ -1,4 +1,4 @@
-const { Artist, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
+const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../util/cover-src')
 
@@ -9,9 +9,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Track id.'
+        description: 'Track id.',
+        format: 'uuid'
       }
     ]
   }
@@ -28,7 +29,7 @@ module.exports = function () {
         },
         attributes: [
           'id',
-          'creator_id',
+          'creatorId',
           'title',
           'url',
           'cover_art',
@@ -68,7 +69,7 @@ module.exports = function () {
           'cover'
         ],
         where: {
-          creator_id: result.creator_id,
+          creatorId: result.creatorId,
           type: {
             [Op.in]: ['single', 'lp', 'ep']
           },
@@ -95,7 +96,7 @@ module.exports = function () {
       }
 
       // FIXME: This should refer an artist, not the original uploader
-      const artist = await Artist.findOne({ where: { id: result.creator_id } })
+      const artist = await UserGroup.findOne({ where: { id: result.creatorId } })
 
       let ext = '.jpg'
 
@@ -108,12 +109,12 @@ module.exports = function () {
       ctx.body = {
         data: {
           id: result.id,
-          creator_id: result.creator_id,
+          creatorId: result.creatorId,
           title: result.title,
           duration: result.duration,
           album: result.album,
           year: result.year,
-          artist: artist.display_name,
+          artist: artist.displayName,
           cover: !result.cover_art
             ? coverSrc(cover, '600', ext, false)
             : coverSrc(result.cover_art, '600', ext, !result.dataValues.cover),
@@ -153,9 +154,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Track id'
+        description: 'Track id',
+        format: 'uuid'
       }
     ],
     responses: {

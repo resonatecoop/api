@@ -1,4 +1,4 @@
-const { User, Artist } = require('../../../../../db/models')
+const { User, UserGroup } = require('../../../../../db/models')
 
 module.exports = function () {
   const operations = {
@@ -12,14 +12,14 @@ module.exports = function () {
         type: 'string',
         required: true,
         description: 'Artist id.',
-        format: 'number'
+        format: 'uuid'
       }
     ]
   }
 
   async function DELETE (ctx, next) {
     try {
-      const result = await Artist.findOne({
+      const result = await UserGroup.findOne({
 
         where: {
           userId: ctx.profile.id,
@@ -32,7 +32,7 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Artist does not exist')
       }
 
-      await Artist.destroy({
+      await UserGroup.destroy({
         where: {
           creator_id: ctx.profile.id,
           id: ctx.params.id
@@ -77,7 +77,7 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
-      let result = await Artist.findOne({
+      let result = await UserGroup.findOne({
 
         where: {
           userId: ctx.profile.id,
@@ -90,9 +90,9 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Artist does not exist or does not belong to your user account')
       }
 
-      result = await Artist.update(body, {
+      result = await UserGroup.update(body, {
         where: {
-          Artist: ctx.profile.id,
+          ownerId: ctx.profile.id,
           id: ctx.params.id
         },
         returning: true
@@ -103,9 +103,9 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Could not update')
       }
 
-      result = await Artist.findOne({
+      result = await UserGroup.findOne({
         where: {
-          creator_id: ctx.profile.id,
+          ownerId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -161,13 +161,13 @@ module.exports = function () {
     }
 
     try {
-      const result = await Artist.findOne({
+      const result = await UserGroup.findOne({
         where,
         include: [
           {
             model: User,
             required: false,
-            attributes: ['id', 'display_name'],
+            attributes: ['id', 'displayName'],
             as: 'user'
           }
         ]
@@ -204,7 +204,7 @@ module.exports = function () {
         type: 'string',
         required: true,
         description: 'Artist id',
-        format: 'number'
+        format: 'uuid'
       }
     ],
     responses: {

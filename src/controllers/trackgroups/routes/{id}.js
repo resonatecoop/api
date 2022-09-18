@@ -1,4 +1,4 @@
-const { Artist, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
+const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
@@ -47,7 +47,7 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'artistId',
+          'creatorId',
           'display_artist',
           'download',
           'id',
@@ -64,10 +64,10 @@ module.exports = function () {
         ],
         include: [
           {
-            model: Artist,
+            model: UserGroup,
             required: false,
-            attributes: ['id', 'display_name'],
-            as: 'artist'
+            attributes: ['id', 'displayName'],
+            as: 'userGroup'
           },
           // {
           //   model: UserMeta,
@@ -96,7 +96,7 @@ module.exports = function () {
             as: 'items',
             include: [{
               model: Track,
-              attributes: ['id', 'creator_id', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
+              attributes: ['id', 'creatorId', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
               as: 'track',
               where: {
                 status: {
@@ -173,11 +173,11 @@ module.exports = function () {
           cover_metadata: {
             id: data.cover
           },
-          artistId: data.artistId,
+          creatorId: data.creatorId,
           display_artist: data.display_artist,
           user: {
-            name: data.artist.display_name,
-            id: data.artist.id
+            name: data.userGroup.displayName,
+            id: data.userGroup.id
           },
           download: data.download,
           id: data.id,
@@ -204,7 +204,7 @@ module.exports = function () {
                 status: item.track.status,
                 album: item.track.album,
                 duration: item.track.duration,
-                artistId: item.track.artistId,
+                artistId: item.track.creatorId,
                 artist: item.track.artist,
                 cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
                 images: variants.reduce((o, key) => {

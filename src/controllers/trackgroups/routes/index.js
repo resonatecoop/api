@@ -1,4 +1,4 @@
-const { Artist, Resonate: Sequelize, TrackGroup, File } = require('../../../db/models')
+const { UserGroup, Resonate: Sequelize, TrackGroup, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../util/cover-src')
@@ -36,7 +36,7 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'artistId',
+          'creatorId',
           'display_artist',
           'id',
           'slug',
@@ -57,15 +57,16 @@ module.exports = function () {
             }
           },
           {
-            model: Artist,
+            model: UserGroup,
             required: false,
-            attributes: ['id', 'display_name'],
-            as: 'artist'
+            attributes: ['id', 'displayName'],
+            as: 'userGroup'
+
           }
         ],
         order: [
           ['createdAt', 'DESC'],
-          ['artistId', 'ASC'],
+          ['creatorId', 'ASC'],
           ['title', 'ASC']
         ]
       }
@@ -75,7 +76,7 @@ module.exports = function () {
       } else if (order === 'oldest') {
         query.order = [
           ['createdAt', 'ASC'],
-          ['artistId', 'ASC'],
+          ['creatorId', 'ASC'],
           ['title', 'ASC']
         ]
       }

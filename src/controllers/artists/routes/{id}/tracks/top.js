@@ -8,9 +8,10 @@ module.exports = function (trackService) {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Artist id.'
+        description: 'Artist id.',
+        format: 'uuid'
       }
     ]
   }
@@ -22,26 +23,26 @@ module.exports = function (trackService) {
 
     try {
       const result = await sequelize.query(`
-        SELECT track.tid as id, track.artist_id as artistId, track.status, track.track_name, track.track_url, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_album, track.track_duration, meta.meta_value as artist, count(play.pid)
+        SELECT track.id as id, track.creator_id as "artistId", track.status, track.track_name, track.track_url, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_album, track.track_duration, "userGroup".display_name as artist, count(play.id)
         FROM track_groups as trackgroup
         INNER JOIN track_group_items as item ON(item.track_group_id = trackgroup.id)
-        INNER JOIN tracks as track ON(item.track_id = track.tid AND track.status IN(0, 2, 3))
-        INNER JOIN plays AS play ON (play.tid = track.tid)
-        INNER JOIN rsntr_usermeta as meta ON(meta.user_id = track.uid AND meta.meta_key = 'nickname')
+        INNER JOIN tracks as track ON(item.track_id = track.id AND track.status IN(0, 2, 3))
+        INNER JOIN plays AS play ON (play.track_id = track.id)
+        INNER JOIN user_groups as "userGroup" ON("userGroup".id = track.creator_id)
         LEFT JOIN files as file ON(file.id = track.track_url)
         WHERE (trackgroup.type IS NULL OR trackgroup.type NOT IN ('playlist', 'compilation'))
-        AND track.tid IN (
-          SELECT play.tid
+        AND track.id IN (
+          SELECT play.track_id
           FROM plays as play
-          GROUP BY play.tid
-          HAVING COUNT(DISTINCT play.pid) > 1
+          GROUP BY play.track_id
+          HAVING COUNT(DISTINCT play.id) > 1
         )
-        AND trackgroup.artistId = :artistId
+        AND trackgroup.creator_id = :artistId
         AND trackgroup.private = false
         AND trackgroup.enabled = true
         AND (trackgroup.release_date <= NOW() OR trackgroup.release_date IS NULL)
-        GROUP BY track.tid, trackgroup.cover, meta.meta_value
-        ORDER by count(play.pid) desc
+        GROUP BY track.id, trackgroup.cover, "userGroup".id, file.id
+        ORDER by count(play.id) desc
         LIMIT :limit
       `, {
         type: sequelize.QueryTypes.SELECT,
