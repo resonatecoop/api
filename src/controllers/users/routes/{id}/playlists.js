@@ -11,9 +11,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'User id.'
+        description: 'User id.',
+        format: 'uuid'
       }
     ]
   }
@@ -136,9 +137,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'User id'
+        description: 'User id',
+        format: 'uuid'
       },
       {
         description: 'The maximum number of results to return',

@@ -1,4 +1,4 @@
-const { TrackGroup, TrackGroupItem, Track, Artist } = require('../../../../../../db/models')
+const { TrackGroup, TrackGroupItem, Track, UserGroup } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
 
 module.exports = function () {
@@ -19,15 +19,15 @@ module.exports = function () {
   async function PUT (ctx, next) {
     const body = ctx.request.body
     try {
-      const artists = Artist.findAll({
+      const artists = UserGroup.findAll({
         where: {
-          userId: ctx.profile.id
+          ownerId: ctx.profile.id
         }
       })
       let result = await TrackGroup.findOne({
         attributes: ['id'],
         where: {
-          creator_id: artists.map(a => a.id),
+          creatorId: artists.map(a => a.id),
           id: ctx.params.id
         },
         include: [{

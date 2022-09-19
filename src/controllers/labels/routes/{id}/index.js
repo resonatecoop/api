@@ -12,9 +12,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Label id.'
+        description: 'Label id.',
+        format: 'uuid'
       }
     ]
   }
@@ -137,9 +138,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Label id'
+        description: 'Label id',
+        format: 'uuid'
       }
     ],
     responses: {

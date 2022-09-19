@@ -199,9 +199,8 @@ const migrateTrackGroups = async (client, id) => {
 
       const missingUserGroups = uniq(results.filter(r => !usersGroupedByLegacyId[r.creator_id]?.user_groups?.[0]).map(r => r.creator_id))
       console.log('results', missingUserGroups)
-      const responses = await Promise.all(missingUserGroups.map(legacyId =>
+      await Promise.all(missingUserGroups.map(legacyId =>
         buildUserGroup(client, legacyId, usersGroupedByLegacyId[legacyId])))
-      console.log('responses', responses)
       usersGroupedByLegacyId = await groupUsersByLegacyId()
 
       try {

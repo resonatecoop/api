@@ -57,6 +57,8 @@ module.exports = (sequelize, DataTypes) => {
   UserGroup.associate = function (models) {
     UserGroup.belongsTo(models.UserGroupType, { foreignKey: 'typeId' })
     UserGroup.belongsTo(models.User, { foreignKey: 'ownerId' })
+    UserGroup.hasMany(models.TrackGroup, { foreignKey: 'creatorId' })
+    UserGroup.hasMany(models.Track, { foreignKey: 'creatorId' })
   }
 
   return UserGroup

@@ -8,9 +8,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Artist id.'
+        description: 'Artist id.',
+        format: 'uuid'
       }
     ]
   }

@@ -1,5 +1,5 @@
 const models = require('../../../db/models')
-const { Artist, TrackGroup, TrackGroupItem, Track } = models
+const { UserGroup, TrackGroup, TrackGroupItem, Track } = models
 // const resolveProfileImage = require('../../../util/profile-image')
 // const map = require('awaity/map')
 // const he = require('he')
@@ -18,14 +18,13 @@ module.exports = function () {
         page = 1
       } = ctx.request.query
 
-      const { rows: result, count } = await Artist.findAndCountAll({
+      const { rows: result, count } = await UserGroup.findAndCountAll({
         limit,
-        order: [['display_name', 'asc']],
+        order: [['displayName', 'asc']],
         offset: page > 1 ? (page - 1) * limit : 0,
         include: [
           {
             model: TrackGroup,
-            as: 'trackgroups',
             include: [{
               model: TrackGroupItem,
               attributes: ['id', 'index', 'track_id'],

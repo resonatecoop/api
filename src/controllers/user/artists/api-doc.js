@@ -13,13 +13,13 @@ const apiDoc = {
     Error: SwaggerError,
     Artist: {
       type: 'object',
-      required: ['display_name'],
+      required: ['displayName'],
       additionalProperties: false,
       properties: {
         id: {
           type: 'number'
         },
-        display_name: {
+        displayName: {
           type: 'string'
         }
       }

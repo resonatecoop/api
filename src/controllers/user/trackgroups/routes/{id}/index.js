@@ -269,7 +269,7 @@ module.exports = function () {
           {
             model: User,
             required: false,
-            attributes: ['id', 'display_name'],
+            attributes: ['id', 'displayName'],
             as: 'user'
           },
           {

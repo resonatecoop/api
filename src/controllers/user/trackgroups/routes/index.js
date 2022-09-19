@@ -1,4 +1,4 @@
-const { TrackGroup, Artist, TrackGroupItem, Track, File } = require('../../../../db/models')
+const { TrackGroup, UserGroup, TrackGroupItem, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
@@ -14,15 +14,14 @@ module.exports = function () {
 
     try {
       // FIXME: We should allow the user to select an artist to add the album to
-      const artist = await Artist.findOne({
+      const artist = await UserGroup.findOne({
         where: {
           userId: ctx.profile.id
         }
       })
       const result = await TrackGroup.create(Object.assign(body, {
         enabled: body.type === 'playlist', // FIXME: what's this enforcing?
-        artistId: artist.id,
-        userId: ctx.profile.id
+        creatorId: artist.id
       }))
 
       ctx.status = 201
@@ -79,14 +78,14 @@ module.exports = function () {
       const { type, limit = 100, page = 1, featured, private: _private, download, enabled, includes } = ctx.request.query
 
       // FIXME: Allow filtering by artist
-      const userArtists = await Artist.findAll({
+      const userArtists = await UserGroup.findAll({
         where: {
-          userId: ctx.profile.id
+          ownerId: ctx.profile.id
         }
       })
 
       const where = {
-        artistId: userArtists.map(a => a.id),
+        creatorId: userArtists.map(a => a.id),
         type: {
           [Op.or]: {
             [Op.eq]: null,
@@ -129,7 +128,7 @@ module.exports = function () {
           'cover',
           'title',
           'type',
-          'artistId',
+          'creatorId',
           'about',
           'private',
           'enabled',

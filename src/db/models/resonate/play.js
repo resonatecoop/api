@@ -42,8 +42,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Play.associate = function (models) {
-    // Play.hasOne(models.Track, { as: 'track', sourceKey: 'trackId', foreignKey: 'id' })
-    // Play.hasOne(models.User, { as: 'user', sourceKey: 'userId', foreignKey: 'id' })
+    Play.belongsTo(models.Track, { sourceKey: 'trackId', foreignKey: 'id' })
+    Play.belongsTo(models.User, { sourceKey: 'userId', foreignKey: 'id' })
   }
 
   return Play

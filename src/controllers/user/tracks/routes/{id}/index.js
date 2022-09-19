@@ -12,9 +12,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Track id.'
+        description: 'Track id.',
+        format: 'uuid'
       }
     ]
   }
@@ -215,9 +216,10 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
-        description: 'Track id'
+        description: 'Track id',
+        format: 'uuid'
       }
     ],
     responses: {

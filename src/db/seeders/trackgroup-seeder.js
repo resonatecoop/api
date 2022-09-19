@@ -42,7 +42,7 @@ module.exports = {
 
       const artistUser = await User.findOne({
         where: {
-          display_name: 'artist'
+          displayName: 'artist'
         }
       })
 
@@ -53,7 +53,7 @@ module.exports = {
       })
 
       const artist = await UserGroup.create({
-        display_name: faker.hacker.noun(),
+        displayName: faker.hacker.noun(),
         ownerId: artistUser.id,
         typeId: artistGroupType.id
       })

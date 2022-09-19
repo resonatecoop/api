@@ -1,4 +1,4 @@
-const { Artist, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
+const { UserGroup, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
 
 module.exports = function () {
   const operations = {
@@ -10,7 +10,7 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
-      const result = await Artist.create(Object.assign(body, {
+      const result = await UserGroup.create(Object.assign(body, {
         userId: ctx.profile.id
       }))
 
@@ -68,17 +68,16 @@ module.exports = function () {
       const { limit = 100, page = 1 } = ctx.request.query
 
       const where = {
-        userId: ctx.profile.id
+        ownerId: ctx.profile.id
       }
 
-      const { rows: result, count } = await Artist.findAndCountAll({
+      const { rows: result, count } = await UserGroup.findAndCountAll({
         limit,
         offset: page > 1 ? (page - 1) * limit : 0,
         where,
         include: [
           {
             model: TrackGroup,
-            as: 'trackgroups',
             include: [{
               model: TrackGroupItem,
               attributes: ['id', 'index', 'track_id'],

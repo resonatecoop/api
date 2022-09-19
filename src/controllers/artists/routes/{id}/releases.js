@@ -1,4 +1,4 @@
-const { Artist, Track, TrackGroup, TrackGroupItem, File } = require('../../../../db/models')
+const { UserGroup, Track, TrackGroup, TrackGroupItem, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 // const slug = require('slug')
 // const coverSrc = require('../../../../util/cover-src')
@@ -47,7 +47,7 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'artistId',
+          'creatorId',
           'display_artist',
           'id',
           'slug',
@@ -70,10 +70,10 @@ module.exports = function () {
             }
           },
           {
-            model: Artist,
+            model: UserGroup,
             required: false,
-            attributes: ['id', 'display_name'],
-            as: 'artist'
+            attributes: ['id', 'displayName'],
+            as: 'userGroup'
           },
           {
             model: TrackGroupItem,

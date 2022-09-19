@@ -105,10 +105,11 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Track.associate = function (models) {
-    Track.hasMany(models.Play, { as: 'play', foreignKey: 'trackId', sourceKey: 'id' })
+    Track.hasMany(models.TrackGroupItem, { foreignKey: 'trackId' })
+    Track.hasMany(models.Play, { foreignKey: 'trackId', sourceKey: 'id' })
     // Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
     // Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
-    Track.hasOne(models.User, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })
+    Track.hasOne(models.UserGroup, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })
     Track.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'track_cover_art', foreignKey: 'id' })
     Track.belongsTo(models.File, { as: 'audiofile', foreignKey: 'track_url' })
     Track.belongsTo(models.File, { as: 'cover', foreignKey: 'track_cover_art' })
