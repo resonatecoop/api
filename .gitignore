@@ -11,3 +11,5 @@ cookies-keys.json
 
 backups
 src/db/legacy/config.js
+
+test-as-built
