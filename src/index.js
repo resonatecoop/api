@@ -72,7 +72,7 @@ app
       password: process.env.REDIS_PASSWORD
     }),
     duration: 60000,
-    errorMessage: 'Dashboard api is rate limited',
+    errorMessage: 'API is rate limited',
     id: (ctx) => ctx.ip,
     headers: {
       remaining: 'Rate-Limit-Remaining',
@@ -82,6 +82,7 @@ app
     max: 100,
     disableHeader: false,
     whitelist: (ctx) => {
+      return process.env.NODE_ENV !== 'production'
       // some logic that returns a boolean
     },
     blacklist: (ctx) => {
