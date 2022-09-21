@@ -1,5 +1,5 @@
 
-const {request, expect, testTrackId} = require('../testConfig') 
+const {request, expect, testTrackId} = require('../../testConfig') 
 
 describe('Api.ts/track endpoint test', () => {
   let response = null
@@ -64,7 +64,7 @@ describe('Api.ts/track endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })    
-  it.only('should get track by id', async () => {
+  it('should get track by id', async () => {
     response = await request.get(`/tracks/${testTrackId}`)
 
     expect(response.status).to.eql(200)

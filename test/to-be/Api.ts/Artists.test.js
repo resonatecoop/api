@@ -1,5 +1,5 @@
 
-const {request, expect, testArtistId} = require('../testConfig') 
+const {request, expect, testArtistId} = require('../../testConfig') 
 
 describe('Api.ts/artists endpoint test', () => {
   let response = null

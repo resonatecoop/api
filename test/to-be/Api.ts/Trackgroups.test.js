@@ -1,5 +1,5 @@
 
-const {request, expect, testTrackGroupId} = require('../testConfig') 
+const {request, expect, testTrackGroupId} = require('../../testConfig') 
 
 describe('Api.ts/Trackgroups endpoint test', () => {
   let response = null

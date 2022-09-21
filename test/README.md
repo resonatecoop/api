@@ -25,9 +25,19 @@ Run the old / as-built tests
 npm run test:as-built
 ```
 
-Run the new / to-be tests
+Run the new / to-be tests for endpoints in Api.ts file
 ```sh
-npm run test:to-be
+npm run test:to-be:api
+```
+
+Run the new / to-be tests for endpoints in Admin.ts file
+```sh
+npm run test:to-be:admin
+```
+
+Run the new / to-be tests for endpoints in User.ts file
+```sh
+npm run test:to-be:user
 ```
 
 Run all the tests in watch mode
@@ -97,6 +107,11 @@ Still not clear on how well the endpoints map to the underlying data.
 
 For the first iteration of these tests, we capture the endpoints' output and put that output into the tests. This is a 'what does it do?' and not a 'what should it do?' approach.
 
+Run the new / to-be tests for endpoints in Api.ts file
+```sh
+npm run test:to-be:api
+```
+
 Endpoints in [Api.ts](https://github.com/resonatecoop/beam/blob/main/src/services/Api.ts)
 * trackgroups
   * GET /trackgroups
@@ -123,6 +138,11 @@ Endpoints in [Api.ts](https://github.com/resonatecoop/beam/blob/main/src/service
   * // NOTE: API is looking for actual "+" (%2B) values instead of whitespace (%20)
   * { q: searchString.replace(/ /g, "+") } <- q is query string?
 
+Run the new / to-be tests for endpoints in Admin.ts file
+```sh
+npm run test:to-be:admin
+```
+
 Endpoints in [Admin.ts](https://github.com/resonatecoop/beam/blob/main/src/services/api/Admin.ts)
 nts: there are interfaces for typing
 * users
@@ -137,6 +157,11 @@ nts: there are interfaces for typing
   * GET /user/admin/tracks/${id}
   * PUT /user/admin/tracks/${id}
 
+Run the new / to-be tests for endpoints in User.ts file
+```sh
+npm run test:to-be:user
+```
+
 Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/services/api/User.ts)
 * user
   * GET /user/profile/
@@ -146,12 +171,12 @@ Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/servic
   * GET /user/trackgroups
   * GET /user/trackgroups/${id}
   * POST /user/trackgroups/${id}/items/add
-  * PUT /user/trackgroups/${id}/items/remove
-  * PUT /user/trackgroups/${id}/items
+  * PUT /user/trackgroups/${id}/items/remove  <- PUT to remove?
+  * PUT /user/trackgroups/${id}/items         <- ?
   * DELETE /user/trackgroups/${id}
 * user artist endpoints
   * GET /user/artists
-  * GET user/artists/${artistId}
+  * GET /user/artists/${artistId}
   * POST /user/artists
 * user tracks
   * POST /user/tracks
@@ -175,8 +200,9 @@ Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/servic
 As work on the new API continues, you might need to edit the existing tests, as well as create new tests.
 
 ## To Do
-* (nts: check response vs. response.body)
 * nts: look over api/src/db/models/* to get a better idea of what the data/datatypes are.
 * (nts: it might be good to run tests from within Docker, using `docker exec -it resonate-api mocha <some.test.js>`? Not sure if this helps...)
-* Configure Mocha error log naming / location
+* Configure Mocha 
+  * error log naming / location
+  * anything else useful
 * Better / more TypeScript integration

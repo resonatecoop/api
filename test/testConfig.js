@@ -3,6 +3,7 @@ const baseURL = "http://localhost:4000/api/v3"
 const request = require('supertest')(baseURL) 
 const expect = require("chai").expect;
 
+// genAudio and path are used in the old / as-built tests
 const genAudio = require('../src/util/gen-silent-audio')
 const path = require('path')
 

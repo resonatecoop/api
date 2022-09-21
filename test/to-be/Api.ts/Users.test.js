@@ -1,5 +1,5 @@
 
-const {request, expect, testUserId} = require('../testConfig') 
+const {request, expect, testUserId} = require('../../testConfig') 
 
 describe.skip('Users endpoint test', () => {
   let response = null

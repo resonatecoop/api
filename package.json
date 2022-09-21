@@ -18,7 +18,9 @@
     "test": "mocha",
     "test:watch": "mocha -w",
     "test:as-built": "mocha test/as-built",
-    "test:to-be": "mocha test/to-be"
+    "test:to-be:api": "mocha test/to-be/Api.ts",
+    "test:to-be:admin": "mocha test/to-be/Admin.ts",
+    "test:to-be:user": "mocha test/to-be/User.ts"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
