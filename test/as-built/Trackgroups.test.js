@@ -2,7 +2,7 @@
 
 // FIXME: this looks like it duplicates test-as-built/user/trackgroups.js
 
-const { baseURL, request, expect, testUserId } = require('./testConfig') 
+const { baseURL, request, expect, testUserId } = require('../testConfig') 
 
 describe('Trackgroups endpoint test', () => {
   let response = null
@@ -14,7 +14,7 @@ describe('Trackgroups endpoint test', () => {
     expect(response.status).to.eql(404)
   })
 
-  describe.only('AS-BUILT Tests', () => {
+  describe('AS-BUILT Tests', () => {
     let uuid = null
 
     describe('test-as-built/trackgroups.js', () => {
@@ -153,12 +153,6 @@ describe('Trackgroups endpoint test', () => {
 
         expect(response.status).to.eql(404)
       })
-    })
-  })
-
-  describe.skip('NEW Tests', () => {
-    it('should fail', () => {
-      expect(false).to.eql(true)
     })
   })
 })

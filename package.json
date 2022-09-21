@@ -16,7 +16,9 @@
     "docker:seed:all": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders",
     "docker:seed:undo:all": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:seed:undo:all --config src/config/databases.js --seeders-path src/db/seeders",
     "test": "mocha",
-    "test:watch": "mocha -w"
+    "test:watch": "mocha -w",
+    "test:as-built": "mocha test/as-built",
+    "test:to-be": "mocha test/to-be"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",

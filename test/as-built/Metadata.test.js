@@ -1,7 +1,7 @@
 
 // all metadata-related test I could find in the existing test suite
 
-const { baseURL, request, expect, testUserId, genAudio, path } = require('./testConfig') 
+const { baseURL, request, expect, testUserId, genAudio, path } = require('../testConfig') 
 
 describe('Metadata endpoint tests', () => {
   let response = null
@@ -13,7 +13,7 @@ describe('Metadata endpoint tests', () => {
     expect(response.status).to.eql(404)
   })
 
-  describe.only('AS-BUILT Tests', () => {
+  describe('AS-BUILT Tests', () => {
     describe('test-as-built/metadata.js', () => {
       const metadata = {
                           title: 'Resonate',
@@ -60,12 +60,6 @@ describe('Metadata endpoint tests', () => {
         // FIXME: original test has no expect
         // expect(response.status).to.eql()
       })
-    })
-  })
-
-  describe.skip('NEW Tests', () => {
-    it('should fail', async () => {
-      expect(false).to.eql(true)
     })
   })
 })

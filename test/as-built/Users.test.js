@@ -1,7 +1,7 @@
 
 // all user-related tests I could find in the existing test suite
 
-const {baseURL, request, expect, testUserId} = require('./testConfig') 
+const {baseURL, request, expect, testUserId} = require('../testConfig') 
 
 describe('Users endpoint test', () => {
   let response = null
@@ -12,7 +12,7 @@ describe('Users endpoint test', () => {
     expect(response.status).to.eql(404) 
   })
 
-  describe.only('AS-BUILT Tests', () => {
+  describe('AS-BUILT Tests', () => {
     describe('test-as-built/users.js', () => {
       it('should fetch user playlists', async () => {
         response = await request.get('/users/12788/playlists')
@@ -280,17 +280,4 @@ describe('Users endpoint test', () => {
       })
     })
   })
-
-  describe.skip('NEW Tests', () => {
-    it('should return data for the test user id', async () => {
-      response = await request.get(`/users/${testUserId}`)
-
-      if (response.status != 200) {
-        console.log(response.error.text)
-      }
-      expect(response.status).to.eql(200)
-    })    
-  })
-
-
 })
