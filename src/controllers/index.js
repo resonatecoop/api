@@ -8,6 +8,7 @@ const users = require('./users/index')
 const labels = require('./labels/index')
 const search = require('./search/index')
 const resolve = require('./resolve/index')
+const playlists = require('./playlists/index')
 
 const root = '/api/v3'
 
@@ -52,5 +53,6 @@ apiRouter.use(root, resolve.routes())
 apiRouter.use(root, search.routes())
 apiRouter.use(root, trackgroups.routes())
 apiRouter.use(root, users.routes())
+apiRouter.use(root, playlists.routes())
 
 module.exports = apiRouter
