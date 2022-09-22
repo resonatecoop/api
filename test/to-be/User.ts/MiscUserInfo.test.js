@@ -1,11 +1,11 @@
 
-const {request, expect} = require('../../testConfig') 
+const { request, expect } = require('../../testConfig')
 
 describe('User.ts/misc user info endpoint test', () => {
   let response = null
 
-  let from = '2020-01-01'
-  let to = '2020-12-31'
+  const from = '2020-01-01'
+  const to = '2020-12-31'
 
   it('should get user plays within date range', async () => {
     response = await request.get(`/user/plays/stats?from=${from}&to=${to}`)
@@ -26,9 +26,9 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
   it('should get user plays history artists (?)', async () => {
-    response = await request.get(`/user/plays/history/artists`)
+    response = await request.get('/user/plays/history/artists')
 
     expect(response.status).to.eql(200)
 
@@ -46,9 +46,9 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should get user collections', async () => {
-    response = await request.get(`/user/collection/`)
+    response = await request.get('/user/collection/')
 
     expect(response.status).to.eql(200)
 
@@ -66,9 +66,9 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should get user plays history', async () => {
-    response = await request.get(`/user/plays/history/`)
+    response = await request.get('/user/plays/history/')
 
     expect(response.status).to.eql(200)
 
@@ -86,9 +86,9 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should get user favorites', async () => {
-    response = await request.get(`/user/favorites`)
+    response = await request.get('/user/favorites')
 
     expect(response.status).to.eql(200)
 
@@ -106,9 +106,9 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should post to user favorites (no user id? all of them?)', async () => {
-    response = await request.post(`/user/favorites`)
+    response = await request.post('/user/favorites')
 
     expect(response.status).to.eql(200)
 
@@ -126,9 +126,9 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should post to user favorites resolve (?)', async () => {
-    response = await request.get(`/user/favorites/resolve`)
+    response = await request.get('/user/favorites/resolve')
 
     expect(response.status).to.eql(200)
 
@@ -146,5 +146,5 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
 })

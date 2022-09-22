@@ -1,13 +1,13 @@
 
 //  needs auth token
 
-const {request, expect, testArtistId} = require('../../testConfig') 
+const { request, expect, testArtistId } = require('../../testConfig')
 
 describe('User.ts/user artist endpoint test', () => {
   let response = null
 
   it('should get user artists', async () => {
-    response = await request.get(`/user/artists`)
+    response = await request.get('/user/artists')
 
     expect(response.status).to.eql(200)
 
@@ -25,7 +25,7 @@ describe('User.ts/user artist endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })   
+  })
   it('should user artists by artist id', async () => {
     response = await request.get(`/user/artists/${testArtistId}`)
 
@@ -45,9 +45,9 @@ describe('User.ts/user artist endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should post to user artists', async () => {
-    response = await request.post(`/user/artists`)
+    response = await request.post('/user/artists')
 
     expect(response.status).to.eql(200)
 
@@ -65,5 +65,5 @@ describe('User.ts/user artist endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
 })

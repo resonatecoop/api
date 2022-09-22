@@ -1,11 +1,11 @@
 
-const {request, expect} = require('../../testConfig') 
+const { request, expect } = require('../../testConfig')
 
 describe('User.ts/products endpoint test', () => {
   let response = null
 
   it('should get user products', async () => {
-    response = await request.get(`/user/products`)
+    response = await request.get('/user/products')
 
     expect(response.status).to.eql(200)
 
@@ -23,5 +23,5 @@ describe('User.ts/products endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
 })

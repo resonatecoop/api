@@ -1,16 +1,16 @@
 
-const {request, expect, testTrackId} = require('../../testConfig') 
+const { request, expect, testTrackId } = require('../../testConfig')
 
 describe('Admin.ts/tracks endpoint test', () => {
   let response = null
 
   it('should handle no authentication', async () => {
-    response = await request.get(`/user/admin/trackgroups/`)
+    response = await request.get('/user/admin/trackgroups/')
 
     expect(response.status).to.eql(401)
   })
   it('should get all tracks', async () => {
-    response = await request.get(`/user/admin/tracks/`)
+    response = await request.get('/user/admin/tracks/')
 
     expect(response.status).to.eql(200)
 
@@ -28,7 +28,7 @@ describe('Admin.ts/tracks endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })  
+  })
   it('should get track by id', async () => {
     response = await request.get(`/user/admin/tracks/${testTrackId}`)
 
@@ -48,7 +48,7 @@ describe('Admin.ts/tracks endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should update a track by id', async () => {
     response = await request.put(`/user/admin/tracks/${testTrackId}`)
 
@@ -70,5 +70,5 @@ describe('Admin.ts/tracks endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
 })
