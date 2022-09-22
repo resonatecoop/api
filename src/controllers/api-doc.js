@@ -1,13 +1,22 @@
-const { SwaggerError } = require('../../util/swagger')
-
 const apiDoc = {
   swagger: '2.0',
   info: {
-    title: 'Resonate Tracks API.',
-    version: '2.0.0-1'
+    title: 'Resonate API',
+    version: '4.0.0'
   },
   definitions: {
-    Error: SwaggerError
+    Error: {
+      type: 'object',
+      properties: {
+        code: {
+          type: 'string'
+        },
+        message: {
+          type: 'string'
+        }
+      },
+      required: ['code', 'message']
+    }
   },
   responses: {
     BadRequest: {
@@ -23,8 +32,7 @@ const apiDoc = {
       }
     }
   },
-  paths: {},
-  tags: [{ name: 'tracks' }]
+  paths: {}
 }
 
 module.exports = apiDoc

@@ -33,7 +33,7 @@ const sessionConfig = require('./config/session')
 const user = require('./controllers/user/index')
 const { provider, routes: authRoutes } = require('./auth/index')
 const apiRouter = require('./controllers')
-console.log('apiRouter')
+
 const stream = require('./controllers/stream/index')
 const Router = require('@koa/router')
 

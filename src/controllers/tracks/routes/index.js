@@ -1,4 +1,4 @@
-const { Resonate: Sequelize, UserMeta, Track, File } = require('../../../db/models')
+const { Resonate: Sequelize, UserGroup, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 
@@ -49,11 +49,8 @@ module.exports = function (trackService) {
           as: 'audiofile'
         },
         {
-          model: UserMeta,
-          attributes: ['meta_key', 'meta_value'],
-          required: false,
-          where: { meta_key: { [Op.in]: ['nickname'] } },
-          as: 'meta'
+          model: UserGroup,
+          as: 'creator'
         }
       ],
       order: [
