@@ -2,9 +2,11 @@ const Router = require('@koa/router')
 
 const { initialize } = require('koa-openapi')
 const cors = require('@koa/cors')
-
-const playlists = require('./playlists/index')
 const koaBody = require('koa-body')
+
+const bytes = require('bytes')
+const path = require('path')
+const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
 const root = '/api/v3'
 
@@ -47,6 +49,9 @@ initialize({
     { path: `${root}/trackgroups`, module: require('./trackgroups/routes') },
     { path: `${root}/trackgroups/{id}`, module: require('./trackgroups/routes/{id}') },
 
+    { path: `${root}/playlists`, module: require('./playlists/routes') },
+    { path: `${root}/playlists/{id}`, module: require('./playlists/routes/{id}') },
+
     { path: `${root}/users/{id}`, module: require('./users/routes/{id}') },
     { path: `${root}/users/{id}/playlists`, module: require('./users/routes/{id}/playlists') },
 
@@ -66,19 +71,57 @@ initialize({
     { path: `${root}/user/plays/history`, module: require('./user/plays/routes/history/tracks') },
     { path: `${root}/user/plays/history/artists`, module: require('./user/plays/routes/history/artists') },
 
+    { path: `${root}/user/playlists`, module: require('./user/playlists/routes') },
+    { path: `${root}/user/playlists/{id}`, module: require('./user/playlists/routes/{id}') },
+    { path: `${root}/user/playlists/{id}/cover`, module: require('./user/playlists/routes/{id}/cover') },
+    { path: `${root}/user/playlists/{id}/privacy`, module: require('./user/playlists/routes/{id}/privacy') },
+    { path: `${root}/user/playlists/{id}/items`, module: require('./user/playlists/routes/{id}/items') },
+    { path: `${root}/user/playlists/{id}/items/add`, module: require('./user/playlists/routes/{id}/items/add') },
+    { path: `${root}/user/playlists/{id}/items/remove`, module: require('./user/playlists/routes/{id}/items/remove') },
+
+    { path: `${root}/user/products`, module: require('./user/products/routes') },
+    { path: `${root}/user/products/success`, module: require('./user/products/routes/success') },
+    { path: `${root}/user/products/cancel`, module: require('./user/products/routes/cancel') },
+    { path: `${root}/user/products/checkout`, module: require('./user/products/routes/checkout') },
+
+    { path: `${root}/user/stream/{id}`, module: require('./user/stream/routes/{id}') },
+
+    { path: `${root}/user/trackgroups`, module: require('./user/trackgroups/routes') },
+    { path: `${root}/user/trackgroups/{id}`, module: require('./user/trackgroups/routes/{id}') },
+    { path: `${root}/user/trackgroups/{id}/cover`, module: require('./user/trackgroups/routes/{id}/cover') },
+    { path: `${root}/user/trackgroups/{id}/privacy`, module: require('./user/trackgroups/routes/{id}/privacy') },
+    { path: `${root}/user/trackgroups/{id}/items`, module: require('./user/trackgroups/routes/{id}/items') },
+    { path: `${root}/user/trackgroups/{id}/items/add`, module: require('./user/trackgroups/routes/{id}/items/add') },
+    { path: `${root}/user/trackgroups/{id}/items/remove`, module: require('./user/trackgroups/routes/{id}/items/remove') },
+
+    { path: `${root}/user/tracks`, module: require('./user/tracks/routes') },
+    { path: `${root}/user/tracks/{id}`, module: require('./user/tracks/routes/{id}') },
+    { path: `${root}/user/tracks/{id}/file`, module: require('./user/tracks/routes/{id}/file') },
+
     {
-      path: `${root}/apiDocs`,
-      module: require('./apiDocs')
+      path: `${root}/apiDocs`, module: require('./apiDocs')
     }],
   dependencies: {
     trackService: require('./tracks/services/trackService')
   }
 })
 
-apiRouter.use(koaBody())
-apiRouter.use(cors())
+apiRouter.use(koaBody({
+  multipart: true,
+  formidable: {
+    uploadDir: path.join(BASE_DATA_DIR, '/data/media/incoming/'),
+    maxFileSize: bytes('2 GB')
+  },
+  onError: (err, ctx) => {
+    console.log(err)
+    if (/maxFileSize/.test(err.message)) {
+      ctx.status = 400
+      ctx.throw(400, err.message)
+    }
+  }
+}))
 
+apiRouter.use(cors())
 apiRouter.use('', openApiRouter.routes(), openApiRouter.allowedMethods({ throw: true }))
-apiRouter.use(root, playlists.routes())
 
 module.exports = apiRouter

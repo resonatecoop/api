@@ -150,10 +150,10 @@ module.exports = function () {
   }
 
   GET.apiDoc = {
-    operationId: 'getTrackgroups',
-    description: 'Returns trackgroups (lp, ep, single)',
-    summary: 'Find trackgroups',
-    tags: ['trackgroups'],
+    operationId: 'getPlaylists',
+    description: 'Returns playlists',
+    summary: 'Find playlists',
+    tags: ['playlists'],
     produces: [
       'application/json'
     ],

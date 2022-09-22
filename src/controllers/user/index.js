@@ -13,13 +13,11 @@ const { User } = require('../../db/models')
  * User routing
  */
 
+// FIXME: Adapt these endpoints to all use the same authentication
+// methods as the other endpoints.
+
 const logout = require('./logout')
-const trackgroups = require('./trackgroups')
-const playlists = require('./playlists')
-const tracks = require('./tracks')
-const stream = require('./stream')
 const admin = require('./admin')
-const products = require('./products')
 
 /**
  * Swagger client for user-api
@@ -42,19 +40,7 @@ user.use(async (ctx, next) => {
   await next()
 })
 
-const allowlist = [
-  '/collection/apiDocs',
-  '/favorites/apiDocs',
-  '/plays/apiDocs',
-  '/profile/apiDocs',
-  '/trackgroups/apiDocs',
-  '/playlists/apiDocs',
-  '/tracks/apiDocs',
-  '/products',
-  '/products/checkout',
-  '/products/success',
-  '/products/apiDocs'
-]
+const allowlist = []
 
 user.use(async (ctx, next) => {
   if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
@@ -106,11 +92,6 @@ user.use(async (ctx, next) => {
 })
 
 user.use(mount('/logout', logout))
-user.use(trackgroups.routes())
-user.use(playlists.routes())
-user.use(tracks.routes())
-user.use(stream.routes())
 user.use(mount('/admin', admin))
-user.use(products.routes())
 
 module.exports = user

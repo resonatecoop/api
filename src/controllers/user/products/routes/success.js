@@ -1,13 +1,11 @@
 const { Credit, User } = require('../../../../db/models')
-// const { Op } = require('sequelize')
+const authenticate = require('../../authenticate')
 
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 module.exports = function () {
   const operations = {
-    GET: [
-      GET
-    ]
+    GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {

@@ -12,28 +12,8 @@ module.exports = () => {
     swaggerOptions: {
       urls: [
         {
-          url: getServiceUrl(''),
+          url: '/api/v3/apiDocs?type=apiDoc',
           name: 'Resonate API'
-        },
-        {
-          url: getServiceUrl('/user/collection'),
-          name: 'User Collection API Service'
-        },
-        {
-          url: getServiceUrl('/user/favorites'),
-          name: 'User Favorites API Service'
-        },
-        {
-          url: getServiceUrl('/user/plays'),
-          name: 'User Plays API Service'
-        },
-        {
-          url: getServiceUrl('/user/trackgroups'),
-          name: 'User Trackgroups API Service'
-        },
-        {
-          url: getServiceUrl('/user/tracks'),
-          name: 'User Tracks API Service'
         }
       ]
     }

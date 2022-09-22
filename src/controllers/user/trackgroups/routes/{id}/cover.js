@@ -1,10 +1,11 @@
 
 const { TrackGroup } = require('../../../../../db/models')
 const { processFile } = require('../../../../../util/process-file')
+const authenticate = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    PUT
+    PUT: [authenticate, PUT]
   }
 
   async function PUT (ctx, next) {

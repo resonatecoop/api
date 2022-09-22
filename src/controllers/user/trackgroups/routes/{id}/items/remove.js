@@ -1,5 +1,6 @@
 const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
+const authenticate = require('../../../../authenticate')
 
 const {
   validateTrackgroupItems,
@@ -8,7 +9,7 @@ const {
 
 module.exports = function () {
   const operations = {
-    PUT,
+    PUT: [authenticate, PUT],
     parameters: [
       {
         name: 'id',

@@ -1,9 +1,10 @@
 const { Playlist, PlaylistItem, Track } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
+const authenticate = require('../../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    PUT,
+    PUT: [authenticate, PUT],
     parameters: [
       {
         name: 'id',
