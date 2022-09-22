@@ -1,12 +1,12 @@
 
 // Needs auth token
 
-const {request, expect, testUserId} = require('../../testConfig') 
+const {request, expect, testUserId, testTrackGroupId} = require('../../testConfig') 
 
 describe('User.ts/user endpoint test', () => {
   let response = null
 
-  it.only('should get user profiles', async () => {
+  it('should get user profiles', async () => {
     response = await request.get(`/user/profile/`)
 
     expect(response.status).to.eql(200)
@@ -66,8 +66,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should should update user trackgroups by user id', async () => {
-    response = await request.put(`/user/trackgroups/${testUserId}`)
+  it('should should update user trackgroups by trackgroup id', async () => {
+    response = await request.put(`/user/trackgroups/${testTrackGroupId}`)
 
     expect(response.status).to.eql(200)
 
@@ -106,8 +106,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should get user trackgroups by user id', async () => {
-    response = await request.get(`/user/trackgroups/${testUserId}`)
+  it('should get user trackgroups by trackgroup id', async () => {
+    response = await request.get(`/user/trackgroups/${testTrackGroupId}`)
 
     expect(response.status).to.eql(200)
 
@@ -126,8 +126,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should post to a trackgroup by user id', async () => {
-    response = await request.get(`/user/trackgroups/${testUserId}/items/add`)
+  it('should post to a trackgroup by trackgroup id', async () => {
+    response = await request.get(`/user/trackgroups/${testTrackGroupId}/items/add`)
 
     expect(response.status).to.eql(200)
 
@@ -146,8 +146,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should remove an item from a trackgroup by user id', async () => {
-    response = await request.put(`/user/trackgroups/${testUserId}/items/remove`)
+  it('should remove an item from a trackgroup by trackgroup id', async () => {
+    response = await request.put(`/user/trackgroups/${testTrackGroupId}/items/remove`)
 
     expect(response.status).to.eql(200)
 
@@ -166,8 +166,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should update trackgroup items by user id', async () => {
-    response = await request.put(`/user/trackgroups/${id}/items`)
+  it('should update trackgroup items by trackgroup id', async () => {
+    response = await request.put(`/user/trackgroups/${testTrackGroupId}/items`)
 
     expect(response.status).to.eql(200)
 
@@ -186,8 +186,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should delete from trackgroups by user id', async () => {
-    response = await request.delete(`/user/trackgroups/${testUserId}`)
+  it('should delete from trackgroups by trackgroup id', async () => {
+    response = await request.delete(`/user/trackgroups/${testTrackGroupId}`)
 
     expect(response.status).to.eql(200)
 

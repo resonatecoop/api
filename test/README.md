@@ -1,11 +1,15 @@
 
 # Resonate API Testing
 
-These are tests for the WIP Resonate API migration. This iteration of the tests development simply migrates tests as-built to a Mocha environment and begins development of new tests of the WIP api specification to-be. Later iterations will focus on more fancy stuff.
+These are tests for the WIP Resonate API (v4) migration. This iteration of the tests development simply migrates tests as-built to a Mocha environment and begins development of new tests of the WIP api specification to-be. This stage of the testing effort deliberately keeps things simple. Later iterations will focus on more fancy stuff.
 
-The purpose of these tests is to verify / validate the endpoints of this API, and to begin development of a robust API test suite.
+Some clarification is needed regarding the test target. There are two possible targets:
+* http://localhost:4000/api/v3 (this repo: api(v4))
+* https://stream.resonate.coop/api/v3/ (beam/api)
 
-For the sake of total clarity, these tests live in the `/api/test` directory. The previous tests live in `/api/test/as-built` directory. The new tests live in `api/test/to-be` directory.
+The purpose of these tests is to verify / validate the endpoints of this API, and to begin development of a more robust API test suite.
+
+For the sake of total clarity, these tests live in the `/api/test` directory. The previous tests live in `/api/test/as-built` directory. The new tests live in `api/test/to-be` directory. In the `api/test/to-be` directory there are three subfolders (Admin.ts, Api.ts, and User.ts), each of which corresponds to a file in the `beam/src/services` folder.
 
 These tests expect a running instance of the Docker container that you get when you `docker compose up` at the `api` repo root. Make sure first that this container instance is running / has finished loading / etc. before running the tests. 
 
@@ -14,11 +18,13 @@ You also need to seed the database.
 The `Getting started with local dev` section of the main repo [README.md](../README.md) file explains what to do.
 
 ## Setup and running
+There is a file name `Template.test.js` in the `test` folder. You can copy this file to start writing new tests more quicly.
+
 There is a file named `testConfig.js` in the `test` folder. It has vars and modules that are used in test files. It's basically used as an include header at the head of each test file. If you create new tests, this file will help you go faster.
 
-In `testConfig.js` there is a const `baseURL`. This is set to `http://localhost:4000/api/v3` so that you can run the tests against the Dockerized resonate api container instance. If you need to run the tests against a different instance of the API, you can comment this const out and replace it with a url of your choosing, ie `const baseURL = 'http://awesome.sauce.com/api/v2'` or similar.
+In `testConfig.js` there is a const `baseURL`. This is set to `http://localhost:4000/api/v3` so that you can run the tests against a local Dockerized resonate api (v4) container instance. If you need to run the tests against a different instance of the API, you can comment this const out and replace it with a url of your choosing, ie `const baseURL = 'http://awesome.sauce.com/api/v2'` or similar.
 
-If you're not familiar with Mocha, take a moment to learn about `skip` and `only`. They are your friends. The tests are structured so that you can 'switch off' and 'switch on' chunks of a test file using `skip` and `only`.
+`https://stream.resonate.coop/api/v3/` is the 'beam/api' instance. This is another possible test target. Further clarification of the correct test target url is needed. You can change the baseURL const in `testConfig.js` to this URL if that is appropriate.
 
 Run the old / as-built tests
 ```sh
@@ -40,22 +46,7 @@ Run the new / to-be tests for endpoints in User.ts file
 npm run test:to-be:user
 ```
 
-Run all the tests in watch mode
-```sh
-npm run test:watch
-```
-
-Run all the tests once
-```sh
-npm run test
-```
-
-Run a specific test once
-```sh
-npm run test <test.name.goes.here.without.these.brackets>
-```
-
-You can create more test script commands in the main repo's `package.json` file, if you need something else.
+You can create more test script commands in the api (v4) repo's `package.json` file, if you need something else.
 
 ## Notes
 
@@ -71,7 +62,13 @@ This testing suite uses Mocha, and Mocha will be installed as a dev dependency i
 This testing suite uses some assertions from Chai, and Chai will be installed as a dev dependency if / when you run `yarn` at the repo root.
 
 ## The Tests As-Built
-This might be a bit confusing. These are the tests that existed previously. This listing references the original fiolder structure. These will likely not run in your dev environment.
+This might be a bit confusing. These are the tests that existed in a previous version of api (v4). This listing references the original fiolder structure. These will likely not run.
+
+They are included here for archival purposes, just in case they are needed for something.
+
+The tests from these files are migrated to the `test/as-built` folder, so that they can be run using Mocha.
+
+Here are the previous tests:
 
 * /test-as-built folder level
   * users
@@ -98,14 +95,21 @@ The purpose / use of test-as-built/fixtures/profiles.js is unclear. It looks lik
 
 There are no tests for the test-as-built/media folder because this folder is only audio files.
 
-The migrated as-built tests are located in `test/as-built`. These will run under Mocha.
+These old / previous-version tests are migrated to `test/as-built`. These will run under Mocha, and will likely fail.
+
+You can run the Mocha-migrated old / as-built tests.
+```sh
+npm run test:as-built
+```
 
 ## The Tests To-Be
-These are the new tests. They are currently based on endpoints revealed [in this document](https://github.com/resonatecoop/beam/tree/main/src/services).
+These are the new tests, for api (v4). They are currently based on endpoints revealed [in this document](https://github.com/resonatecoop/beam/tree/main/src/services).
 
 Still not clear on how well the endpoints map to the underlying data.
 
-For the first iteration of these tests, we capture the endpoints' output and put that output into the tests. This is a 'what does it do?' and not a 'what should it do?' approach.
+For the first iteration of these tests, we capture the endpoints' output and return that output to the tests. This is a 'what does it do?' and not a 'what should it do?' approach. Later iterations of test development should focus on actual required functionality and valid test data.
+
+### Api.ts tests
 
 Run the new / to-be tests for endpoints in Api.ts file
 ```sh
@@ -138,13 +142,16 @@ Endpoints in [Api.ts](https://github.com/resonatecoop/beam/blob/main/src/service
   * // NOTE: API is looking for actual "+" (%2B) values instead of whitespace (%20)
   * { q: searchString.replace(/ /g, "+") } <- q is query string?
 
+### Admin.ts tests
 Run the new / to-be tests for endpoints in Admin.ts file
 ```sh
 npm run test:to-be:admin
 ```
 
+These tests are incomplete. Main thing to do next is implement a way to get access token from test target.
+
 Endpoints in [Admin.ts](https://github.com/resonatecoop/beam/blob/main/src/services/api/Admin.ts)
-nts: there are interfaces for typing
+
 * users
   * GET /user/admin/users/
   * GET /user/admin/users/${id}
@@ -157,12 +164,16 @@ nts: there are interfaces for typing
   * GET /user/admin/tracks/${id}
   * PUT /user/admin/tracks/${id}
 
+### User.ts tests
 Run the new / to-be tests for endpoints in User.ts file
 ```sh
 npm run test:to-be:user
 ```
 
+These tests are incomplete. Main thing to do next is implement a way to get access token from test target.
+
 Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/services/api/User.ts)
+
 * user
   * GET /user/profile/
   * GET /users/${id}/playlists
@@ -197,12 +208,18 @@ Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/servic
 * products
   * GET /user/products
 
-As work on the new API continues, you might need to edit the existing tests, as well as create new tests.
+As work on the new API continues, you might need to edit the existing tests, as well as create new tests. You can use `Template.test.js` and `testConfig.js`, located in the `test` folder, to get started.
 
 ## To Do
-* nts: look over api/src/db/models/* to get a better idea of what the data/datatypes are.
-* (nts: it might be good to run tests from within Docker, using `docker exec -it resonate-api mocha <some.test.js>`? Not sure if this helps...)
+* Need to clarify location of test target, ie 'beam' or 'api(4)'.
+* Find a simple, straightforward way to get access tokens.
+  * These are needed in the Admin.ts and User.ts tests.
+  * Most straightforward solution would be to copy the login process and capture the token in the response.
+* Look over api/src/db/models/* to get a better idea of what the data/datatypes are.
+* It might be good to run tests from within Docker, using `docker exec -it resonate-api mocha <some.test.js>`? 
+  * Not sure if this helps anything.
 * Configure Mocha 
   * error log naming / location
   * anything else useful
+    * --reporter type?
 * Better / more TypeScript integration

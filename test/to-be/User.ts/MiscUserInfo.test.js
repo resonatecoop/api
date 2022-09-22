@@ -47,7 +47,7 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   }) 
-  it('should user collections', async () => {
+  it('should get user collections', async () => {
     response = await request.get(`/user/collection/`)
 
     expect(response.status).to.eql(200)

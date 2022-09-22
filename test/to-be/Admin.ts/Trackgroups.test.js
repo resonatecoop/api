@@ -33,7 +33,7 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })    
-  it('should trackgroup by id', async () => {
+  it('should get trackgroup by id', async () => {
     response = await request.get(`/user/admin/trackgroups/${testTrackGroupId}`)
 
     expect(response.status).to.eql(200)
