@@ -9,6 +9,7 @@ const db = {}
 
 db.Resonate = new Sequelize(config.database, config.username, config.password, { ...config, define: { underscored: true } })
 
+// FIXME: can the following be cleaned up?
 db.Favorite = require(path.join(__dirname, '/resonate', 'favorite.js'))(db.Resonate, DataTypes)
 db.File = require(path.join(__dirname, '/resonate', 'file.js'))(db.Resonate, DataTypes)
 db.GfForm = require(path.join(__dirname, '/resonate', 'gf_form.js'))(db.Resonate, DataTypes)
@@ -32,6 +33,8 @@ db.Address = require(path.join(__dirname, '/resonate', 'address.js'))(db.Resonat
 db.ShareTransaction = require(path.join(__dirname, '/resonate', 'share_transaction.js'))(db.Resonate, DataTypes)
 db.Image = require(path.join(__dirname, '/resonate', 'image.js'))(db.Resonate, DataTypes)
 db.UserGroupLink = require(path.join(__dirname, '/resonate', 'user_group_link.js'))(db.Resonate, DataTypes)
+db.Playlist = require(path.join(__dirname, '/resonate', 'playlist.js'))(db.Resonate, DataTypes)
+db.PlaylistItem = require(path.join(__dirname, '/resonate', 'playlist_item.js'))(db.Resonate, DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

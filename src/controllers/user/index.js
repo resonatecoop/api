@@ -19,6 +19,7 @@ const logout = require('./logout')
 const plays = require('./plays')
 const profile = require('./profile')
 const trackgroups = require('./trackgroups')
+const playlists = require('./playlists')
 const tracks = require('./tracks')
 const stream = require('./stream')
 const artists = require('./artists')
@@ -52,6 +53,7 @@ const allowlist = [
   '/plays/apiDocs',
   '/profile/apiDocs',
   '/trackgroups/apiDocs',
+  '/playlists/apiDocs',
   '/tracks/apiDocs',
   '/products',
   '/products/checkout',
@@ -114,6 +116,7 @@ user.use(mount('/logout', logout))
 user.use(profile.routes())
 user.use(plays.routes())
 user.use(trackgroups.routes())
+user.use(playlists.routes())
 user.use(tracks.routes())
 user.use(artists.routes())
 user.use(stream.routes())
