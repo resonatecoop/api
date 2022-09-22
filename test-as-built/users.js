@@ -5,11 +5,13 @@ const destroyable = require('server-destroy')
 const error = require('koa-json-error')
 const path = require('path')
 const koaCash = require('koa-cash')
-const koaCashConfig = require('../lib/config/cache.js')
+// const koaCashConfig = require('../lib/config/cache.js')
+const koaCashConfig = require('../src/config/cache.js')
 
-require('dotenv-safe').config({ path: path.join(__dirname, '../.env.test.js') })
+// require('dotenv-safe').config({ path: path.join(__dirname, '../.env.test.js') })
 
-const trackgroups = require('../lib/users.js')
+// const trackgroups = require('../lib/users.js')
+const trackgroups = require('./trackgroups.js')
 
 const app = new Koa()
 
