@@ -28,22 +28,22 @@ In `testConfig.js` there is a const `baseURL`. This is set to `http://localhost:
 
 Run the old / as-built tests
 ```sh
-npm run test:as-built
+yarn run test:as-built
 ```
 
 Run the new / to-be tests for endpoints in Api.ts file
 ```sh
-npm run test:to-be:api
+yarn run test:to-be:api
 ```
 
 Run the new / to-be tests for endpoints in Admin.ts file
 ```sh
-npm run test:to-be:admin
+yarn run test:to-be:admin
 ```
 
 Run the new / to-be tests for endpoints in User.ts file
 ```sh
-npm run test:to-be:user
+yarn run test:to-be:user
 ```
 
 You can create more test script commands in the api (v4) repo's `package.json` file, if you need something else.
