@@ -1,11 +1,11 @@
 
-const {request, expect, testUserId, testTrackId, testTrackGroupId} = require('../../testConfig') 
+const { request, expect, testTrackId, testTrackGroupId } = require('../../testConfig')
 
 describe('User.ts/user tracks endpoint test', () => {
   let response = null
 
   it('should post to user tracks', async () => {
-    response = await request.post(`/user/tracks`)
+    response = await request.post('/user/tracks')
 
     expect(response.status).to.eql(200)
 
@@ -23,7 +23,7 @@ describe('User.ts/user tracks endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
   it('should upload a file based on track id', async () => {
     // FIXME: is put the right verb? should be post?
     response = await request.put(`/user/tracks/${testTrackId}/file `)
@@ -44,7 +44,7 @@ describe('User.ts/user tracks endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should upload a cover (image?) based on trackgroup id', async () => {
     // FIXME: is put the right verb? should be post?
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/cover`)
@@ -65,5 +65,5 @@ describe('User.ts/user tracks endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
 })

@@ -2,19 +2,19 @@
 // endpoints access token
 //    probably need the supertest persist whatever thing
 
-const {request, expect, testTrackGroupId} = require('../../testConfig') 
+const { request, expect, testTrackGroupId } = require('../../testConfig')
 
 describe('Admin.ts/trackgroups endpoint test', () => {
   let response = null
 
   it('should handle no authentication', async () => {
-    response = await request.get(`/user/admin/trackgroups/`)
+    response = await request.get('/user/admin/trackgroups/')
 
     expect(response.status).to.eql(401)
   })
 
   it('should get all trackgroups', async () => {
-    response = await request.get(`/user/admin/trackgroups/`)
+    response = await request.get('/user/admin/trackgroups/')
 
     expect(response.status).to.eql(200)
 
@@ -32,7 +32,7 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
   it('should get trackgroup by id', async () => {
     response = await request.get(`/user/admin/trackgroups/${testTrackGroupId}`)
 
@@ -52,7 +52,7 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-   })    
+  })
   it('should update a trackgroup by id', async () => {
     response = await request.put(`/user/admin/trackgroups/${testTrackGroupId}`)
 
@@ -91,5 +91,5 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
 })

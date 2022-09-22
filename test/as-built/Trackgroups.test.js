@@ -2,7 +2,7 @@
 
 // FIXME: this looks like it duplicates test-as-built/user/trackgroups.js
 
-const { baseURL, request, expect, testUserId } = require('../testConfig') 
+const { request, expect } = require('../testConfig')
 
 describe('Trackgroups endpoint test', () => {
   let response = null
@@ -20,20 +20,20 @@ describe('Trackgroups endpoint test', () => {
     describe('test-as-built/trackgroups.js', () => {
       it('should create and save a new release', async () => {
         response = await request.post('/trackgroups')
-                                .send({
-                                  title: 'Claustro',
-                                  display_artist: 'Burial',
-                                  type: 'ep',
-                                  release_date: '2019-01-02',
-                                  cover: '13a4dedc-8b54-413c-bbd5-a96c6b99d91a',
-                                  composers: ['Burial'],
-                                  performers: ['Burial'],
-                                  tags: ['techno', 'experimental'],
-                                  about: `
+          .send({
+            title: 'Claustro',
+            display_artist: 'Burial',
+            type: 'ep',
+            release_date: '2019-01-02',
+            cover: '13a4dedc-8b54-413c-bbd5-a96c6b99d91a',
+            composers: ['Burial'],
+            performers: ['Burial'],
+            tags: ['techno', 'experimental'],
+            about: `
                                     this is about the release
                                   `
-                                })
-        
+          })
+
         expect(response.status).to.eql(201)
 
         uuid = response.body.data.id
@@ -57,81 +57,81 @@ describe('Trackgroups endpoint test', () => {
       })
       it('should update a release', async () => {
         response = await request.put(`/trackgroups/${uuid}`)
-                                .send({
-                                  title: 'Claustro',
-                                  display_artist: 'Burial',
-                                  type: 'ep',
-                                  release_date: '2019-02-03',
-                                  cover: '13a4dedc-8b54-413c-bbd5-a96c6b99d91a',
-                                  composers: ['Burial'],
-                                  performers: ['Burial'],
-                                  tags: ['techno', 'experimental'],
-                                  about: `
+          .send({
+            title: 'Claustro',
+            display_artist: 'Burial',
+            type: 'ep',
+            release_date: '2019-02-03',
+            cover: '13a4dedc-8b54-413c-bbd5-a96c6b99d91a',
+            composers: ['Burial'],
+            performers: ['Burial'],
+            tags: ['techno', 'experimental'],
+            about: `
                                     this is about the release
                                   `
-                                })
-        
+          })
+
         expect(response.status).to.eql(200)
       })
       it('should add items', async () => {
         response = await request.put(`/trackgroups/${uuid}/items/add`)
-                                .send({
-                                  tracks: [
-                                    {
-                                      title: 'Test track',
-                                      track_id: 4,
-                                      index: 1
-                                    }
-                                  ]
-                                })
-        
+          .send({
+            tracks: [
+              {
+                title: 'Test track',
+                track_id: 4,
+                index: 1
+              }
+            ]
+          })
+
         expect(response.status).to.eql(200)
       })
       it('should replace items', async () => {
         response = await request.put(`/trackgroups/${uuid}/items`)
-                                .send({
-                                  tracks: [
-                                    {
-                                      title: 'Test track',
-                                      track_id: 1,
-                                      index: 1
-                                    },
-                                    {
-                                      title: 'Test track 3',
-                                      track_id: 2,
-                                      index: 2
-                                    },
-                                    {
-                                      title: 'Test track 2',
-                                      track_id: 3,
-                                      index: 3
-                                    }
-                                  ]
-                                })
-        
+          .send({
+            tracks: [
+              {
+                title: 'Test track',
+                track_id: 1,
+                index: 1
+              },
+              {
+                title: 'Test track 3',
+                track_id: 2,
+                index: 2
+              },
+              {
+                title: 'Test track 2',
+                track_id: 3,
+                index: 3
+              }
+            ]
+          })
+
         expect(response.status).to.eql(200)
       })
       it('should remove items', async () => {
         response = await request.put(`/trackgroups/${uuid}/items/remove`)
-                                .send({
-                                  tracks: [
-                                    {
-                                      track_id: 2
-                                    },
-                                    {
-                                      track_id: 4
-                                    }
-                                  ]
-                                })
-        
+          .send({
+            tracks: [
+              {
+                track_id: 2
+              },
+              {
+                track_id: 4
+              }
+            ]
+          })
+
         expect(response.status).to.eql(200)
       })
       it('should update privacy', async () => {
         response = await request.put(`/trackgroups/${uuid}/privacy`)
-                                .send({
-                                  private: true
-                                })
-        
+          .send({
+            private: true
+          })
+
         expect(response.status).to.eql(200)
       })
       it('should delete release', async () => {
@@ -141,11 +141,11 @@ describe('Trackgroups endpoint test', () => {
       })
       it('should fail with bad request', async () => {
         response = await request.post('/trackgroups')
-                                .send({
-                                  title: 'Claustro'
-                                  // display_artist: 'Burial',
-                                })
-        
+          .send({
+            title: 'Claustro'
+            // display_artist: 'Burial',
+          })
+
         expect(response.status).to.eql(400)
       })
       it('should fail with 404', async () => {

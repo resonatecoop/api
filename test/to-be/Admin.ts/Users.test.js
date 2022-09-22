@@ -1,11 +1,11 @@
 
-const {request, expect, testUserId} = require('../../testConfig') 
+const { request, expect } = require('../../testConfig')
 
 describe('Admin.ts/users endpoint test', () => {
   let response = null
 
   it('should get users', async () => {
-    response = await request.get(`/user/admin/users/`)
+    response = await request.get('/user/admin/users/')
 
     expect(response.status).to.eql(200)
 
@@ -23,9 +23,9 @@ describe('Admin.ts/users endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
   it('should get user by id', async () => {
-    response = await request.get(`/user/admin/users/$testUserId}`)
+    response = await request.get('/user/admin/users/$testUserId}')
 
     expect(response.status).to.eql(200)
 
@@ -43,5 +43,5 @@ describe('Admin.ts/users endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
 })

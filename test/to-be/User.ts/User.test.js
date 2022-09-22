@@ -1,13 +1,13 @@
 
 // Needs auth token
 
-const {request, expect, testUserId, testTrackGroupId} = require('../../testConfig') 
+const { request, expect, testUserId, testTrackGroupId } = require('../../testConfig')
 
 describe('User.ts/user endpoint test', () => {
   let response = null
 
   it('should get user profiles', async () => {
-    response = await request.get(`/user/profile/`)
+    response = await request.get('/user/profile/')
 
     expect(response.status).to.eql(200)
 
@@ -25,7 +25,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  })    
+  })
   it('should get user playlists by user id', async () => {
     response = await request.get(`/users/${testUserId}/playlists`)
 
@@ -45,9 +45,9 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should post to user/trackgroups', async () => {
-    response = await request.post(`/user/trackgroups`)
+    response = await request.post('/user/trackgroups')
 
     expect(response.status).to.eql(200)
 
@@ -65,7 +65,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should should update user trackgroups by trackgroup id', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}`)
 
@@ -85,9 +85,9 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should get user trackgroups', async () => {
-    response = await request.get(`/user/trackgroups`)
+    response = await request.get('/user/trackgroups')
 
     expect(response.status).to.eql(200)
 
@@ -105,7 +105,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should get user trackgroups by trackgroup id', async () => {
     response = await request.get(`/user/trackgroups/${testTrackGroupId}`)
 
@@ -125,7 +125,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should post to a trackgroup by trackgroup id', async () => {
     response = await request.get(`/user/trackgroups/${testTrackGroupId}/items/add`)
 
@@ -145,7 +145,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should remove an item from a trackgroup by trackgroup id', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/items/remove`)
 
@@ -165,7 +165,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should update trackgroup items by trackgroup id', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/items`)
 
@@ -185,7 +185,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
   it('should delete from trackgroups by trackgroup id', async () => {
     response = await request.delete(`/user/trackgroups/${testTrackGroupId}`)
 
@@ -205,5 +205,5 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-  }) 
+  })
 })

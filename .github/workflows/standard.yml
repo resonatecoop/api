@@ -1,4 +1,4 @@
-name: Lint primarily with prettier
+name: Lint primarily with standard
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  prettier:
+  standard:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,4 +17,4 @@ jobs:
         run: yarn install
 
       - name: Lint
-        run: yarn test:lint
+        run: yarn lint

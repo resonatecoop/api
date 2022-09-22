@@ -1,7 +1,7 @@
 
 // all role-related test I could find in the existing test suite
 
-const { baseURL, request, expect, testUserId, path } = require('../testConfig') 
+const { request, expect, path } = require('../testConfig')
 
 describe('Roles endpoint tests', () => {
   let response = null
@@ -17,9 +17,9 @@ describe('Roles endpoint tests', () => {
     describe('test-as-built/roles.js', () => {
       it.skip('should fail with 401:unauthorized', async () => {
         response = await request.post('/upload')
-                                .field('name', 'uploads')
-                                .attach('uploads', path.join(__dirname, './fixtures/Resonate.aiff.js'))
-        
+          .field('name', 'uploads')
+          .attach('uploads', path.join(__dirname, './fixtures/Resonate.aiff.js'))
+
         expect(response.status).to.eql(401)
       })
     })
