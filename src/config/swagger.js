@@ -16,26 +16,6 @@ module.exports = () => {
           name: 'Resonate API'
         },
         {
-          url: getServiceUrl('/users'),
-          name: 'Users API Service'
-        },
-        {
-          url: getServiceUrl('/search'),
-          name: 'Search API Service'
-        },
-        {
-          url: getServiceUrl('/trackgroups'),
-          name: 'Trackgroups API Service'
-        },
-        {
-          url: getServiceUrl('/resolve'),
-          name: 'Resolve API Service'
-        },
-        {
-          url: getServiceUrl('/labels'),
-          name: 'Label Profiles API Service'
-        },
-        {
           url: getServiceUrl('/user/collection'),
           name: 'User Collection API Service'
         },
@@ -54,10 +34,6 @@ module.exports = () => {
         {
           url: getServiceUrl('/user/tracks'),
           name: 'User Tracks API Service'
-        },
-        {
-          url: getServiceUrl('/user/profile'),
-          name: 'User Profile API Service'
         }
       ]
     }

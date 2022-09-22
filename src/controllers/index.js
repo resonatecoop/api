@@ -3,12 +3,8 @@ const Router = require('@koa/router')
 const { initialize } = require('koa-openapi')
 const cors = require('@koa/cors')
 
-const trackgroups = require('./trackgroups/index')
-const users = require('./users/index')
-const labels = require('./labels/index')
-const search = require('./search/index')
-const resolve = require('./resolve/index')
 const playlists = require('./playlists/index')
+const koaBody = require('koa-body')
 
 const root = '/api/v3'
 
@@ -36,6 +32,40 @@ initialize({
     { path: `${root}/artists/{id}/tracks`, module: require('./artists/routes/{id}/tracks') },
     { path: `${root}/artists/{id}/tracks/top`, module: require('./artists/routes/{id}/tracks/top') },
 
+    { path: `${root}/labels`, module: require('./labels/routes') },
+    { path: `${root}/labels/{id}`, module: require('./labels/routes/{id}') },
+    { path: `${root}/labels/{id}/albums`, module: require('./labels/routes/{id}/albums') },
+    { path: `${root}/labels/{id}/releases`, module: require('./labels/routes/{id}/releases') },
+    { path: `${root}/labels/{id}/artists`, module: require('./labels/routes/{id}/artists') },
+
+    // FIXME: This one is broken cause it relies on elastic search.
+    { path: `${root}/search`, module: require('./search/routes') },
+
+    // FIXME: Not entirely clear on what the point of this route is
+    { path: `${root}/resolve`, module: require('./resolve/routes') },
+
+    { path: `${root}/trackgroups`, module: require('./trackgroups/routes') },
+    { path: `${root}/trackgroups/{id}`, module: require('./trackgroups/routes/{id}') },
+
+    { path: `${root}/users/{id}`, module: require('./users/routes/{id}') },
+    { path: `${root}/users/{id}/playlists`, module: require('./users/routes/{id}/playlists') },
+
+    { path: `${root}/user/profile`, module: require('./user/profile/routes') },
+    { path: `${root}/user/artists`, module: require('./user/artists/routes') },
+    { path: `${root}/user/artists/{id}`, module: require('./user/artists/routes/{id}') },
+    { path: `${root}/user/collection`, module: require('./user/collection/routes') },
+
+    { path: `${root}/user/favorites/resolve`, module: require('./user/favorites/routes/resolve') },
+    { path: `${root}/user/favorites`, module: require('./user/favorites/routes') },
+
+    { path: `${root}/user/plays`, module: require('./user/plays/routes') },
+    { path: `${root}/user/plays/resolve`, module: require('./user/plays/routes/resolve') },
+    { path: `${root}/user/plays/spendings`, module: require('./user/plays/routes/spendings') },
+    { path: `${root}/user/plays/buy`, module: require('./user/plays/routes/buy') },
+    { path: `${root}/user/plays/stats`, module: require('./user/plays/routes/stats') },
+    { path: `${root}/user/plays/history`, module: require('./user/plays/routes/history/tracks') },
+    { path: `${root}/user/plays/history/artists`, module: require('./user/plays/routes/history/artists') },
+
     {
       path: `${root}/apiDocs`,
       module: require('./apiDocs')
@@ -45,14 +75,10 @@ initialize({
   }
 })
 
+apiRouter.use(koaBody())
 apiRouter.use(cors())
 
 apiRouter.use('', openApiRouter.routes(), openApiRouter.allowedMethods({ throw: true }))
-apiRouter.use(root, labels.routes())
-apiRouter.use(root, resolve.routes())
-apiRouter.use(root, search.routes())
-apiRouter.use(root, trackgroups.routes())
-apiRouter.use(root, users.routes())
 apiRouter.use(root, playlists.routes())
 
 module.exports = apiRouter

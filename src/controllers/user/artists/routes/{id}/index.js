@@ -1,10 +1,11 @@
 const { User, UserGroup } = require('../../../../../db/models')
+const authenticate = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
-    PUT,
-    DELETE,
+    GET: [authenticate, GET],
+    PUT: [authenticate, PUT],
+    DELETE: [authenticate, DELETE],
     parameters: [
       {
         name: 'id',
@@ -53,7 +54,7 @@ module.exports = function () {
   DELETE.apiDoc = {
     operationId: 'deleteArtist',
     description: 'Delete artist',
-    tags: ['artists'],
+    tags: ['user'],
     responses: {
       200: {
         description: 'Artist deleted response.',
@@ -124,7 +125,7 @@ module.exports = function () {
   PUT.apiDoc = {
     operationId: 'updateArtist',
     description: 'Update artist',
-    tags: ['artists'],
+    tags: ['user'],
     parameters: [
       {
         in: 'body',
@@ -196,7 +197,7 @@ module.exports = function () {
   GET.apiDoc = {
     operationId: 'getArtist',
     description: 'Returns a single artist',
-    tags: ['artists'],
+    tags: ['user'],
     parameters: [
       {
         name: 'id',

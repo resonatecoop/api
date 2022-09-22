@@ -13,16 +13,11 @@ const { User } = require('../../db/models')
  * User routing
  */
 
-const collection = require('./collection')
-const favorites = require('./favorites')
 const logout = require('./logout')
-const plays = require('./plays')
-const profile = require('./profile')
 const trackgroups = require('./trackgroups')
 const playlists = require('./playlists')
 const tracks = require('./tracks')
 const stream = require('./stream')
-const artists = require('./artists')
 const admin = require('./admin')
 const products = require('./products')
 
@@ -110,15 +105,10 @@ user.use(async (ctx, next) => {
   await next()
 })
 
-user.use(collection.routes())
-user.use(favorites.routes())
 user.use(mount('/logout', logout))
-user.use(profile.routes())
-user.use(plays.routes())
 user.use(trackgroups.routes())
 user.use(playlists.routes())
 user.use(tracks.routes())
-user.use(artists.routes())
 user.use(stream.routes())
 user.use(mount('/admin', admin))
 user.use(products.routes())
