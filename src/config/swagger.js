@@ -12,6 +12,10 @@ module.exports = () => {
     swaggerOptions: {
       urls: [
         {
+          url: getServiceUrl(''),
+          name: 'Resonate API'
+        },
+        {
           url: getServiceUrl('/users'),
           name: 'Users API Service'
         },
@@ -20,24 +24,12 @@ module.exports = () => {
           name: 'Search API Service'
         },
         {
-          url: getServiceUrl('/tag'),
-          name: 'Tag API Service'
-        },
-        {
           url: getServiceUrl('/trackgroups'),
           name: 'Trackgroups API Service'
         },
         {
-          url: getServiceUrl('/tracks'),
-          name: 'Tracks API Service'
-        },
-        {
           url: getServiceUrl('/resolve'),
           name: 'Resolve API Service'
-        },
-        {
-          url: getServiceUrl('/artists'),
-          name: 'Artist Profiles API Service'
         },
         {
           url: getServiceUrl('/labels'),

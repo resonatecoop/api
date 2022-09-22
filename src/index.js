@@ -32,14 +32,8 @@ const sessionConfig = require('./config/session')
 
 const user = require('./controllers/user/index')
 const { provider, routes: authRoutes } = require('./auth/index')
-const trackgroups = require('./controllers/trackgroups/index')
-const tracks = require('./controllers/tracks/index')
-const artists = require('./controllers/artists/index')
-const users = require('./controllers/users/index')
-const labels = require('./controllers/labels/index')
-const search = require('./controllers/search/index')
-const tag = require('./controllers/tag/index')
-const resolve = require('./controllers/resolve/index')
+const apiRouter = require('./controllers')
+
 const stream = require('./controllers/stream/index')
 const Router = require('@koa/router')
 
@@ -102,16 +96,6 @@ app
     headers: ['Content-Type', 'Authorization']
   }))
 
-const apiRouter = new Router()
-apiRouter.use('/api/v3', tracks.routes())
-apiRouter.use('/api/v3', artists.routes())
-apiRouter.use('/api/v3', labels.routes())
-apiRouter.use('/api/v3', resolve.routes())
-apiRouter.use('/api/v3', search.routes())
-apiRouter.use('/api/v3', tag.routes())
-apiRouter.use('/api/v3', trackgroups.routes())
-apiRouter.use('/api/v3', tracks.routes())
-apiRouter.use('/api/v3', users.routes())
 app.use(apiRouter.routes())
 
 app.use(authRoutes(provider).routes(), authRoutes(provider).allowedMethods({ throw: true }))
