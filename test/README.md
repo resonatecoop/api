@@ -99,7 +99,7 @@ These old / previous-version tests are migrated to `test/as-built`. These will r
 
 You can run the Mocha-migrated old / as-built tests.
 ```sh
-npm run test:as-built
+yarn test:as-built
 ```
 
 ## The Tests To-Be
@@ -113,7 +113,7 @@ For the first iteration of these tests, we capture the endpoints' output and ret
 
 Run the new / to-be tests for endpoints in Api.ts file
 ```sh
-npm run test:to-be:api
+yarn test:to-be:api
 ```
 
 Endpoints in [Api.ts](https://github.com/resonatecoop/beam/blob/main/src/services/Api.ts)
@@ -145,7 +145,7 @@ Endpoints in [Api.ts](https://github.com/resonatecoop/beam/blob/main/src/service
 ### Admin.ts tests
 Run the new / to-be tests for endpoints in Admin.ts file
 ```sh
-npm run test:to-be:admin
+yarn test:to-be:admin
 ```
 
 These tests are incomplete. Main thing to do next is implement a way to get access token from test target.
@@ -167,7 +167,7 @@ Endpoints in [Admin.ts](https://github.com/resonatecoop/beam/blob/main/src/servi
 ### User.ts tests
 Run the new / to-be tests for endpoints in User.ts file
 ```sh
-npm run test:to-be:user
+yarn test:to-be:user
 ```
 
 These tests are incomplete. Main thing to do next is implement a way to get access token from test target.
