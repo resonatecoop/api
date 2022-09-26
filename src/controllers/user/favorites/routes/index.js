@@ -1,10 +1,11 @@
 const { Track, Favorite, Resonate: sequelize } = require('../../../../db/models')
 const trackService = require('../../../tracks/services/trackService')
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
-    POST
+    GET: [authenticate, GET],
+    POST: [authenticate, POST]
   }
 
   async function POST (ctx, next) {

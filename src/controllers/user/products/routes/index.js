@@ -1,17 +1,14 @@
-// const { UserMeta, User, Role, OauthUser /* Resonate: sequelize */ } = require('../../../../db/models')
-// const { Op } = require('sequelize')
-
 const stripe = require('stripe')(process.env.STRIPE_KEY)
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET
+    GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {
     try {
       const products = await stripe.products.list({ limit: 50 })
-      // const prices = await stripe.prices.list({ limit: 50 })
 
       ctx.body = {
         data: products.data,

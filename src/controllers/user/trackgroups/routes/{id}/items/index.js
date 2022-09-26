@@ -1,4 +1,5 @@
 const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
+const authenticate = require('../../../../authenticate')
 
 const {
   validateTrackgroupItems,
@@ -7,7 +8,7 @@ const {
 
 module.exports = function () {
   const operations = {
-    PUT,
+    PUT: [authenticate, PUT],
     parameters: [
       {
         name: 'id',

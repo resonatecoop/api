@@ -1,9 +1,10 @@
 const { UserGroup, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    POST,
-    GET
+    POST: [authenticate, POST],
+    GET: [authenticate, GET]
   }
 
   async function POST (ctx, next) {
@@ -33,7 +34,7 @@ module.exports = function () {
   POST.apiDoc = {
     operationId: 'createArtist',
     description: 'Create new artist',
-    tags: ['artists'],
+    tags: ['user'],
     parameters: [
       {
         in: 'body',
@@ -112,7 +113,7 @@ module.exports = function () {
     operationId: 'getArtists',
     description: 'Returns artists',
     summary: 'Find artists',
-    tags: ['artists'],
+    tags: ['user'],
     produces: [
       'application/json'
     ],

@@ -1,4 +1,5 @@
 const { findAllPlayCounts } = require('../../../../scripts/reports/plays')
+const authenticate = require('../../authenticate')
 
 const getDateFormat = (period = 'monthly') => {
   return {
@@ -10,9 +11,7 @@ const getDateFormat = (period = 'monthly') => {
 
 module.exports = function () {
   const operations = {
-    GET: [
-      GET
-    ]
+    GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {

@@ -2,11 +2,12 @@ const { TrackGroup, UserGroup, TrackGroupItem, Track, File } = require('../../..
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    POST,
-    GET
+    POST: [authenticate, POST],
+    GET: [authenticate, GET]
   }
 
   async function POST (ctx, next) {

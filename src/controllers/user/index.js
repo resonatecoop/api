@@ -13,18 +13,11 @@ const { User } = require('../../db/models')
  * User routing
  */
 
-const collection = require('./collection')
-const favorites = require('./favorites')
+// FIXME: Adapt these endpoints to all use the same authentication
+// methods as the other endpoints.
+
 const logout = require('./logout')
-const plays = require('./plays')
-const profile = require('./profile')
-const trackgroups = require('./trackgroups')
-const playlists = require('./playlists')
-const tracks = require('./tracks')
-const stream = require('./stream')
-const artists = require('./artists')
 const admin = require('./admin')
-const products = require('./products')
 
 /**
  * Swagger client for user-api
@@ -47,19 +40,7 @@ user.use(async (ctx, next) => {
   await next()
 })
 
-const allowlist = [
-  '/collection/apiDocs',
-  '/favorites/apiDocs',
-  '/plays/apiDocs',
-  '/profile/apiDocs',
-  '/trackgroups/apiDocs',
-  '/playlists/apiDocs',
-  '/tracks/apiDocs',
-  '/products',
-  '/products/checkout',
-  '/products/success',
-  '/products/apiDocs'
-]
+const allowlist = []
 
 user.use(async (ctx, next) => {
   if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
@@ -110,17 +91,7 @@ user.use(async (ctx, next) => {
   await next()
 })
 
-user.use(collection.routes())
-user.use(favorites.routes())
 user.use(mount('/logout', logout))
-user.use(profile.routes())
-user.use(plays.routes())
-user.use(trackgroups.routes())
-user.use(playlists.routes())
-user.use(tracks.routes())
-user.use(artists.routes())
-user.use(stream.routes())
 user.use(mount('/admin', admin))
-user.use(products.routes())
 
 module.exports = user

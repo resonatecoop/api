@@ -1,9 +1,10 @@
 // TODO this can be consolidated with ./privacy.js
 const { TrackGroup } = require('../../../../db/models')
+const authenticate = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    PUT,
+    PUT: [authenticate, PUT],
     parameters: [
       {
         name: 'id',

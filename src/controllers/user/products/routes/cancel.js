@@ -2,17 +2,16 @@
 // const { Op } = require('sequelize')
 
 // const stripe = require('stripe')(process.env.STRIPE_KEY)
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET: [
-      GET
-    ]
+    GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {
     try {
-      // FIXME: Better error handling here
+      // FIXME: Better error handling here, cancellatoin doesn't do anything right now
       // const response = ctx.request.query
       // const session = await stripe.checkout.sessions.retrieve(ctx.request.query.session_id)
       // const lineItems = await stripe.checkout.sessions.listLineItems(session.id)

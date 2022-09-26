@@ -1,8 +1,9 @@
 const { Track, Resonate: sequelize } = require('../../../../../db/models')
+const authenticate = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET
+    GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {

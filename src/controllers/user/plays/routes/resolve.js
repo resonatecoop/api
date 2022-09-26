@@ -1,9 +1,10 @@
 const { Play, Resonate: sequelize } = require('../../../../db/models')
 const { Op } = require('sequelize')
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    POST
+    POST: [authenticate, POST]
   }
 
   async function POST (ctx, next) {

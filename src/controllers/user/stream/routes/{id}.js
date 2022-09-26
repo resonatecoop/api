@@ -5,10 +5,11 @@ const send = require('koa-send')
 const path = require('path')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
+const authenticate = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET
+    GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {

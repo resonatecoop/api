@@ -1,8 +1,9 @@
 const { Playlist } = require('../../../../../db/models')
+const authenticate = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    PUT,
+    PUT: [authenticate, PUT],
     parameters: [
       {
         name: 'id',

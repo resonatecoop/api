@@ -27,7 +27,7 @@ module.exports = function () {
         in: 'query',
         name: 'basePath',
         type: 'string',
-        enum: ['/v3/tracks', '/api/v3/tracks', '/']
+        enum: ['/v3/user/profile', '/api/v3/user/profile', '/']
       }
     ],
     responses: {

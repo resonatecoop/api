@@ -1,12 +1,13 @@
 const { User, Playlist, PlaylistItem, Track, File } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
+const authenticate = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
-    PUT,
-    DELETE,
+    GET: [authenticate, GET],
+    PUT: [authenticate, PUT],
+    DELETE: [authenticate, DELETE],
     parameters: [
       {
         name: 'id',
