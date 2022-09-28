@@ -7,7 +7,7 @@ describe('User.ts/user endpoint test', () => {
   let response = null
 
   it('should get user profiles', async () => {
-    response = await request.get(`/user/profile/`)
+    response = await request.get('/user/profile/')
 
     expect(response.status).to.eql(200)
 
@@ -47,7 +47,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user/trackgroups', async () => {
-    response = await request.post(`/user/trackgroups`)
+    response = await request.post('/user/trackgroups')
 
     expect(response.status).to.eql(200)
 
@@ -87,7 +87,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should get user trackgroups', async () => {
-    response = await request.get(`/user/trackgroups`)
+    response = await request.get('/user/trackgroups')
 
     expect(response.status).to.eql(200)
 

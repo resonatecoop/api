@@ -4,9 +4,8 @@ const { request, expect, testLabelId } = require('../testConfig')
 describe('Api.ts/labels endpoint test', () => {
   let response = null
 
-
   it.only('should get all labels', async () => {
-    response = await request.get(`/labels`)
+    response = await request.get('/labels')
 
     // relation \"rsntr_users\" does not exist"
 
@@ -26,7 +25,6 @@ describe('Api.ts/labels endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-
   })
   it('should get a label by id', async () => {
     response = await request.get(`/labels/${testLabelId}`)
@@ -47,7 +45,6 @@ describe('Api.ts/labels endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-
   })
   it('should a label\'s releases by label id', async () => {
     response = await request.get(`/labels/${testLabelId}/releases`)
@@ -68,7 +65,6 @@ describe('Api.ts/labels endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-
   })
   it('should get a label\'s artists by label id', async () => {
     response = await request.get(`/labels/${testLabelId}/artists`)
@@ -89,7 +85,6 @@ describe('Api.ts/labels endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-
   })
   it('should get a label\'s albums by label id', async () => {
     response = await request.get(`/labels/${testLabelId}/albums`)
@@ -110,6 +105,5 @@ describe('Api.ts/labels endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-
   })
 })

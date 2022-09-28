@@ -5,7 +5,7 @@ describe('User.ts/products endpoint test', () => {
   let response = null
 
   it('should get user products', async () => {
-    response = await request.get(`/user/products`)
+    response = await request.get('/user/products')
 
     expect(response.status).to.eql(200)
 
