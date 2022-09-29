@@ -13,4 +13,4 @@ COPY --from=ffmpeg / /
 
 EXPOSE 4000
 
-CMD ["yarn", "start-dev"]
+CMD ["yarn", "start:dev"]
