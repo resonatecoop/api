@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-expressions */
 // endpoints access token
 //    probably need the supertest persist whatever thing
 
