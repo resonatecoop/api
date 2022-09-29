@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 // endpoints access token
 //    probably need the supertest persist whatever thing
 

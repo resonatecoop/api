@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
-const { request, expect } = require('../testConfig')
+/* eslint-env mocha */
+const { request, expect } = require('./testConfig') // change this to require('../testConfig') after you copy this template
 
 describe('TEMPLATE endpoint test', () => {
   let response = null

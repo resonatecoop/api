@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 const { request, expect } = require('../testConfig')
 
 describe('Api.ts/search endpoint test', () => {
