@@ -7,7 +7,7 @@ describe('User.ts/user artist endpoint test', () => {
   let response = null
 
   it('should get user artists', async () => {
-    response = await request.get(`/user/artists`)
+    response = await request.get('/user/artists')
 
     expect(response.status).to.eql(200)
 
@@ -47,7 +47,7 @@ describe('User.ts/user artist endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user artists', async () => {
-    response = await request.post(`/user/artists`)
+    response = await request.post('/user/artists')
 
     expect(response.status).to.eql(200)
 

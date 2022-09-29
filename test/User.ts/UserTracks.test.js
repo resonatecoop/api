@@ -1,11 +1,11 @@
 
-const { request, expect, testUserId, testTrackId, testTrackGroupId } = require('../testConfig')
+const { request, expect, testTrackId, testTrackGroupId } = require('../testConfig')
 
 describe('User.ts/user tracks endpoint test', () => {
   let response = null
 
   it('should post to user tracks', async () => {
-    response = await request.post(`/user/tracks`)
+    response = await request.post('/user/tracks')
 
     expect(response.status).to.eql(200)
 

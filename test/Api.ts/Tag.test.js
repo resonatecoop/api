@@ -11,7 +11,7 @@ describe('Api.ts/tag endpoint test', () => {
 
     const attributes = response.body
     expect(attributes).to.be.an('object')
-    expect(attributes).to.include.keys("id", "type", "name")
+    expect(attributes).to.include.keys('id', 'type', 'name')
 
     // expect(attributes.data).to.be.an('array')
     // expect(attributes.data.length).to.be.greaterThan(0)
@@ -23,6 +23,5 @@ describe('Api.ts/tag endpoint test', () => {
     // expect(attributes.count).to.eql(1)
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
-
   })
 })

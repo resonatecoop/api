@@ -5,19 +5,19 @@ describe('TEMPLATE endpoint test', () => {
   let response = null
 
   it('should do something', async () => {
-    response = await request.get(`/`)
+    response = await request.get('/')
 
     expect(response.status).to.eql()
 
     const attributes = response.body
     expect(attributes).to.be.an('object')
-    expect(attributes).to.include.keys("")
+    expect(attributes).to.include.keys('')
 
     expect(attributes.data).to.be.an('array')
     expect(attributes.data.length).to.eql(3)
 
     const theData = attributes.data[0]
-    expect(theData).to.include.keys("")
+    expect(theData).to.include.keys('')
     expect(theData.xxx).to.eql()
 
     expect(attributes.count).to.eql(1)

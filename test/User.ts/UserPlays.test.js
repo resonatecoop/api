@@ -5,7 +5,7 @@ describe('User.ts/user plays endpoint test', () => {
   let response = null
 
   it('should post to user plays (all of them?)', async () => {
-    response = await request.get(`/user/plays`)
+    response = await request.get('/user/plays')
 
     expect(response.status).to.eql(200)
 
@@ -25,7 +25,7 @@ describe('User.ts/user plays endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user plays buy', async () => {
-    response = await request.post(`/user/plays/buy`)
+    response = await request.post('/user/plays/buy')
 
     expect(response.status).to.eql(200)
 
@@ -45,7 +45,7 @@ describe('User.ts/user plays endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user plays resolve (?)', async () => {
-    response = await request.get(`/user/plays/resolve`)
+    response = await request.get('/user/plays/resolve')
 
     expect(response.status).to.eql(200)
 

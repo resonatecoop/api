@@ -5,12 +5,12 @@ describe('Admin.ts/tracks endpoint test', () => {
   let response = null
 
   it('should handle no authentication', async () => {
-    response = await request.get(`/user/admin/trackgroups/`)
+    response = await request.get('/user/admin/trackgroups/')
 
     expect(response.status).to.eql(401)
   })
   it('should get all tracks', async () => {
-    response = await request.get(`/user/admin/tracks/`)
+    response = await request.get('/user/admin/tracks/')
 
     expect(response.status).to.eql(200)
 

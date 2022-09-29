@@ -5,12 +5,12 @@ describe('Api.ts/search endpoint test', () => {
   let response = null
 
   it('should handle no provided search term/s', async () => {
-    response = await request.get(`/search`)
+    response = await request.get('/search')
 
     expect(response.status).to.eql(400)
   })
   it('should return results for a search term', async () => {
-    let searchTerm = 'asdf'
+    const searchTerm = 'asdf'
 
     response = await request.get(`/search?q=${searchTerm}`)
 
