@@ -7,7 +7,7 @@
   "license": "gpl3",
   "private": true,
   "scripts": {
-    "start-dev": "./node_modules/nodemon/bin/nodemon.js --trace-warnings ./server.js --config nodemon.json",
+    "start:dev": "./node_modules/nodemon/bin/nodemon.js --trace-warnings ./server.js --config nodemon.json",
     "start": "node src/index.js",
     "migrate": "NODE_ENV=development sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:workers": "NODE_ENV=development docker exec -it resonate-api node src/jobs/queue-worker.js run",

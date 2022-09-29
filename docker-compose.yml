@@ -20,7 +20,7 @@ services:
       - api-network
       - redis-network
     build: .
-    command: /bin/sh -c "yarn && yarn migrate && yarn start-dev"
+    command: /bin/sh -c "yarn && yarn migrate && yarn start:dev"
     container_name: resonate-api
     environment:
       - NODE_ENV=development
