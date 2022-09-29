@@ -2,8 +2,9 @@
 const Redis = require('ioredis') // eslint-disable-line import/no-unresolved
 const isEmpty = require('lodash/isEmpty')
 const { Client } = require('../db/models')
+const { REDIS_CONFIG } = require('../config/redis')
 
-const client = new Redis(process.env.REDIS_HOST, { keyPrefix: 'oidc:' })
+const client = new Redis(REDIS_CONFIG, { keyPrefix: 'oidc' })
 
 const grantable = new Set([
   'AccessToken',

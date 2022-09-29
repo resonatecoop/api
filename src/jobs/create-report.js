@@ -2,17 +2,14 @@ const Queue = require('bull')
 const DateFns = require('date-fns')
 const path = require('path')
 const winston = require('winston')
+const { REDIS_CONFIG } = require('../config/redis')
 
 const { File } = require('../db/models')
 const createReport = require('../scripts/reports')
 const sendEmailJob = require('./send-mail')
 
 const sendEmailQueue = new Queue('send-email', {
-  redis: {
-    port: process.env.REDIS_PORT || 6379,
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    password: process.env.REDIS_PASSWORD
-  }
+  redis: REDIS_CONFIG
 })
 
 sendEmailQueue.on('completed', (job, result) => {

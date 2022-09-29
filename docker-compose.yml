@@ -7,9 +7,11 @@ services:
       - redis-server
       - "--appendonly"
       - "yes"
+      - "--requirepass ${REDIS_PASSWORD}"
     image: redis
     container_name: resonate-redis
     restart: always
+
     expose:
       - 6379
     ports:
