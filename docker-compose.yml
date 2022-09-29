@@ -50,44 +50,27 @@ services:
           - pgsql
     ports:
       - '${POSTGRES_LOCAL_MACHINE_PORT}:5432'
-    # volumes:
-    #   - web-root:/var/www/html
-    #   - ./nginx-conf:/etc/nginx/conf.d
-    # - certbot-etc:/etc/letsencrypt
-    # - certbot-var:/var/lib/letsencrypt
-    # - dhparam:/etc/ssl/certs
-    # - htpasswd:/etc/nginx/htpasswd
-    # depends_on:
-    # - api
-    # networks:
-    # - app-network
-    # - api-network
-    # certbot:
-    #   image: certbot/certbot
-    #   container_name: certbot
-    #   volumes:
-    #     - certbot-etc:/etc/letsencrypt
-    #     - certbot-var:/var/lib/letsencrypt
-    #     - web-root:/var/www/html
-    #   depends_on:
-    #     - webserver
-    #   command: certonly --webroot --webroot-path=/var/www/html --email auggod@resonate.is --agree-tos --no-eff-email --force-renewal -d beta.stream.resonate.coop
 
   nginx:
     restart: always
     container_name: resonate-nginx
     networks:
       - api-network
+    volumes:
+      - ./data/web-root:/var/www/html
+      - ./data/certbot-etc:/etc/letsencrypt
+      - ./data/certbot-var:/var/lib/letsencrypt
     build:
       context: ./nginx
+      target: ${IMAGE:-dev-image}
+
     ports:
       - "${NGINX_PORT}:80"
+      - 433:433
 
 networks:
   api-network:
     driver: bridge
-  # app-network:
-  #   driver: bridge
   redis-network:
     driver: bridge
 
