@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 const { request, expect, testTagId } = require('../testConfig')
 
 describe('Api.ts/tag endpoint test', () => {

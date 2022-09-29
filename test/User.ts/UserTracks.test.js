@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 const { request, expect, testTrackId, testTrackGroupId } = require('../testConfig')
 
 describe('User.ts/user tracks endpoint test', () => {

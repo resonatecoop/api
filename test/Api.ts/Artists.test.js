@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 const { request, expect, testArtistId } = require('../testConfig')
 
 describe('Api.ts/artists endpoint test', () => {

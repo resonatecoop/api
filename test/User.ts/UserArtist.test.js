@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 //  needs auth token
 
 const { request, expect, testArtistId } = require('../testConfig')

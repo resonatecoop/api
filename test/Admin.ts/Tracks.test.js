@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+/* eslint-env mocha */
 const { request, expect, testTrackId } = require('../testConfig')
 
 describe('Admin.ts/tracks endpoint test', () => {
