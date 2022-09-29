@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-expressions */
 const { request, expect } = require('../testConfig')
 
 describe('TEMPLATE endpoint test', () => {

@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-expressions */
 // Needs auth token
 
 const { request, expect, testUserId, testTrackGroupId } = require('../testConfig')

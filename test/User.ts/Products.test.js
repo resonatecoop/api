@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-expressions */
 const { request, expect } = require('../testConfig')
 
 describe('User.ts/products endpoint test', () => {

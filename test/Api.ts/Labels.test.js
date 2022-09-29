@@ -1,10 +1,10 @@
-
+/* eslint-disable no-unused-expressions */
 const { request, expect, testLabelId } = require('../testConfig')
 
 describe('Api.ts/labels endpoint test', () => {
   let response = null
 
-  it.only('should get all labels', async () => {
+  it('should get all labels', async () => {
     response = await request.get('/labels')
 
     // relation \"rsntr_users\" does not exist"
