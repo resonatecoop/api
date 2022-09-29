@@ -10,6 +10,7 @@ const { Track, File } = require('../../lib/db/models')
 const reprocessTrackJob = require('../../lib/jobs/reprocess-track')
 const convertAudioJob = require('../../lib/jobs/convert-audio')
 const cleanupJob = require('../../lib/jobs/cleanup')
+const { REDIS_CONFIG } = require('../config/redis')
 
 const logger = winston.createLogger({
   level: 'info',
@@ -28,11 +29,7 @@ const logger = winston.createLogger({
 })
 
 const queueOptions = {
-  redis: {
-    port: process.env.REDIS_PORT || 6379,
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    password: process.env.REDIS_PASSWORD
-  }
+  redis: REDIS_CONFIG
 }
 
 const reprocessTracksQueue = new Queue('reprocess-tracks', queueOptions)

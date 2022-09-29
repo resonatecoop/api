@@ -8,6 +8,7 @@ const ajvKeywords = require('ajv-keywords')
 const ajvFormats = require('ajv-formats')
 
 const ms = require('ms')
+const { REDIS_CONFIG } = require('../../../config/redis')
 
 const ajv = new AJV({
   coerceTypes: true,
@@ -31,11 +32,7 @@ const validateQuery = ajv.compile({
 })
 
 const queueOptions = {
-  redis: {
-    port: process.env.REDIS_PORT || 6379,
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    password: process.env.REDIS_PASSWORD
-  }
+  redis: REDIS_CONFIG
 }
 
 const queues = new Koa()

@@ -7,6 +7,7 @@ require('dotenv-safe').config({ path: path.join(__dirname, '../../.env') })
 
 const { optimizeImage: convertImageJob } = require('../../lib/jobs/convert-image')
 const sharpConfig = require('../../lib/config/sharp')
+const { REDIS_CONFIG } = require('../config/redis')
 
 const logger = winston.createLogger({
   level: 'info',
@@ -25,11 +26,7 @@ const logger = winston.createLogger({
 })
 
 const queueOptions = {
-  redis: {
-    port: process.env.REDIS_PORT || 6379,
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    password: process.env.REDIS_PASSWORD
-  }
+  redis: REDIS_CONFIG
 }
 
 test('should convert artwork image to jpeg and webp', async t => {

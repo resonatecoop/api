@@ -12,6 +12,7 @@ const createReportJob = require('../jobs/create-report')
 const winston = require('winston')
 const decodeUriComponent = require('decode-uri-component')
 const numbro = require('numbro')
+const { REDIS_CONFIG } = require('../../config/redis')
 
 const sum = (a, b) => numbro(a).add(b).value()
 const divide = (a, b) => numbro(a).divide(b).value()
@@ -33,11 +34,7 @@ const logger = winston.createLogger({
 })
 
 const queueOptions = {
-  redis: {
-    port: process.env.REDIS_PORT || 6379,
-    host: process.env.REDIS_HOST || '127.0.0.1',
-    password: process.env.REDIS_PASSWORD
-  }
+  redis: REDIS_CONFIG
 }
 const createReport = new Queue('create-report', queueOptions)
 

@@ -16,7 +16,6 @@ const allowlist = [
 const adapter = new RedisAdapter('AccessToken')
 
 const checkForAuthentication = async (ctx, next) => {
-  console.log('checking authentication')
   if (ctx.get('Authorization').startsWith('Bearer ')) {
     // bearer auth
     ctx.accessToken = ctx.get('Authorization').slice(7, ctx.get('Authorization').length).trimLeft()
