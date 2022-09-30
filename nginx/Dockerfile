@@ -15,6 +15,4 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 COPY dev.resonate.coop.conf /etc/nginx/conf.d/default.conf
-# RUN certbot certonly --webroot --webroot-path=/var/www/html -d dev.resonate.coop --email dev@resonate.coop -n --agree-tos --expand
-
-# ENTRYPOINT [ "../entrypoint.sh" ]
+RUN SLEEPTIME=$(awk 'BEGIN{srand(); print int(rand()*(3600+1))}'); echo "0 0,12 * * * root sleep $SLEEPTIME && certbot renew -q" | tee -a /etc/crontab > /dev/null
