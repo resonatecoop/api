@@ -1,0 +1,118 @@
+---
+services:
+  redis:
+    networks:
+      - redis-network
+    command:
+      - redis-server
+      - "--appendonly"
+      - "yes"
+      - "--requirepass ${REDIS_PASSWORD}"
+    image: redis
+    container_name: resonate-redis
+    restart: always
+
+    expose:
+      - 6379
+    ports:
+      - "${REDIS_PORT}:6379"
+
+  api:
+    networks:
+      - api-network
+      - redis-network
+    build: .
+    command: /bin/sh -c "yarn && yarn migrate:test && yarn start:dev"
+    container_name: resonate-api
+    environment:
+      - NODE_ENV=test
+    depends_on:
+      - redis
+      - pgsql
+    ports:
+      - "4000:4000"
+    restart: always
+    volumes:
+      - ./:/var/www/api
+      - ./data/media/incoming:/data/media/incoming
+      - ./data/media/audio:/data/media/audio
+      - ./data/media/images:/data/media/images
+
+  pgsql:
+    image: postgres:14-alpine
+    env_file:
+      - .env
+    volumes:
+      - ./data/pgsql:/var/lib/postgresql/data
+      - ./data/pgsql_backups:/backups
+    container_name: resonate-pgsql
+    networks:
+      api-network:
+        aliases:
+          - pgsql
+    ports:
+      - '${POSTGRES_LOCAL_MACHINE_PORT}:5432'
+    # volumes:
+    #   - web-root:/var/www/html
+    #   - ./nginx-conf:/etc/nginx/conf.d
+    # - certbot-etc:/etc/letsencrypt
+    # - certbot-var:/var/lib/letsencrypt
+    # - dhparam:/etc/ssl/certs
+    # - htpasswd:/etc/nginx/htpasswd
+    # depends_on:
+    # - api
+    # networks:
+    # - app-network
+    # - api-network
+    # certbot:
+    #   image: certbot/certbot
+    #   container_name: certbot
+    #   volumes:
+    #     - certbot-etc:/etc/letsencrypt
+    #     - certbot-var:/var/lib/letsencrypt
+    #     - web-root:/var/www/html
+    #   depends_on:
+    #     - webserver
+    #   command: certonly --webroot --webroot-path=/var/www/html --email auggod@resonate.is --agree-tos --no-eff-email --force-renewal -d beta.stream.resonate.coop
+
+  nginx:
+    restart: always
+    container_name: resonate-nginx
+    networks:
+      - api-network
+    build:
+      context: ./nginx
+    ports:
+      - "${NGINX_PORT}:80"
+
+networks:
+  api-network:
+    driver: bridge
+  # app-network:
+  #   driver: bridge
+  redis-network:
+    driver: bridge
+
+volumes:
+  certbot-etc:
+  certbot-var:
+  htpasswd:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${PWD}/htpasswd/"
+      o: bind
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${PWD}/public/"
+      o: bind
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: "${PWD}/dhparam/"
+      o: bind
+
+version: "3.7"

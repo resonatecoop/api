@@ -42,6 +42,21 @@ module.exports = (env) => {
         return Promise.resolve()
       }
     },
+    test: {
+      maxAge: CACHE_MAX_AGE,
+      compression: true, // https://github.com/koajs/cash#compression
+      setCachedHeader: true, // https://github.com/koajs/cash#setcachedheader
+      get (key, maxAge) {
+        const value = memoryCache.get(cleanKey(key))
+
+        return Promise.resolve(value)
+      },
+      set (key, value) {
+        memoryCache.set(cleanKey(key), value, CACHE_MAX_AGE_SEC)
+
+        return Promise.resolve()
+      }
+    },
     production: {
       maxAge: CACHE_MAX_AGE,
       threshold: 0,
