@@ -33,6 +33,7 @@ services:
       - "4000:4000"
     restart: always
     volumes:
+      - ~/.ssh:/root/.ssh
       - ./:/var/www/api
       - ./data/media/incoming:/data/media/incoming
       - ./data/media/audio:/data/media/audio
