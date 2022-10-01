@@ -15,7 +15,7 @@ const testUserId = '17203153-e2b0-457f-929d-5abe4e322ea1'
 const testTrackGroupId = 'c91bf101-2d3d-4181-8010-627ecce476de'
 const testTagId = 'asdf'
 const testLabelId = 'asdf'
-const testArtistId = '251c01f6-7293-45f6-b8cd-242bdd76cd0d'
+const testArtistId = '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6'
 const testTrackId = 'e8fc6dd4-f6ed-4b2b-be0f-efe9f32c3def'
 
 const testAccessToken = 'asdf'

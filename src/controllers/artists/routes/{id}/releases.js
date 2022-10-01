@@ -12,7 +12,7 @@ module.exports = function () {
       {
         name: 'id',
         in: 'path',
-        type: 'integer',
+        type: 'string',
         required: true,
         description: 'Artist id.'
       }
@@ -28,7 +28,8 @@ module.exports = function () {
       const query = {
         where: {
           private: false,
-          artistId: ctx.params.id,
+          // artistId: ctx.params.id,
+          creatorId: ctx.params.id,
           enabled: true,
           release_date: {
             [Op.or]: {

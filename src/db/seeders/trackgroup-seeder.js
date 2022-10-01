@@ -37,8 +37,9 @@ module.exports = {
           name: 'artist'
         }
       })
+      //  FIXME: 'users' is replicated in users-seeder.js
       await queryInterface.bulkInsert('users', [{
-        id: faker.datatype.uuid(),
+        id: '251c01f6-7293-45f6-b8cd-242bdd76cd0d',
         email: 'artist@admin.com',
         password: await User.hashPassword({ password: 'test1234' }),
         email_confirmed: true,
