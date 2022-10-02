@@ -1,0 +1,46 @@
+extends layout.pug
+
+
+block content 
+  - 
+    const mappedScopes = { 'read_write': 'read & write'}
+
+  div(class="login-client-image")
+  ul(class="scopes")
+    if [details.missingOIDCScope, details.missingOIDCClaims, details.missingResourceScopes].filter(Boolean).length === 0
+      li The client is asking you to confirm previously given authorization
+    - 
+      const missingOIDCScope = new Set(details.missingOIDCScope);
+        missingOIDCScope.delete('openid');
+        missingOIDCScope.delete('offline_access')
+    if missingOIDCScope.size 
+      li You're granting #[a(href=`${client.clientUrl}`) #{client.clientName}] access to:
+      ul 
+        each scope of missingOIDCScope 
+          li #{mappedScopes[scope]}
+      li on your account
+    - 
+      const missingOIDCClaims = new Set(details.missingOIDCClaims);
+        ['sub', 'sid', 'auth_time', 'acr', 'amr', 'iss'].forEach(Set.prototype.delete.bind(missingOIDCClaims))
+    if missingOIDCClaims.size 
+      li Claims:
+      ul 
+        each scope of missingOIDCClaims 
+          li #{scope}
+    - 
+      const missingResourceScopes = new Set(details.missingResourceScopes);
+    if missingResourceScopes.size 
+      each object in Object.entries(details.missingResourceScopes)
+        li object[0]
+        ul 
+          each scope of object[1] 
+            li #{scope}
+    if params.scope && params.scope.includes('offline_access')
+      li the client is asking to have offline access to this authorization 
+      if (!details.missingOIDCScope) || !details.missingOIDCScope.includes('offline_access')
+        p (which you have previously granted)
+
+  form(action=`/interaction/${uid}/confirm`, method="post", autocomplete="off")
+    button(type="submit", autofocus) Continue 
+
+    

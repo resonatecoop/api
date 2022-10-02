@@ -94,6 +94,8 @@ class RedisAdapter {
         return {
           client_secret: dbClient.secret,
           client_id: dbClient.key,
+          client_name: dbClient.applicationName,
+          client_url: dbClient.applicationUrl,
           grant_types: dbClient.grantTypes,
           response_types: dbClient.responseTypes,
           redirect_uris: dbClient.redirectURIs

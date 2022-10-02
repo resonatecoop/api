@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content 
+  h1 Register
+  form(action="/register", method="post", autocomplete="off")
+    input(type="email", name="email", placeholder="Enter your email")
+    input(type="password", name="password", placeholder="and password") 
+    button(type="submit") 
+      text Register

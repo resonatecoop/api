@@ -4,6 +4,8 @@ const querystring = require('querystring')
 const { inspect } = require('util')
 const { User } = require('../db/models')
 const RedisAdapter = require('./redis-adapter')
+const send = require('koa-send')
+const path = require('path')
 
 const isEmpty = require('lodash/isEmpty')
 const bodyParser = require('koa-body')
@@ -29,6 +31,7 @@ const adapter = new RedisAdapter('Session')
 module.exports = (provider) => {
   const router = new Router()
   const { constructor: { errors: { SessionNotFound } } } = provider
+  // Serving static files for the views
 
   router.use(async (ctx, next) => {
     ctx.set('cache-control', 'no-store')
@@ -137,6 +140,7 @@ module.exports = (provider) => {
         })
       }
       case 'consent': {
+        console.log('prompt', prompt.details)
         return ctx.render('interaction', {
           client,
           uid,

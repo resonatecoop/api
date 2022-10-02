@@ -7,9 +7,10 @@ const compress = require('koa-compress')
 const error = require('koa-json-error')
 const mount = require('koa-mount')
 const etag = require('koa-etag')
-const render = require('koa-ejs')
+const serve = require('koa-static')
 const path = require('path')
 const send = require('koa-send')
+const Pug = require('koa-pug')
 
 const session = require('koa-session')
 const koaCash = require('koa-cash')
@@ -103,6 +104,10 @@ app.use(mount('/', provider.app))
 app.use(mount('/api/v3/stream', stream)) // TODO: put this in the API
 app.use(mount('/api/v3/user', user)) // TODO: put this in the API
 
+// FIXME: koa-static is currently insecure and out of date.
+// https://github.com/koajs/static/issues/202
+app.use(mount('/public', serve(path.join(__dirname, 'auth/public'))))
+
 // In production we will presumably use a different way to
 // serve static files
 if (process.env.NODE_ENV !== 'production') {
@@ -124,12 +129,16 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(staticRouter.routes())
 }
 
-// These are the views needed for the OpenID authentication
-render(app, {
-  cache: false,
-  viewExt: 'ejs',
-  layout: '_layout',
-  root: path.join(__dirname, 'auth/views')
+const pug = new Pug({ // eslint-disable-line no-unused-vars
+  viewPath: path.resolve(__dirname, './auth/views'),
+  locals: { /* variables and helpers */ },
+  // basedir: 'path/for/pug/extends',
+  helperPath: [
+    // 'path/to/pug/helpers',
+    // { random: 'path/to/lib/random.js' },
+    { _: require('lodash') }
+  ],
+  app: app // Binding `ctx.render()`, equals to pug.use(app)
 })
 
 module.exports = app
