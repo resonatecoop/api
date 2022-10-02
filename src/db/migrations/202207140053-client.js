@@ -50,6 +50,10 @@ module.exports = {
         allowNull: false,
         field: 'application_url'
       },
+      metaData: {
+        type: DataTypes.JSONB,
+        field: 'meta_data'
+      },
       updatedAt: {
         field: 'updated_at',
         allowNull: false,
