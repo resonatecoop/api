@@ -37,6 +37,7 @@ module.exports = {
           name: 'artist'
         }
       })
+      //  FIXME: 'users' is replicated in users-seeder.js
       await queryInterface.bulkInsert('users', [{
         id: '251c01f6-7293-45f6-b8cd-242bdd76cd0d', // hard coded user id to pass tests for now
         email: 'artist@admin.com',

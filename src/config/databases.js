@@ -37,23 +37,10 @@ const config = {
     username: process.env.POSTGRES_USER,
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
-    host: process.env.POSTGRES_HOSTNAME,
+    host: process.env.POSTGRES_HOSTNAME + '-test',
     dialect: 'postgres',
-    port: process.env.POSTGRES_EXT_PORT || 5432,
+    port: process.env.POSTGRES_EXT_PORT || 5435,
     logging: console.log
-    // Resonate: {
-    //   username: process.env.MYSQL_DB_USER,
-    //   password: process.env.MYSQL_DB_PASS,
-    //   database: process.env.MYSQL_DB_NAME || 3306,
-    //   host: process.env.MYSQL_DB_HOST || '127.0.0.1',
-    //   dialect: 'mysql',
-    //   logging: false,
-    //   define: {
-    //     charset: 'utf8mb4',
-    //     collate: 'utf8mb4_unicode_ci',
-    //     timestamps: false
-    //   }
-    // }
   },
   production: {
     username: process.env.POSTGRES_USER,

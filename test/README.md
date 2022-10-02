@@ -9,20 +9,23 @@ These tests reference the [beam](https://github.com/resonatecoop/beam/tree/main/
 
 The api(v4) tests live in the `/api/test` directory. In this directory there are three subfolders (`Admin.ts`, `Api.ts`, and `User.ts`), each of which corresponds to a file in the [beam](https://github.com/resonatecoop/beam/tree/main/src/services) repository.
 
-These tests expect a running instance of the Docker container that you get when you `docker compose up` at the `api` repo root. Make sure first that this container instance is running / has finished loading / etc. before running the tests. 
+## How the test data was made
+You can read an overview of how the test data was made [here](./HowTheTestDataWasMade.md). 
 
-You also need to seed the database.
-
-The `Getting started with local dev` section of the main repo [README.md](../README.md) file explains what to do.
 
 ## Setup and running
-There is a file named `Template.test.js` in the `test` folder. You can copy this file to start writing new tests more quickly.
+First, start up the Docker test container.
+```sh
+yarn docker:compose:test:up
+```
+If this is the first time you have started this test container, you will need to seed the test database. You don't have to do this every time you start the test container.
+```sh
+docker:seed:all:test
+```
 
-There is a file named `testConfig.js` in the `test` folder. It has vars and modules that are used in test files. It's basically used as an include header at the beginning of each test file. If you create new tests, this file will help you go faster.
+* Note: You might need to shutdown then restart the Docker test container after seeding the test data.
 
-In `testConfig.js` there is a const `baseURL`. This is set to `http://localhost:4000/api/v3` so that you can run the tests against a local Dockerized resonate api (v4) container instance. If you need to run the tests against a different instance of the API, you can comment this const out and replace it with a url of your choosing, ie `const baseURL = 'http://awesome.sauce.com/api/v2'` or similar.
-
-These tests run under Mocha as test runner. If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
+Once the test Docker container is seeded and up, you can run tests.
 
 Run the tests for endpoints in Api.ts file
 ```sh
@@ -47,13 +50,13 @@ mocha -w someFilePath/someTestFileName
 You can create more test script commands in the api (v4) repo's `package.json` file, if you need something else.
 
 ## Notes
+There is a file named `Template.test.js` in the `test` folder. You can copy this file to start writing new tests more quickly.
 
-If you cloned the Resonate API repo in the past and then ran `yarn install`, you might have something called 'Tape' installed on your machine. 'Tape' is a test runner that was used in an earlier version of the API.
+There is a file named `testConfig.js` in the `test` folder. It has vars and modules that are used in test files. It's basically used as an include header at the beginning of each test file. If you create new tests, this file will help you go faster.
 
-You might want to delete 'Tape' from your system. The decision is yours. Do so with the command
-```sh
-yarn remove tape
-```
+In `testConfig.js` there is a const `baseURL`. This is set to `http://localhost:4000/api/v3` so that you can run the tests against a local Dockerized resonate api (v4) container instance. If you need to run the tests against a different instance of the API, you can comment this const out and replace it with a url of your choosing, ie `const baseURL = 'http://awesome.sauce.com/api/v2'` or similar.
+
+These tests run under Mocha as test runner. If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
 
 This testing suite uses Mocha, and Mocha will be installed as a dev dependency if / when you run `yarn` at the repo root.
 

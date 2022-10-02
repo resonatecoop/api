@@ -28,7 +28,7 @@ services:
       - NODE_ENV=test
     depends_on:
       - redis
-      - pgsql
+      - pgsql-test
     ports:
       - "4000:4000"
     restart: always
@@ -38,43 +38,20 @@ services:
       - ./data/media/audio:/data/media/audio
       - ./data/media/images:/data/media/images
 
-  pgsql:
+  pgsql-test:
     image: postgres:14-alpine
     env_file:
       - .env
     volumes:
-      - ./data/pgsql:/var/lib/postgresql/data
-      - ./data/pgsql_backups:/backups
-    container_name: resonate-pgsql
+      - ./data/pgsql-test:/var/lib/postgresql/data
+      - ./data/pgsql-test-backups:/backups
+    container_name: resonate-pgsql-test
     networks:
       api-network:
         aliases:
-          - pgsql
+          - pgsql-test
     ports:
-      - '${POSTGRES_LOCAL_MACHINE_PORT}:5432'
-    # volumes:
-    #   - web-root:/var/www/html
-    #   - ./nginx-conf:/etc/nginx/conf.d
-    # - certbot-etc:/etc/letsencrypt
-    # - certbot-var:/var/lib/letsencrypt
-    # - dhparam:/etc/ssl/certs
-    # - htpasswd:/etc/nginx/htpasswd
-    # depends_on:
-    # - api
-    # networks:
-    # - app-network
-    # - api-network
-    # certbot:
-    #   image: certbot/certbot
-    #   container_name: certbot
-    #   volumes:
-    #     - certbot-etc:/etc/letsencrypt
-    #     - certbot-var:/var/lib/letsencrypt
-    #     - web-root:/var/www/html
-    #   depends_on:
-    #     - webserver
-    #   command: certonly --webroot --webroot-path=/var/www/html --email auggod@resonate.is --agree-tos --no-eff-email --force-renewal -d beta.stream.resonate.coop
-
+      - '${POSTGRES_TEST_LOCAL_MACHINE_PORT}:5432'
   nginx:
     restart: always
     container_name: resonate-nginx
