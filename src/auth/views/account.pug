@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content 
+  h1 Hi #{user.displayName}
+  form(action=`/account`, method="post", autocomplete="off")
+    input(type="email", name="email", value=`${user.email}`, placeholder="Enter your email")
+    input(type="password", name="password", placeholder="and password") 
+    button(type="submit") 
+      text To-do: update your email

@@ -1,0 +1,66 @@
+body {
+  background: white;
+  font-size: 18px;
+  font-family: Graphik, -apple-system, BlinkMacSystemFont, "avenir next", avenir, helvetica, "helvetica neue", ubuntu, roboto, noto, "segoe ui", arial, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: black;
+  font-weight: bold;
+}
+
+.content {
+  min-width: 300px;
+  max-width: 400px;
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+}
+
+.content form {
+  display: flex;
+  flex-direction: column;
+
+}
+
+form input {
+  font-size: 1rem;
+  padding: 1rem;
+  margin: .25rem;
+  background-color: black;
+  border: 1px solid;
+  color: white;
+}
+
+form button {
+  background-color: white;
+  border: 1px solid black;
+  font-size: 1rem;
+  margin: .25rem;
+  padding: 1rem;
+  color: black;
+  cursor: pointer;
+}
+
+.scopes {
+  background: #efefef;
+  padding: 1rem;
+}
+
+.scopes>li {
+  list-style: none;
+}
+
+#footer {
+  text-align: center;
+  font-size: .75rem;
+}
