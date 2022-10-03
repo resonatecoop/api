@@ -25,6 +25,7 @@ const koaCashConfig = require('./config/cache')
 const errorConfig = require('./config/error')
 const compressConfig = require('./config/compression')
 const sessionConfig = require('./config/session')
+const corsConfig = require('./config/cors')
 
 /**
  * Koa apps
@@ -44,19 +45,8 @@ const app = new Koa({
   proxy: true
 })
 
-const origins = [
-  'https://id.resonate.localhost',
-  'https://id.resonate.ninja',
-  'https://id.resonate.coop',
-  'https://beta.stream.resonate.coop',
-  'https://beta.stream.resonate.localhost',
-  'https://beta.stream.resonate.localhost:8080',
-  'https://beta.stream.resonate.ninja',
-  'http://localhost:8080',
-  'https://localhost:8080'
-]
-
 app
+  .use(cors(corsConfig))
   .use(error(errorConfig()))
   .use(logger())
   .use(ratelimit({
@@ -88,13 +78,6 @@ app
   .use(koaSwagger(swaggerConfig())) // swagger-ui at /docs
   .use(koaCash(koaCashConfig()))
   .use(etag()) // required for koa-cash to propertly set 304
-  .use(cors({
-    origin: async (req) => {
-      if (req.header.origin && origins.includes(req.header.origin)) return req.header.origin
-    },
-    credentials: true,
-    headers: ['Content-Type', 'Authorization']
-  }))
 
 app.use(apiRouter.routes())
 

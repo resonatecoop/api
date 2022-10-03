@@ -10,6 +10,7 @@ module.exports = {
       response_types: ['code'],
       redirect_uris: ['http://localhost:8080'],
       application_name: 'Test',
+      meta_data: { 'allowed-cors-origins': ['http://localhost:8080'] },
       application_url: 'http://test.test',
       created_at: faker.date.past(1),
       updated_at: faker.date.past(1)

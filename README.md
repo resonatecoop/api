@@ -28,6 +28,16 @@ Seed the data
 yarn docker:seed:all
 ```
 
+## Clients
+
+This API is an API, and as such, it needs clients to be particularly useful!
+
+To register a client, you can simply add one to the database. Check out the [client-seeder](src/db/seeders/clients-seeder.js) for what that could look like. For testing purposes you want to take particular note of the `meta_data.allowed-cors-origins` and `redirect_uris`. Note that if you are building a browser client and don't match the same origin as in the `allowed-cors-origins` your requests will fail!
+
+If you're just looking to get started with the API to build your own client, you can use the client in [client-seeder](src/db/seeders/clients-seeder.js).
+
+> Note: we should write a thorough guide for that!
+
 ## Docs
 
 Swagger generates docs, you can see them at: 

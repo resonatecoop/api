@@ -47,6 +47,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'application_url'
     },
+    metaData: {
+      type: DataTypes.JSONB
+    },
     updatedAt: {
       field: 'updated_at',
       allowNull: false,
@@ -63,6 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
+    underscore: true,
     paranoid: true,
     modelName: 'Client',
     tableName: 'clients'
