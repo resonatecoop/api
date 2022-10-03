@@ -52,7 +52,7 @@
     "dotenv-safe": "^8.2.0",
     "email-templates": "^8.0.7",
     "fast-safe-stringify": "^2.0.7",
-    "file-type": "^14.1.4",
+    "file-type": "^16.5.4",
     "fluent-ffmpeg": "^2.1.2",
     "grant-koa": "^5.4.8",
     "gravatar": "^1.8.0",
