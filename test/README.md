@@ -22,8 +22,12 @@ If this is the first time you have started this test container, you will need to
 ```sh
 docker:seed:all:test
 ```
-
 * Note: You might need to shutdown then restart the Docker test container after seeding the test data.
+ 
+To stop the Docker test container.
+```sh
+yarn docker:compose:test:down
+```
 
 Once the test Docker container is seeded and up, you can run tests.
 

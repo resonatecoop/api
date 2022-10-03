@@ -46,10 +46,13 @@ services:
       - ./data/pgsql-test:/var/lib/postgresql/data
       - ./data/pgsql-test-backups:/backups
     container_name: resonate-pgsql-test
+    # networks:
+    #   api-network:
+    #     aliases:
+    #       - pgsql-test
     networks:
-      api-network:
-        aliases:
-          - pgsql-test
+      - api-network
+      # - redis-network
     ports:
       - '${POSTGRES_TEST_LOCAL_MACHINE_PORT}:5432'
   nginx:
