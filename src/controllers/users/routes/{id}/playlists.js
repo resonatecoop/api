@@ -1,6 +1,5 @@
-const { User, TrackGroup, File } = require('../../../../db/models')
+const { User, Playlist, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
-const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
 const ms = require('ms')
 
@@ -25,25 +24,16 @@ module.exports = function () {
     try {
       const { limit = 100, page = 1 } = ctx.request.query
 
-      const { rows: result, count } = await TrackGroup.findAndCountAll({
+      const { rows: result, count } = await Playlist.findAndCountAll({
         limit,
         offset: page > 1 ? (page - 1) * limit : 0,
         where: {
           private: false,
-          release_date: {
-            [Op.or]: {
-              [Op.lte]: new Date(),
-              [Op.eq]: null
-            }
-          },
-          creator_id: ctx.params.id,
-          type: 'playlist'
+          creator_id: ctx.params.id
         },
         attributes: [
           'id',
-          'creator_id',
-          'slug',
-          'release_date',
+          'creatorId',
           'cover',
           'title',
           'about'
@@ -84,19 +74,6 @@ module.exports = function () {
       ctx.body = {
         data: result.map((item) => {
           const o = Object.assign({}, item.dataValues)
-
-          const slugTitle = item.get('slug')
-
-          if (!slugTitle) {
-            item.slug = slug(o.title)
-            item.save()
-          }
-
-          o.slug = item.slug
-
-          o.uri = `https://${process.env.API_DOMAIN}/v3/trackgroups/${item.id}`
-
-          o.type = 'playlist'
 
           o.tags = item.get('tags')
 

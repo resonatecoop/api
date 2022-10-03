@@ -112,44 +112,18 @@ module.exports = function () {
 
       ctx.body = {
         data: {
-          about: data.about,
+          ...data,
           cover: coverSrc(data.cover, !data.cover_metadata ? '600' : '1500', ext, !data.cover_metadata),
           cover_metadata: {
             id: data.cover
           },
-          creatorId: data.creatorId,
-          display_artist: data.display_artist,
-          user: {
-            name: data.userGroup.displayName,
-            id: data.userGroup.id
-          },
-          download: data.download,
-          id: data.id,
           items: data.items.map((item) => {
-            // const { nickname } = Object.fromEntries(Object.entries(item.track.meta)
-            //   .map(([key, value]) => {
-            //     const metaKey = value.meta_key
-            //     let metaValue = value.meta_value
-
-            //     if (!isNaN(Number(metaValue))) {
-            //       metaValue = Number(metaValue)
-            //     }
-
-            //     return [metaKey, metaValue]
-            //   }))
-
             const fallback = !item.track.cover_art ? false : !item.track.cover_metadata
 
             return {
               index: item.index,
               track: {
-                id: item.track.id,
-                title: item.track.title,
-                status: item.track.status,
-                album: item.track.album,
-                duration: item.track.duration,
-                artistId: item.track.creatorId,
-                artist: item.track.artist,
+                ...item.track,
                 cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
                 images: variants.reduce((o, key) => {
                   const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
@@ -181,13 +155,9 @@ module.exports = function () {
               }
             )
           }, {}),
-          peformers: data.peformers,
           private: data.private,
-          release_date: data.release_date,
-          slug: data.slug,
           tags: data.tags,
-          title: data.title,
-          type: data.type
+          title: data.title
         },
         status: 'ok'
       }

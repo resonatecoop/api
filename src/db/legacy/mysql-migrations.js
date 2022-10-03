@@ -347,7 +347,6 @@ const migratePlaylistItems = async (client, id) => {
     AND tg.type = 'playlist'
     `, async function (error, results, fields) {
       if (error) reject(error)
-      console.log('result', results.length)
       try {
         await PlaylistItem.bulkCreate(results
           // TODO: Some tracks' legacy artists don't exist in the user-api database because

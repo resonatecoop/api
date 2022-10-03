@@ -83,6 +83,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Playlist.associate = function (models) {
+    Playlist.hasMany(models.PlaylistItem, { foreignKey: 'playlistId', as: 'items' })
     Playlist.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'cover', foreignKey: 'id' })
     Playlist.hasOne(models.User, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })
   }
