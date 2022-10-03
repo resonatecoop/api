@@ -14,7 +14,7 @@ module.exports = {
       application_url: 'http://test.test',
       created_at: faker.date.past(1),
       updated_at: faker.date.past(1)
-    }])
+    }], {}, { meta_data: { type: new Sequelize.JSON() } })
   },
 
   down: (queryInterface, Sequelize) => {
