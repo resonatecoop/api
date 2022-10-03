@@ -16,6 +16,7 @@
     "docker:seed:all": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders",
     "docker:seed:undo:all": "NODE_ENV=development docker exec -it resonate-api npx sequelize db:seed:undo:all --config src/config/databases.js --seeders-path src/db/seeders",
     "docker:compose:test:up": "docker compose -f docker-compose.test.yml up",
+    "docker:compose:test:down": "docker compose -f docker-compose.test.yml down",
     "migrate:test": "NODE_ENV=test sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:workers:test": "NODE_ENV=test docker exec -it resonate-api node src/jobs/queue-worker.js run",
     "docker:migrate:test": "NODE_ENV=test docker exec -it resonate-api npx sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
