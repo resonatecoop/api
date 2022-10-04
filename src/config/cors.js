@@ -12,7 +12,5 @@ module.exports = {
     if (hasClientsWithOrigin.length > 0) {
       return req.header.origin
     }
-  },
-  credentials: true,
-  headers: ['Content-Type', 'Authorization']
+  }
 }

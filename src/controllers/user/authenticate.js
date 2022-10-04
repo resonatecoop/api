@@ -16,7 +16,6 @@ const allowlist = [
 const adapter = new RedisAdapter('AccessToken')
 
 const checkForAuthentication = async (ctx, next) => {
-  console.log('checking for authentication')
   if (ctx.get('Authorization').startsWith('Bearer ')) {
     // bearer auth
     ctx.accessToken = ctx.get('Authorization').slice(7, ctx.get('Authorization').length).trimLeft()
@@ -30,10 +29,8 @@ const checkForAuthentication = async (ctx, next) => {
     ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)
   } else {
     if (allowlist.includes(ctx.path)) return
-    console.log('has access token?', ctx.accessToken)
     if (!ctx.accessToken) {
       ctx.status = 401
-      console.log('throw')
       ctx.throw(401, 'Missing required access token')
     }
 
@@ -42,7 +39,6 @@ const checkForAuthentication = async (ctx, next) => {
       // const adapter = new RedisAdapter('AccessToken')
       const session = await adapter.find(ctx.accessToken)
       if (session.accountId) {
-        console.log('session', session.accountId)
         const user = await User.findOne({
           where: {
             id: session.accountId
