@@ -24,44 +24,42 @@ const checkForAuthentication = async (ctx, next) => {
     ctx.accessToken = ctx.session.grant.response.access_token
   }
 
-  if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
-    // 302
-    ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)
-  } else {
-    if (allowlist.includes(ctx.path)) return
-    if (!ctx.accessToken) {
-      ctx.status = 401
-      ctx.throw(401, 'Missing required access token')
-    }
+  if (allowlist.includes(ctx.path)) return
+  if (!ctx.accessToken) {
+    ctx.status = 401
+    ctx.throw(401, 'Missing required access token')
+  }
 
-    try {
-      // let response
-      // const adapter = new RedisAdapter('AccessToken')
-      const session = await adapter.find(ctx.accessToken)
-      if (session.accountId) {
-        const user = await User.findOne({
-          where: {
-            id: session.accountId
-          },
-          raw: true
-        })
-        if (user) {
-          ctx.profile = user
-        } else {
-          ctx.status = 401
-          ctx.throw(ctx.status, 'User not found')
-        }
-      }
-    } catch (err) {
-      console.error(err)
-      let message = err.message
-      if (err.response) {
-        // handle token expiration
+  try {
+    // let response
+    // const adapter = new RedisAdapter('AccessToken')
+    const session = await adapter.find(ctx.accessToken)
+    if (session.accountId) {
+      const user = await User.findOne({
+        where: {
+          id: session.accountId
+        },
+        raw: true
+      })
+      if (user) {
+        ctx.profile = user
+      } else {
         ctx.status = 401
-        message = err.response.body.error
+        ctx.throw(ctx.status, 'User not found')
       }
-      ctx.throw(ctx.status, message)
+    } else {
+      ctx.status = 401
+      ctx.throw(ctx.status, 'Session not found')
     }
+  } catch (err) {
+    console.error(err)
+    let message = err.message
+    if (err.response) {
+      // handle token expiration
+      ctx.status = 401
+      message = err.response.body.error
+    }
+    ctx.throw(ctx.status, message)
   }
 }
 
