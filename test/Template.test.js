@@ -1,8 +1,14 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
+
+//  EDIT THIS TO SUIT THE REQUIREMENTS OF THE TEST/S YOU WRITE
 const { request, expect } = require('./testConfig') // change this to require('../testConfig') after you copy this template
 
 describe('TEMPLATE endpoint test', () => {
+  // If you are writing tests for endpoints that require authentication,
+  //    uncomment the next line. Otherwise you can remove these three lines.
+  // require('../MockAccessToken.js')
+
   let response = null
 
   it('should do something', async () => {
