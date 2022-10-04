@@ -3,20 +3,23 @@
 // endpoints access token
 //    probably need the supertest persist whatever thing
 
-const { request, expect, testTrackGroupId } = require('../testConfig')
+const { request, expect, testTrackGroupId, testAccessToken } = require('../testConfig')
 
 describe('Admin.ts/trackgroups endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
-  it('should handle no authentication', async () => {
+  it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/admin/trackgroups/')
 
     expect(response.status).to.eql(401)
   })
 
   it('should get all trackgroups', async () => {
-    response = await request.get('/user/admin/trackgroups/')
+    response = await request.get('/user/admin/trackgroups/').set('Authorization', `Bearer ${testAccessToken}`)
 
+    console.log('all trackgroups RESPONSE: ', response.text)
     expect(response.status).to.eql(200)
 
     // const attributes = response.body
@@ -35,8 +38,9 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should get trackgroup by id', async () => {
-    response = await request.get(`/user/admin/trackgroups/${testTrackGroupId}`)
+    response = await request.get(`/user/admin/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
+    console.log('trackgroup by id RESPONSE: ', response.text)
     expect(response.status).to.eql(200)
 
     // const attributes = response.body
@@ -55,8 +59,9 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should update a trackgroup by id', async () => {
-    response = await request.put(`/user/admin/trackgroups/${testTrackGroupId}`)
+    response = await request.put(`/user/admin/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
+    console.log('update trackgroup by RESPONSE: ', response.text)
     // id: string
 
     // this should be in the body

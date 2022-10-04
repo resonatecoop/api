@@ -9,8 +9,8 @@ const persistedRequest = require('supertest').agent(baseURL)
 
 const expect = require('chai').expect
 
-// test ids come from the yarn docker:seed:all command you should have already
-//    run as part of the api setup
+const TestRedisAdapter = require('../src/auth/redis-adapter')
+
 const testUserId = '17203153-e2b0-457f-929d-5abe4e322ea1'
 const testTrackGroupId = 'c91bf101-2d3d-4181-8010-627ecce476de'
 const testTagId = 'asdf'
@@ -18,7 +18,7 @@ const testLabelId = 'asdf'
 const testArtistId = '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6'
 const testTrackId = 'e8fc6dd4-f6ed-4b2b-be0f-efe9f32c3def'
 
-const testAccessToken = 'asdf'
+const testAccessToken = 'test-!@#$-test-%^&*'
 
 module.exports = {
   baseURL,
@@ -31,5 +31,6 @@ module.exports = {
   testLabelId,
   testArtistId,
   testTrackId,
-  testAccessToken
+  testAccessToken,
+  TestRedisAdapter
 }
