@@ -9,16 +9,18 @@ const persistedRequest = require('supertest').agent(baseURL)
 
 const expect = require('chai').expect
 
+//  FIXME: have to switch REDIS_HOST to 127.0.0.1 and comment out REDIS_PASSWORD to get tests to run.
 const TestRedisAdapter = require('../src/auth/redis-adapter')
 
 const testUserId = '17203153-e2b0-457f-929d-5abe4e322ea1'
-const testTrackGroupId = 'c91bf101-2d3d-4181-8010-627ecce476de'
+const testTrackGroupId = '84322e4f-0247-427f-8bed-e7617c3df5ad'
 const testTagId = 'asdf'
 const testLabelId = 'asdf'
 const testArtistId = '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6'
-const testTrackId = 'e8fc6dd4-f6ed-4b2b-be0f-efe9f32c3def'
+const testTrackId = 'b6d160d1-be16-48a4-8c4f-0c0574c4c6aa'
 
 const testAccessToken = 'test-!@#$-test-%^&*'
+const testInvalidAccessToken = 'invalid-invalid-invalid-invalid'
 
 module.exports = {
   baseURL,
@@ -32,5 +34,6 @@ module.exports = {
   testArtistId,
   testTrackId,
   testAccessToken,
-  TestRedisAdapter
+  TestRedisAdapter,
+  testInvalidAccessToken
 }

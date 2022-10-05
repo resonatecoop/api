@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect, testTrackId } = require('../testConfig')
+
+const { request, expect, testTrackId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('Admin.ts/tracks endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
   it('should handle no authentication', async () => {
@@ -10,9 +13,16 @@ describe('Admin.ts/tracks endpoint test', () => {
 
     expect(response.status).to.eql(401)
   })
-  it('should get all tracks', async () => {
-    response = await request.get('/user/admin/tracks/')
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/admin/trackgroups/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
+    expect(response.status).to.eql(401)
+  })
+
+  it('should get all tracks', async () => {
+    response = await request.get('/user/admin/tracks/').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('all tracks RESPONSE: ', response.text)
     expect(response.status).to.eql(200)
 
     // const attributes = response.body
@@ -31,7 +41,9 @@ describe('Admin.ts/tracks endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should get track by id', async () => {
-    response = await request.get(`/user/admin/tracks/${testTrackId}`)
+    response = await request.get(`/user/admin/tracks/${testTrackId}`).set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('track by id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -51,7 +63,9 @@ describe('Admin.ts/tracks endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should update a track by id', async () => {
-    response = await request.put(`/user/admin/tracks/${testTrackId}`)
+    response = await request.put(`/user/admin/tracks/${testTrackId}`).set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('update track by id RESPONSE: ', response.text)
 
     // check Admin.ts for interface / type for payload
 

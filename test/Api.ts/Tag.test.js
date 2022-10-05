@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 const { request, expect, testTagId } = require('../testConfig')
 
-describe('Api.ts/tag endpoint test', () => {
+describe.skip('Api.ts/tag endpoint test', () => {
   let response = null
 
   it('should get a tag by id', async () => {

@@ -9,16 +9,21 @@ These tests reference the [beam](https://github.com/resonatecoop/beam/tree/main/
 
 The api(v4) tests live in the `/api/test` directory. In this directory there are three subfolders (`Admin.ts`, `Api.ts`, and `User.ts`), each of which corresponds to a file in the [beam](https://github.com/resonatecoop/beam/tree/main/src/services) repository.
 
-## How the test data was made
-You can read an overview of how the test data was made [here](./HowTheTestDataWasMade.md). 
+## Dev Notes
+This section changes over time, as issues arise and are dealt with.
+* It looks like the protected endpoints will accept any value for an accessToken, and that the only check against this token is whether or not it is provided.
+* Many of the endpoints return a 404 code, when perhaps a 400 is more appropriate.
+* We are skipping tests for `Labels`, `Tags`, and `Search` because of upstream data migration issues and incomplete funcitonality to be resolved at some point soon.
 
+## How the test data was made
+You should never need to create test data. However, you can read an overview of how the test data was made [here](./HowTheTestDataWasMade.md). 
 
 ## Setup and running
 First, start up the Docker test container.
 ```sh
 yarn docker:compose:test:up
 ```
-If this is the first time you have started this test container, you will need to seed the test database. You don't have to do this every time you start the test container.
+If this is the first time you have started this test container, you will need to seed the test database. You should only do this once. You don't have to do this every time you start the test container.
 ```sh
 docker:seed:all:test
 ```
@@ -29,7 +34,9 @@ To stop the Docker test container.
 yarn docker:compose:test:down
 ```
 
-Once the test Docker container is seeded and up, you can run tests.
+Once the test Docker container is seeded and up, you can run tests. Please note that the tests are designed to run in `watch` mode. You can change this in the `.mocharc.js` file, but please be careful so that you don't break anything.
+
+Open a new terminal window. It is often helpful to open it next to the terminal window which displays the output of the Docker test container. 
 
 Run the tests for endpoints in Api.ts file
 ```sh
@@ -46,35 +53,34 @@ Run the tests for endpoints in User.ts file
 yarn test:user
 ```
 
-You can run a test in `watch` mode, from the command line. This is helpful while you work on a test, or work on the functionality being tested.
-```sh
-mocha -w someFilePath/someTestFileName
-```
+These tests run under Mocha in watch mode. If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help focus on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
 
 You can create more test script commands in the api (v4) repo's `package.json` file, if you need something else.
 
-## Notes
+## Configuration and how to make more tests
+There is a file named `.mocharc.js` located in the project root. This file contains configuration settings. If you change it, you might break things.
+
 There is a file named `Template.test.js` in the `test` folder. You can copy this file to start writing new tests more quickly.
 
 There is a file named `testConfig.js` in the `test` folder. It has vars and modules that are used in test files. It's basically used as an include header at the beginning of each test file. If you create new tests, this file will help you go faster.
 
 In `testConfig.js` there is a const `baseURL`. This is set to `http://localhost:4000/api/v3` so that you can run the tests against a local Dockerized resonate api (v4) container instance. If you need to run the tests against a different instance of the API, you can comment this const out and replace it with a url of your choosing, ie `const baseURL = 'http://awesome.sauce.com/api/v2'` or similar.
 
-These tests run under Mocha as test runner. If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
-
-This testing suite uses Mocha, and Mocha will be installed as a dev dependency if / when you run `yarn` at the repo root.
-
-This testing suite uses some assertions from Chai, and Chai will be installed as a dev dependency if / when you run `yarn` at the repo root.
+There is a file named `MockAccessToken.js` in the `test` folder. This file can help you test endpoints that require authentication. It's rather simple. Refer to the file for more infos.
 
 ## The Tests
 These are tests for api (v4). They are currently based on endpoints revealed [in this document](https://github.com/resonatecoop/beam/tree/main/src/services).
 
 Still not clear on how well the endpoints map to the underlying data.
 
-For this iteration of these tests, we capture the endpoints' output and return that output to the tests. This is a 'what does it do?' and not a 'what should it do?' approach. Later iterations of test development should focus on testing actual required functionality and valid test data.
+For this iteration of these tests, we capture the endpoints' output and return that output to the tests. This tests answer the questions 'what do we have?' and 'what does it do?' and not 'what should it do?'. Later iterations of test development should focus on testing actual required functionality and valid test data.
 
 ### Api.ts tests
 
+* Currently we are skipping `Labels` tests and `Tags` tests. This is due to issues upstream with legacy data migration.
+* Currently we are skipping `Search ` tests. This can continue once search functionality is implemented. This implementation should occur after initial test development is complete.
+
+  
 Run the tests for endpoints in Api.ts file
 ```sh
 yarn test:api
@@ -112,8 +118,6 @@ Run the tests for endpoints in Admin.ts file
 yarn test:admin
 ```
 
-These tests are incomplete. Main thing to do next is implement a way to get access token from test target.
-
 Endpoints in [Admin.ts](https://github.com/resonatecoop/beam/blob/main/src/services/api/Admin.ts)
 
 * users
@@ -133,8 +137,6 @@ Run the tests for endpoints in User.ts file
 ```sh
 yarn test:user
 ```
-
-These tests are incomplete. Main thing to do next is implement a way to get access token from test target.
 
 Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/services/api/User.ts)
 
@@ -172,17 +174,11 @@ Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/servic
 * products
   * GET /user/products
 
-As work on the new API continues, you might need to edit the existing tests, as well as create new tests. You can use `Template.test.js` and `testConfig.js`, located in the `test` folder, to get started with new tests.
+As work on the new API continues, you might need to edit the existing tests, as well as create new tests. You can use `Template.test.js`, `testConfig.js` and `MockAccessToken`, located in the `test` folder, to get started with new tests.
 
 ## To Do
-* Find a simple, straightforward way to get access tokens.
-  * These are needed in the Admin.ts and User.ts tests.
-  * Most straightforward solution would be to copy the login process and capture the token in the response.
-* Look over api/src/db/models/* to get a better idea of what the data/datatypes are.
-* It might be good to run tests from within Docker, using `docker exec -it resonate-api mocha <some.test.js>`? 
-  * Not sure if this helps anything.
-* Configure Mocha 
-  * error log naming / location
-  * anything else useful
-    * --reporter type?
+* Finish `Labels` and `Tags` testing once upstream data issues are resolved.
+* Implement search endpoint.
+* Resume test development for endpoints that currently have no data (Labels, Tags, etc.).
+* Look over api/src/db/models/ files to get a better idea of what the data/datatypes are.
 * Better / more TypeScript integration

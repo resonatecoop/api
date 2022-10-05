@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-// endpoints access token
-//    probably need the supertest persist whatever thing
 
-const { request, expect, testTrackGroupId, testAccessToken } = require('../testConfig')
+const { request, expect, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('Admin.ts/trackgroups endpoint test', () => {
   require('../MockAccessToken')
@@ -12,6 +10,11 @@ describe('Admin.ts/trackgroups endpoint test', () => {
 
   it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/admin/trackgroups/')
+
+    expect(response.status).to.eql(401)
+  })
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/admin/trackgroups/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
     expect(response.status).to.eql(401)
   })

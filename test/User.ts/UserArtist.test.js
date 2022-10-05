@@ -1,14 +1,28 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-//  needs auth token
 
-const { request, expect, testArtistId } = require('../testConfig')
+const { request, expect, testArtistId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('User.ts/user artist endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
-  it('should get user artists', async () => {
+  it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/artists')
+
+    expect(response.status).to.eql(401)
+  })
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/artists').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+
+    expect(response.status).to.eql(401)
+  })
+
+  it('should get user artists', async () => {
+    response = await request.get('/user/artists').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('all user artists RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -28,7 +42,9 @@ describe('User.ts/user artist endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should user artists by artist id', async () => {
-    response = await request.get(`/user/artists/${testArtistId}`)
+    response = await request.get(`/user/artists/${testArtistId}`).set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('user artists by artist id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -48,7 +64,9 @@ describe('User.ts/user artist endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user artists', async () => {
-    response = await request.post('/user/artists')
+    response = await request.post('/user/artists').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('post to user artists RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
