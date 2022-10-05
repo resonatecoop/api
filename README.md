@@ -28,6 +28,7 @@ Seed the data
 yarn docker:seed:all
 ```
 
+Now go to http://localhost:4000 and you should see the swagger docs!
 ## Clients
 
 This API is an API, and as such, it needs clients to be particularly useful!
