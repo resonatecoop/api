@@ -1,5 +1,5 @@
 const { Credit, User } = require('../../../../db/models')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 

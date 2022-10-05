@@ -1,5 +1,5 @@
 const { UserGroup, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {

@@ -1,5 +1,5 @@
 const { Track, Resonate: sequelize } = require('../../../../../db/models')
-const authenticate = require('../../../authenticate')
+const { authenticate } = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {

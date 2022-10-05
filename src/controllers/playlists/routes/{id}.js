@@ -2,10 +2,11 @@ const { User, Playlist, PlaylistItem, Track, File } = require('../../../db/model
 const { Op } = require('sequelize')
 const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
+const { loadProfileIntoContext } = require('../../user/authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
+    GET: [loadProfileIntoContext, GET],
     parameters: [
       {
         name: 'id',
@@ -22,8 +23,17 @@ module.exports = function () {
     if (await ctx.cashed(ms('30s'))) return
 
     const where = {
-      id: ctx.params.id,
-      private: false
+      id: ctx.params.id
+    }
+
+    if (ctx.profile.id) {
+      where[Op.or] = [{
+        private: false
+      }, {
+        creatorId: ctx.profile.id
+      }]
+    } else {
+      where.private = false
     }
 
     try {

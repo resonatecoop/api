@@ -1,7 +1,7 @@
 const { UserGroup, User, Role, OauthUser, Credit /* Resonate: sequelize */ } = require('../../../../db/models')
 const profileImage = require('../../../../util/profile-image')
 const gravatar = require('gravatar')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {

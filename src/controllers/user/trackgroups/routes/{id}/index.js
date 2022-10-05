@@ -1,7 +1,7 @@
 const { User, TrackGroup, TrackGroupItem, Track, File } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
-const authenticate = require('../../../authenticate')
+const { authenticate } = require('../../../authenticate')
 
 const {
   validateParams
