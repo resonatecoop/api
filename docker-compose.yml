@@ -35,9 +35,9 @@ services:
     volumes:
       - ~/.ssh:/root/.ssh
       - ./:/var/www/api
-      - ./data/media/incoming:/data/media/incoming
-      - ./data/media/audio:/data/media/audio
-      - ./data/media/images:/data/media/images
+      - ${MEDIA_LOCATION}incoming:/data/media/incoming
+      - ${MEDIA_LOCATION}audio:/data/media/audio
+      - ${MEDIA_LOCATION}images:/data/media/images
 
   pgsql:
     image: postgres:14-alpine

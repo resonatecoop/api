@@ -104,14 +104,6 @@ module.exports = function () {
                 }
               },
               include: [
-                // {
-                //   model: UserMeta,
-                //   attributes: ['meta_key', 'meta_value'],
-                //   where: {
-                //     meta_key: 'nickname'
-                //   },
-                //   as: 'meta'
-                // },
                 {
                   model: File,
                   required: false,

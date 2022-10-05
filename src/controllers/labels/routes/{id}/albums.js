@@ -1,6 +1,7 @@
-const { Resonate: sequelize, Track } = require('../../../../db/models')
+const { TrackGroup, Track, TrackGroupItem } = require('../../../../db/models')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
+const { Op } = require('sequelize')
 
 module.exports = function (trackService) {
   const operations = {
@@ -20,78 +21,52 @@ module.exports = function (trackService) {
   async function GET (ctx, next) {
     if (await ctx.cashed()) return
 
-    const { limit = 5, page = 1, various = false } = ctx.request.query
+    const { limit = 5, page = 1 } = ctx.request.query
     const offset = page > 1 ? (page - 1) * limit : 0
 
     try {
-      const [countResult] = await sequelize.query(`
-        SELECT count(*) as count FROM(
-          SELECT distinct (track.track_album)
-          FROM tracks as track
-          WHERE track.uid IN (
-            SELECT user_id
-            FROM rsntr_usermeta
-            WHERE meta_key = 'mylabel'
-            AND meta_value = :labelId
-          )
-          AND track.status IN (0, 2, 3)
-          AND track.track_album != ''
-          AND track.track_cover_art != ''
-          GROUP BY track.track_album
-          ${various ? 'HAVING count(distinct track.uid) > 1' : ''}
-        ) as count
-      `, {
-        type: sequelize.QueryTypes.SELECT,
-        replacements: {
-          labelId: ctx.params.id
-        }
-      })
-
-      const { count } = countResult
-
-      const result = await sequelize.query(`
-        SELECT distinct(track.track_name), track.uid as creator_id, track.tid, track.track_album, track.track_duration, track.track_cover_art as cover_art, track.status, track.uid, um.meta_value as artist, track.track_number, cover.id as cover
-        FROM tracks as track
-        INNER JOIN rsntr_usermeta AS um ON (track.uid = um.user_id AND um.meta_key = 'nickname')
-        LEFT OUTER JOIN files AS cover ON (track.track_cover_art = cover.id)
-        INNER JOIN (
-          SELECT distinct (t2.track_album)
-          FROM tracks as t2
-          WHERE t2.uid IN (
-            SELECT user_id
-            FROM rsntr_usermeta
-            WHERE meta_key = 'mylabel'
-            AND meta_value = :labelId
-          )
-          AND t2.status IN (0, 2, 3)
-          AND t2.track_album != ''
-          AND t2.track_cover_art != ''
-          GROUP BY t2.track_album
-          ${various ? 'HAVING count(distinct t2.uid) > 1' : ''}
-          ORDER BY t2.track_album
-          LIMIT :limit
-          OFFSET 0
-        ) as track2 ON track2.track_album = track.track_album
-        WHERE track.uid IN (
-          SELECT user_id
-          FROM rsntr_usermeta
-          WHERE meta_key = 'mylabel'
-          AND meta_value = :labelId
-        )
-        AND track.status IN (0, 2, 3)
-        AND track.track_album != ''
-        AND track.track_cover_art != ''
-        ORDER BY track.track_album, track.track_number, track.tid
-        LIMIT 50
-      `, {
-        type: sequelize.QueryTypes.SELECT,
-        replacements: {
-          labelId: ctx.params.id,
-          limit,
-          offset
+      const { count, rows: result } = TrackGroup.findAndCountAll({
+        limit,
+        offset,
+        attributes: [
+          'about',
+          'cover',
+          'creatorId',
+          'displayName',
+          'id',
+          'slug',
+          'tags',
+          'title',
+          'type'
+        ],
+        where: {
+          private: false,
+          enabled: true,
+          release_date: {
+            [Op.or]: {
+              [Op.lte]: new Date(),
+              [Op.eq]: null
+            }
+          }
         },
-        mapToModel: true,
-        model: Track
+        include: [{
+          model: TrackGroupItem,
+          attributes: ['id', 'index'],
+          as: 'items',
+          include: [{
+            model: Track,
+            attributes: ['id', 'creatorId', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
+            as: 'track',
+            where: {
+              status: {
+                [Op.in]: [0, 2, 3]
+              }
+            }
+
+          }
+          ]
+        }
+        ]
       })
 
       if (!result.length) {

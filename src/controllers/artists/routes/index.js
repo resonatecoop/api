@@ -37,50 +37,6 @@ module.exports = function () {
           }
         ]
       })
-      // const orderByColumn = {
-      //   id: 'id',
-      //   name: 'umNickname.meta_value'
-      // }[orderBy]
-
-      // const [countResult] = await sequelize.query(`
-      //   SELECT count(distinct users.ID) as count
-      //   FROM rsntr_users as users
-      //   INNER JOIN tracks AS tracks ON users.ID = tracks.uid
-      //   INNER JOIN rsntr_usermeta AS umNickname ON ( umNickname.user_id = users.ID AND umNickname.meta_key = 'nickname')
-      //   INNER JOIN rsntr_usermeta AS umRole ON (
-      //     umRole.user_id = users.ID AND umRole.meta_key = 'role' AND umRole.meta_value in ('bands', 'member')
-      //   )
-      //   WHERE tracks.status IN (0, 2, 3)
-      //   AND tracks.track_album != ''
-      //   AND tracks.track_cover_art != ''
-      //   LIMIT 1
-      // `, {
-      //   type: sequelize.QueryTypes.SELECT
-      // })
-
-      // const result = await sequelize.query(`
-      //   SELECT distinct ID, umNickname.meta_value as artist
-      //   FROM rsntr_users as users
-      //   INNER JOIN tracks AS tracks ON users.ID = tracks.uid
-      //   INNER JOIN rsntr_usermeta AS umNickname ON ( umNickname.user_id = users.ID AND umNickname.meta_key = 'nickname')
-      //   INNER JOIN rsntr_usermeta AS umRole ON (
-      //     umRole.user_id = users.ID AND umRole.meta_key = 'role' AND umRole.meta_value IN ('bands', 'member')
-      //   )
-      //   WHERE tracks.status IN (0, 2, 3)
-      //   AND tracks.track_album != ''
-      //   AND tracks.track_cover_art != ''
-      //   ORDER BY ${orderByColumn} ${order}
-      //   LIMIT :limit
-      //   OFFSET :offset
-      // `, {
-      //   type: sequelize.QueryTypes.SELECT,
-      //   replacements: {
-      //     limit,
-      //     offset
-      //   },
-      //   mapToModel: true,
-      //   model: User
-      // })
 
       ctx.lastModified = new Date()
 

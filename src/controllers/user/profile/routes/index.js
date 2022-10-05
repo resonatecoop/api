@@ -57,7 +57,7 @@ module.exports = function () {
         registered,
         email,
         role,
-        credit,
+        credit: credit ?? { total: 0 },
         userGroups,
         gravatar: gravatar.url(email, { protocol: 'https' }),
         profiles: []

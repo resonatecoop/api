@@ -1,6 +1,5 @@
-const { UserGroup, Resonate: Sequelize, TrackGroup, File } = require('../../../db/models')
+const { User, Resonate: Sequelize, Playlist, File } = require('../../../db/models')
 const { Op } = require('sequelize')
-const slug = require('slug')
 const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
 
@@ -13,36 +12,20 @@ module.exports = function () {
     if (ctx.request.query.order !== 'random' && await ctx.cashed(ms('30s'))) return
 
     try {
-      const { type, limit = 90, page = 1, featured, order } = ctx.request.query
+      const { limit = 90, page = 1, featured, order } = ctx.request.query
 
       const query = {
         where: {
-          private: false,
-          enabled: true,
-          release_date: {
-            [Op.or]: {
-              [Op.lte]: new Date(),
-              [Op.eq]: null
-            }
-          },
-          type: {
-            [Op.or]: {
-              [Op.eq]: null,
-              [Op.notIn]: ['playlist', 'compilation'] // hide playlists and compilations
-            }
-          }
+          private: false
         },
         limit: limit,
         attributes: [
           'about',
           'cover',
           'creatorId',
-          'display_artist',
           'id',
-          'slug',
           'tags',
-          'title',
-          'type'
+          'title'
         ],
         include: [
           {
@@ -57,10 +40,10 @@ module.exports = function () {
             }
           },
           {
-            model: UserGroup,
+            model: User,
             required: false,
             attributes: ['id', 'displayName'],
-            as: 'userGroup'
+            as: 'creator'
 
           }
         ],
@@ -85,15 +68,11 @@ module.exports = function () {
         query.offset = (page - 1) * limit
       }
 
-      if (type) {
-        query.where.type = type
-      }
-
       if (featured) {
         query.where.featured = true
       }
 
-      const { rows: result, count } = await TrackGroup.findAndCountAll(query)
+      const { rows: result, count } = await Playlist.findAndCountAll(query)
 
       let ext = '.jpg'
 
@@ -106,17 +85,6 @@ module.exports = function () {
       ctx.body = {
         data: result.map((item) => {
           const o = Object.assign({}, item.dataValues)
-
-          const slugTitle = item.get('slug')
-
-          if (!slugTitle) {
-            item.slug = slug(o.title)
-            item.save()
-          }
-
-          o.slug = item.slug
-
-          o.uri = `${process.env.APP_HOST}/v3/trackgroups/${item.id}`
 
           o.tags = item.get('tags')
 
