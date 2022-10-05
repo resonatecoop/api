@@ -1,12 +1,28 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect } = require('../testConfig')
+
+const { request, expect, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('User.ts/products endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
-  it('should get user products', async () => {
+  it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/products')
+
+    expect(response.status).to.eql(401)
+  })
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/products').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+
+    expect(response.status).to.eql(401)
+  })
+
+  it('should get user products', async () => {
+    response = await request.get('/user/products').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('user products RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 

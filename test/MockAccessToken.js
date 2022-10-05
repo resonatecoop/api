@@ -4,7 +4,7 @@
 //    hopefully you get the idea behind it.
 // 'require' this in tests that need to pass accessToken-based authentication.
 //    In the test's primary 'describe' block, enter
-//      require('../BeforeAndAfter.js')
+//      require('../MockAccessToken.js')
 //      as the first line inside of the describe block
 //    Look at test/auth/AccessTokenExample.test.js for more infos
 
@@ -19,10 +19,7 @@ before('send access token to Redis', () => {
     accountId: testUserId
   })
 })
-// Remove a test access token from a Redis. Because we are thoughtful and clean up
-//    after ourselves.
+// Remove a test access token from a Redis.
 after('remove access token from Redis', () => {
   adapter.destroy(testAccessToken)
-  //  FIXME: should also remove / disconnect / destroy adapter
-  //      does this simply happen by itself when the test exits?
 })

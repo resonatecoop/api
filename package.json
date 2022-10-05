@@ -24,11 +24,10 @@
     "docker:seed:all:test": "NODE_ENV=test docker exec -it resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders/test",
     "docker:seed:undo:all:test": "NODE_ENV=test docker exec -it resonate-api npx sequelize db:seed:undo:all --config src/config/databases.js --seeders-path src/db/seeders/test",
     "lint": "standard",
-    "test": "mocha",
-    "test:watch": "mocha -w",
-    "test:api": "mocha test/Api.ts",
-    "test:admin": "mocha test/Admin.ts",
-    "test:user": "mocha test/User.ts"
+    "lint:fix": "standard --fix",
+    "test:api": "clear && docker exec -it resonate-api yarn mocha test/Api.ts",
+    "test:admin": "clear && docker exec -it resonate-api yarn mocha test/Admin.ts",
+    "test:user": "clear && docker exec -it resonate-api yarn mocha test/User.ts"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",

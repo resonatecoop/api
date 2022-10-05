@@ -1,12 +1,27 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect, testTrackId, testTrackGroupId } = require('../testConfig')
+const { request, expect, testTrackId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('User.ts/user tracks endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
+  it('should handle no authentication / accessToken', async () => {
+    response = await request.get('/user/tracks')
+
+    expect(response.status).to.eql(401)
+  })
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/tracks').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+
+    expect(response.status).to.eql(401)
+  })
+
   it('should post to user tracks', async () => {
-    response = await request.post('/user/tracks')
+    response = await request.post('/user/tracks').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('post to all user tracks RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -27,7 +42,9 @@ describe('User.ts/user tracks endpoint test', () => {
   })
   it('should upload a file based on track id', async () => {
     // FIXME: is put the right verb? should be post?
-    response = await request.put(`/user/tracks/${testTrackId}/file `)
+    response = await request.put(`/user/tracks/${testTrackId}/file `).set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('upload a file based on track id RESPONSE: ', response.text)
 
     expect(response.status).to.eql()
 
@@ -48,7 +65,9 @@ describe('User.ts/user tracks endpoint test', () => {
   })
   it('should upload a cover (image?) based on trackgroup id', async () => {
     // FIXME: is put the right verb? should be post?
-    response = await request.put(`/user/trackgroups/${testTrackGroupId}/cover`)
+    response = await request.put(`/user/trackgroups/${testTrackGroupId}/cover`).set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('upload a cover based on trackgroup id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 

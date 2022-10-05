@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-// How to use the MockAccessToken.js file≥
+// How to use the MockAccessToken.js file
 const { testAccessToken, testUserId } = require('../testConfig')
 
 describe('Access token example test', () => {

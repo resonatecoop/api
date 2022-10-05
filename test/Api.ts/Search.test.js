@@ -2,7 +2,7 @@
 /* eslint-env mocha */
 const { request, expect } = require('../testConfig')
 
-describe('Api.ts/search endpoint test', () => {
+describe.skip('Api.ts/search endpoint test', () => {
   let response = null
 
   it('should handle no provided search term/s', async () => {

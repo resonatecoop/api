@@ -1,12 +1,28 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect } = require('../testConfig')
+
+const { request, expect, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('User.ts/user plays endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
-  it('should post to user plays (all of them?)', async () => {
+  it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/plays')
+
+    expect(response.status).to.eql(401)
+  })
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/plays').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+
+    expect(response.status).to.eql(401)
+  })
+
+  it('should post to user plays (all of them?)', async () => {
+    response = await request.get('/user/plays').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('post to user plays RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -26,7 +42,9 @@ describe('User.ts/user plays endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user plays buy', async () => {
-    response = await request.post('/user/plays/buy')
+    response = await request.post('/user/plays/buy').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('post to user plays buy RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -46,7 +64,9 @@ describe('User.ts/user plays endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should post to user plays resolve (?)', async () => {
-    response = await request.get('/user/plays/resolve')
+    response = await request.get('/user/plays/resolve').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('post to user plays resolve RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 

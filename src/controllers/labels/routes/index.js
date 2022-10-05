@@ -1,7 +1,7 @@
 const { User, Resonate: sequelize } = require('../../../db/models')
-const resolveProfileImage = require('../../../util/profile-image')
-const map = require('awaity/map')
-const he = require('he')
+// const resolveProfileImage = require('../../../util/profile-image')
+// const map = require('awaity/map')
+// const he = require('he')
 
 module.exports = function () {
   const operations = {
@@ -21,7 +21,7 @@ module.exports = function () {
 
       const [countResult] = await sequelize.query(`
         SELECT count(distinct label.ID) as count
-        FROM rsntr_users AS label
+        FROM users AS label
         INNER JOIN rsntr_usermeta AS um ON (label.ID = um.user_id AND um.meta_key = 'nickname')
         INNER JOIN rsntr_usermeta AS um2 ON (
           um2.user_id = label.ID AND um2.meta_key = 'role' AND um2.meta_value in ('label-owner')
@@ -31,13 +31,13 @@ module.exports = function () {
           WHERE meta_key = 'mylabel'
           AND EXISTS(
             SELECT * from tracks as track
-            WHERE track.uid = user_id
+            WHERE track.id = user_id
             AND track.status IN(0, 2, 3)
             AND track.track_album != ''
-            AND track.track_cover_art != ''
+            AND track.track_cover_art IS NOT NULL
           )
         ) as a
-        ON a.meta_value = label.ID
+        ON a.meta_value = CAST(label.ID AS TEXT)
         LIMIT 1
       `, {
         type: sequelize.QueryTypes.SELECT
@@ -47,7 +47,7 @@ module.exports = function () {
 
       const result = await sequelize.query(`
         SELECT distinct label.ID, um.meta_value AS name
-        FROM rsntr_users AS label
+        FROM users AS label
         INNER JOIN rsntr_usermeta AS um ON (label.ID = um.user_id AND um.meta_key = 'nickname')
         INNER JOIN rsntr_usermeta AS um2 ON (
           um2.user_id = label.ID AND um2.meta_key = 'role' AND um2.meta_value in ('label-owner')
@@ -57,13 +57,13 @@ module.exports = function () {
           WHERE meta_key = 'mylabel'
           AND EXISTS(
             SELECT * from tracks as track
-            WHERE track.uid = user_id
+            WHERE track.id = user_id
             AND track.status IN(0, 2, 3)
             AND track.track_album != ''
-            AND track.track_cover_art != ''
+            AND track.track_cover_art IS NOT NULL
           )
         ) as a
-        ON a.meta_value = label.ID
+        ON a.meta_value = CAST(label.ID AS TEXT)
         ORDER BY ID DESC
         LIMIT :limit
         OFFSET :offset
@@ -78,12 +78,19 @@ module.exports = function () {
       })
 
       ctx.body = {
-        data: await map(result, async (item) => {
-          return {
-            name: he.decode(item.dataValues.name),
-            id: item.id,
-            images: await resolveProfileImage(item.id)
-          }
+        //  FIXME: ???
+        // data: await map(result, async (item) => {
+        //   return {
+        //     name: he.decode(item.dataValues.name),
+        //     id: item.id,
+        //     images: await resolveProfileImage(item.id)
+        //   }
+        // }),
+        // FIXME: copied this from src/controllers/artists/routes/index.js
+        data: result.map((item) => {
+          const o = Object.assign({}, item.dataValues)
+
+          return o
         }),
         count,
         pages: Math.ceil(count / limit)

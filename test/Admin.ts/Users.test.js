@@ -1,12 +1,28 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect } = require('../testConfig')
+
+const { request, expect, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 
 describe('Admin.ts/users endpoint test', () => {
+  require('../MockAccessToken')
+
   let response = null
 
-  it('should get users', async () => {
+  it('should handle no authentication', async () => {
     response = await request.get('/user/admin/users/')
+
+    expect(response.status).to.eql(401)
+  })
+  it('should handle an invalid access token', async () => {
+    response = await request.get('/user/admin/users/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+
+    expect(response.status).to.eql(401)
+  })
+
+  it('should get users', async () => {
+    response = await request.get('/user/admin/users/').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('all users RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -26,7 +42,9 @@ describe('Admin.ts/users endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   it('should get user by id', async () => {
-    response = await request.get('/user/admin/users/$testUserId}')
+    response = await request.get('/user/admin/users/$testUserId}').set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('user by id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
