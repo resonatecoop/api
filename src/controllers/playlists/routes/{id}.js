@@ -26,7 +26,7 @@ module.exports = function () {
       id: ctx.params.id
     }
 
-    if (ctx.profile.id) {
+    if (ctx.profile?.id) {
       where[Op.or] = [{
         private: false
       }, {
