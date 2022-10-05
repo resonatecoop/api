@@ -1,7 +1,7 @@
 const { Resonate: sequelize } = require('../../../../db/models')
 const numbro = require('numbro')
 const NodeCache = require('node-cache')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 const cache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 const sum = (a, b) => numbro(a).add(b).value()

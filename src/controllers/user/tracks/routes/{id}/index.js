@@ -2,7 +2,7 @@ const { UserMeta, Track, File } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 const { validate } = require('../../../../../schemas/tracks')
-const authenticate = require('../../../authenticate')
+const { authenticate } = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {

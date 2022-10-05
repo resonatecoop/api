@@ -1,6 +1,6 @@
 const { Track, Favorite, Resonate: sequelize } = require('../../../../db/models')
 const trackService = require('../../../tracks/services/trackService')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {

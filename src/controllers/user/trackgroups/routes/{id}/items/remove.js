@@ -1,6 +1,6 @@
 const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
-const authenticate = require('../../../../authenticate')
+const { authenticate } = require('../../../../authenticate')
 
 const {
   validateTrackgroupItems,

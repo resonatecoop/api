@@ -1,7 +1,7 @@
 
 const { TrackGroup } = require('../../../../../db/models')
 const { processFile } = require('../../../../../util/process-file')
-const authenticate = require('../../../authenticate')
+const { authenticate } = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {

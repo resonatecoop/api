@@ -1,6 +1,6 @@
 const { Playlist, PlaylistItem, Track, User } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
-const authenticate = require('../../../../authenticate')
+const { authenticate } = require('../../../../authenticate')
 
 module.exports = function () {
   const operations = {
