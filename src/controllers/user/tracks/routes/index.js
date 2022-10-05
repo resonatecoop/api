@@ -1,7 +1,7 @@
 const { Resonate: Sequelize, UserMeta, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 module.exports = function (trackService) {
   const operations = {

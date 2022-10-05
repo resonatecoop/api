@@ -1,5 +1,5 @@
 const { findAllPlayCounts } = require('../../../../scripts/reports/plays')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 const getDateFormat = (period = 'monthly') => {
   return {

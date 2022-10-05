@@ -1,7 +1,7 @@
 const { UserGroup, User, Role, OauthUser, Credit /* Resonate: sequelize */ } = require('../../../../db/models')
 const profileImage = require('../../../../util/profile-image')
 const gravatar = require('gravatar')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
@@ -57,7 +57,7 @@ module.exports = function () {
         registered,
         email,
         role,
-        credit,
+        credit: credit ?? { total: 0 },
         userGroups,
         gravatar: gravatar.url(email, { protocol: 'https' }),
         profiles: []

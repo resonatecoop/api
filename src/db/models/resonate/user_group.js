@@ -59,6 +59,7 @@ module.exports = (sequelize, DataTypes) => {
     UserGroup.belongsTo(models.User, { foreignKey: 'ownerId' })
     UserGroup.hasMany(models.TrackGroup, { foreignKey: 'creatorId' })
     UserGroup.hasMany(models.Track, { foreignKey: 'creatorId' })
+    UserGroup.hasMany(models.UserGroupLink, { as: 'links', foreignKey: 'ownerId' })
   }
 
   return UserGroup

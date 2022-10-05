@@ -461,7 +461,7 @@ const migrateLinks = async (client) => {
 
       try {
         await UserGroupLink.bulkCreate(results
-          .filter(r => usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id)
+          .filter(r => usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id && r.meta_value !== '')
           .map(r => ({
             uri: r.meta_value,
             platform: r.meta_key,

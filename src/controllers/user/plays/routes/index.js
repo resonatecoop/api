@@ -2,7 +2,7 @@ const { Play, Track, Credit } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const { calculateCost, formatCredit } = require('@resonate/utils')
 const numbro = require('numbro')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 const add = (a, b) => numbro(a).add(b).value()
 const subtract = (a, b) => numbro(a).subtract(b).value()

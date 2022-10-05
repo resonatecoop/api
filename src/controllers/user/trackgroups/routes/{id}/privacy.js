@@ -1,7 +1,7 @@
 // TODO this can be consolidated with ./settings.js
 
 const { TrackGroup } = require('../../../../../db/models')
-const authenticate = require('../../../authenticate')
+const { authenticate } = require('../../../authenticate')
 
 module.exports = function () {
   const operations = {

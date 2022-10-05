@@ -3,7 +3,7 @@ const { Op } = require('sequelize')
 const { calculateRemainingCost, formatCredit } = require('@resonate/utils')
 const map = require('awaity/map')
 const numbro = require('numbro')
-const authenticate = require('../../authenticate')
+const { authenticate } = require('../../authenticate')
 
 const subtract = (a, b) => numbro(a).subtract(b).value()
 
