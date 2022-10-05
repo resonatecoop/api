@@ -1,6 +1,5 @@
-const { TrackGroup, UserGroup, TrackGroupItem, Track, File } = require('../../../../db/models')
+const { Playlist, UserGroup, PlaylistItem, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
-const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
 const authenticate = require('../../authenticate')
 
@@ -20,8 +19,7 @@ module.exports = function () {
           userId: ctx.profile.id
         }
       })
-      const result = await TrackGroup.create(Object.assign(body, {
-        enabled: body.type === 'playlist', // FIXME: what's this enforcing?
+      const result = await Playlist.create(Object.assign(body, {
         creatorId: artist.id
       }))
 
@@ -76,31 +74,14 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     try {
-      const { type, limit = 100, page = 1, featured, private: _private, download, enabled, includes } = ctx.request.query
-
-      // FIXME: Allow filtering by artist
-      const userArtists = await UserGroup.findAll({
-        where: {
-          ownerId: ctx.profile.id
-        }
-      })
+      const { type, limit = 100, page = 1, featured, private: _private, includes } = ctx.request.query
 
       const where = {
-        creatorId: userArtists.map(a => a.id),
-        type: {
-          [Op.or]: {
-            [Op.eq]: null,
-            [Op.notIn]: ['playlist', 'compilation'] // hide playlists and compilations
-          }
-        }
+        creatorId: ctx.profile.id
       }
 
       if (type) {
         where.type = type
-      }
-
-      if (download) {
-        where.download = true
       }
 
       if (_private) {
@@ -111,32 +92,22 @@ module.exports = function () {
         where.featured = true
       }
 
-      if (enabled) {
-        where.enabled = true
-      }
-
       const whereTrackGroupItem = {}
 
       if (includes) {
         whereTrackGroupItem.track_id = includes // trackgroup where trackgroup item has a given track
       }
 
-      const { rows: result, count } = await TrackGroup.findAndCountAll({
+      const { rows: result, count } = await Playlist.findAndCountAll({
         limit,
         offset: page > 1 ? (page - 1) * limit : 0,
         attributes: [
           'id',
           'cover',
           'title',
-          'type',
           'creatorId',
           'about',
-          'private',
-          'enabled',
-          'display_artist',
-          'composers',
-          'performers',
-          'release_date'
+          'private'
         ],
         include: [
           {
@@ -151,7 +122,7 @@ module.exports = function () {
             }
           },
           {
-            model: TrackGroupItem,
+            model: PlaylistItem,
             attributes: ['id', 'index'],
             required: !!whereTrackGroupItem.track_id,
             as: 'items',
@@ -183,21 +154,8 @@ module.exports = function () {
         data: result.map((item) => {
           const o = Object.assign({}, item.dataValues)
 
-          const slugTitle = item.get('slug')
+          o.creatorId = item.get('creatorId')
 
-          if (!slugTitle) {
-            item.slug = slug(o.title)
-            item.save()
-          }
-
-          o.slug = item.slug
-
-          o.uri = `${process.env.APP_HOST}/v3/trackgroups/${item.id}`
-
-          o.performers = item.get('performers')
-          o.artistId = item.get('artistId')
-
-          o.composers = item.get('composers')
           o.tags = item.get('tags')
 
           o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)
@@ -230,10 +188,10 @@ module.exports = function () {
   }
 
   GET.apiDoc = {
-    operationId: 'getTrackgroups',
-    description: 'Returns trackgroups (lp, ep, single)',
-    summary: 'Find trackgroups',
-    tags: ['trackgroups'],
+    operationId: 'getPlaylists',
+    description: 'Returns playlists',
+    summary: 'Find playlists',
+    tags: ['playlists'],
     produces: [
       'application/json'
     ],
@@ -278,13 +236,6 @@ module.exports = function () {
         description: 'Filter featured releases',
         in: 'query',
         name: 'featured'
-      },
-      {
-        type: 'string',
-        description: 'The trackgroup type',
-        in: 'query',
-        enum: ['ep', 'lp', 'single', 'playlist'],
-        name: 'type'
       },
       {
         type: 'integer',

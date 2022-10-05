@@ -26,5 +26,9 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'user_group_links'
   })
 
+  UserGroupLink.associate = function (models) {
+    UserGroupLink.belongsTo(models.UserGroup, { foreignKey: 'ownerId' })
+  }
+
   return UserGroupLink
 }

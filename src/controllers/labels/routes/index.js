@@ -1,6 +1,5 @@
-const { User, Resonate: sequelize } = require('../../../db/models')
+const { UserGroup, UserGroupType } = require('../../../db/models')
 const resolveProfileImage = require('../../../util/profile-image')
-const map = require('awaity/map')
 const he = require('he')
 
 module.exports = function () {
@@ -19,72 +18,20 @@ module.exports = function () {
 
       const offset = page > 1 ? (page - 1) * limit : 0
 
-      const [countResult] = await sequelize.query(`
-        SELECT count(distinct label.ID) as count
-        FROM rsntr_users AS label
-        INNER JOIN rsntr_usermeta AS um ON (label.ID = um.user_id AND um.meta_key = 'nickname')
-        INNER JOIN rsntr_usermeta AS um2 ON (
-          um2.user_id = label.ID AND um2.meta_key = 'role' AND um2.meta_value in ('label-owner')
-        )
-        INNER JOIN (SELECT meta_value, user_id
-          FROM rsntr_usermeta
-          WHERE meta_key = 'mylabel'
-          AND EXISTS(
-            SELECT * from tracks as track
-            WHERE track.uid = user_id
-            AND track.status IN(0, 2, 3)
-            AND track.track_album != ''
-            AND track.track_cover_art != ''
-          )
-        ) as a
-        ON a.meta_value = label.ID
-        LIMIT 1
-      `, {
-        type: sequelize.QueryTypes.SELECT
-      })
-
-      const { count } = countResult
-
-      const result = await sequelize.query(`
-        SELECT distinct label.ID, um.meta_value AS name
-        FROM rsntr_users AS label
-        INNER JOIN rsntr_usermeta AS um ON (label.ID = um.user_id AND um.meta_key = 'nickname')
-        INNER JOIN rsntr_usermeta AS um2 ON (
-          um2.user_id = label.ID AND um2.meta_key = 'role' AND um2.meta_value in ('label-owner')
-        )
-        INNER JOIN (SELECT meta_value, user_id
-          FROM rsntr_usermeta
-          WHERE meta_key = 'mylabel'
-          AND EXISTS(
-            SELECT * from tracks as track
-            WHERE track.uid = user_id
-            AND track.status IN(0, 2, 3)
-            AND track.track_album != ''
-            AND track.track_cover_art != ''
-          )
-        ) as a
-        ON a.meta_value = label.ID
-        ORDER BY ID DESC
-        LIMIT :limit
-        OFFSET :offset
-      `, {
-        type: sequelize.QueryTypes.SELECT,
-        replacements: {
-          limit,
-          offset
-        },
-        mapToModel: true,
-        model: User
+      const { rows: result, count } = await UserGroup.findAndCountAll({
+        offset,
+        limit,
+        include: [{ model: UserGroupType }]
       })
 
       ctx.body = {
-        data: await map(result, async (item) => {
+        data: await Promise.all(result.map(async (item) => {
           return {
-            name: he.decode(item.dataValues.name),
+            name: he.decode(item.dataValues.displayName),
             id: item.id,
             images: await resolveProfileImage(item.id)
           }
-        }),
+        })),
         count,
         pages: Math.ceil(count / limit)
       }
