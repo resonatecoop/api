@@ -90,7 +90,9 @@ const router = new Router()
 trackgroups.use(user.middleware())
 
 user.use((ctx, action) => {
-  return ctx.profile || action === 'access trackgroups'
+  //  FINDME
+  // return ctx.profile || action === 'access trackgroups'
+  return !!ctx.profile
 })
 
 user.use('access trackgroups', async (ctx, action) => {

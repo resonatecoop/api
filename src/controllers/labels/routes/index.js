@@ -3,7 +3,6 @@ const { UserGroup, UserGroupType } = require('../../../db/models')
 const resolveProfileImage = require('../../../util/profile-image')
 const he = require('he')
 
-
 module.exports = function () {
   const operations = {
     GET
@@ -19,7 +18,6 @@ module.exports = function () {
       } = ctx.request.query
 
       const offset = page > 1 ? (page - 1) * limit : 0
-
 
       const { rows: result, count } = await UserGroup.findAndCountAll({
         offset,
