@@ -11,6 +11,7 @@ The api(v4) tests live in the `/api/test` directory. In this directory there are
 
 ## Dev Notes
 This section changes over time, as issues arise and are dealt with.
+* We are currently skipping the `Admin.ts` endpoint tests. The concensus is that these endpoints should be rewritten.
 * It looks like the protected endpoints will accept any value for an accessToken, and that the only check against this token is whether or not it is provided.
 * Many of the endpoints return a 404 code, when perhaps a 400 is more appropriate.
 * We are skipping tests for `Labels`, `Tags`, and `Search` because of upstream data migration issues and incomplete funcitonality to be resolved at some point soon.
@@ -34,7 +35,7 @@ To stop the Docker test container.
 yarn docker:compose:test:down
 ```
 
-Once the test Docker container is seeded and up, you can run tests. Please note that the tests are designed to run in `watch` mode. You can change this in the `.mocharc.js` file, but please be careful so that you don't break anything.
+Once the test Docker container is seeded and up, you can run tests. Please note that the tests are designed to run in `watch` mode. You can change this in the `.mocharc.js` file.
 
 Open a new terminal window. It is often helpful to open it next to the terminal window which displays the output of the Docker test container. 
 
@@ -53,12 +54,25 @@ Run the tests for endpoints in User.ts file
 yarn test:user
 ```
 
-These tests run under Mocha in watch mode. If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help focus on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
+These tests run locally under Mocha in watch mode. Watch mode is enabled locally in the `.mocharc.js` config file, which is located in the project root folder. You should not run these tests in watch mode when deploying them to CI/CD pipelines.
+
+For reference, here are the contents of the `mocharc.js` config file:
+```sh
+module.exports = {
+    "reporter": "spec",
+    "watch": true,
+    "watch-files": ['test/**/*.js', 'src/**/*.js'],
+    "watch-ignore": ['node_modules'],
+    "recursive": true
+};
+```
+
+If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help focus on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
 
 You can create more test script commands in the api (v4) repo's `package.json` file, if you need something else.
 
 ## Configuration and how to make more tests
-There is a file named `.mocharc.js` located in the project root. This file contains configuration settings. If you change it, you might break things.
+There is a file named `.mocharc.js` located in the project root. This file contains configuration settings for running the tests locally.
 
 There is a file named `Template.test.js` in the `test` folder. You can copy this file to start writing new tests more quickly.
 
@@ -80,7 +94,6 @@ For this iteration of these tests, we capture the endpoints' output and return t
 * Currently we are skipping `Labels` tests and `Tags` tests. This is due to issues upstream with legacy data migration.
 * Currently we are skipping `Search ` tests. This can continue once search functionality is implemented. This implementation should occur after initial test development is complete.
 
-  
 Run the tests for endpoints in Api.ts file
 ```sh
 yarn test:api
@@ -177,8 +190,16 @@ Endpoints in [User.ts](https://github.com/resonatecoop/beam/blob/main/src/servic
 As work on the new API continues, you might need to edit the existing tests, as well as create new tests. You can use `Template.test.js`, `testConfig.js` and `MockAccessToken`, located in the `test` folder, to get started with new tests.
 
 ## To Do
+* Resolve tests that 200 when invalid access token is sent.
 * Finish `Labels` and `Tags` testing once upstream data issues are resolved.
 * Implement search endpoint.
 * Resume test development for endpoints that currently have no data (Labels, Tags, etc.).
 * Look over api/src/db/models/ files to get a better idea of what the data/datatypes are.
 * Better / more TypeScript integration
+* CI/CD
+  * Integrate into Github Actions.
+  * `skip` and `only` linting.
+  * disable watch mode.
+    * no `.mocharc.js` in CI/CD deployment is a step towards this.
+  * ability to test different users/other entities by id, for different test cases.
+  * convert tests to run off of db models.

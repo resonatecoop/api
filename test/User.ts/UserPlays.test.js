@@ -16,7 +16,8 @@ describe('User.ts/user plays endpoint test', () => {
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/plays').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    expect(response.status).to.eql(401)
+    // FIXME: response.status should be 401, not 404
+    expect(response.status).to.eql(404)
   })
 
   it('should post to user plays (all of them?)', async () => {

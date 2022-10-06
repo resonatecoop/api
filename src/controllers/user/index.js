@@ -66,7 +66,10 @@ user.use(async (ctx, next) => {
     // let response
     // const adapter = new RedisAdapter('AccessToken')
     const session = await adapter.find(ctx.accessToken)
-    if (session.accountId) {
+
+    console.log('session: ', session)
+
+    if (session?.accountId) {
       const user = await User.findOne({
         where: {
           id: session.accountId
