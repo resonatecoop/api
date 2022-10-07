@@ -14,7 +14,7 @@ This section changes over time, as issues arise and are dealt with.
 * We are currently skipping the `Admin.ts` endpoint tests. The concensus is that these endpoints should be rewritten.
 * It looks like the protected endpoints will accept any value for an accessToken, and that the only check against this token is whether or not it is provided.
 * Many of the endpoints return a 404 code, when perhaps a 400 is more appropriate.
-* We are skipping tests for `Labels`, `Tags`, and `Search` because of upstream data migration issues and incomplete funcitonality to be resolved at some point soon.
+* We are skipping tests for `Labels`, and `Tags` because of upstream data migration issues and incomplete funcitonality to be resolved at some point soon.
 
 ## How the test data was made
 You should never need to create test data. However, you can read an overview of how the test data was made [here](./HowTheTestDataWasMade.md). 
