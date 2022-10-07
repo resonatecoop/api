@@ -1,23 +1,24 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
+const { request, expect, testUserId, testAdminUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
+const MockAccessToken = require('../MockAccessToken')
 
 describe('User.ts/user endpoint test', () => {
-  require('../MockAccessToken')
+  MockAccessToken(testAdminUserId)
 
   let response = null
 
   it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/profile')
 
+    console.log('asdf ', response.status)
     expect(response.status).to.eql(401)
   })
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/profile').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    // FIXME: response.status should be 401, not 404
-    expect(response.status).to.eql(404)
+    expect(response.status).to.eql(401)
   })
 
   it('should get user profiles', async () => {

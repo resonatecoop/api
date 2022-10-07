@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
+const { request, expect, testUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
+const MockAccessToken = require('../MockAccessToken')
 
 describe.skip('Admin.ts/trackgroups endpoint test', () => {
-  require('../MockAccessToken')
+  MockAccessToken(testUserId)
 
   let response = null
 

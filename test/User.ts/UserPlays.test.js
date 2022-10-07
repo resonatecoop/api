@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testAccessToken, testInvalidAccessToken } = require('../testConfig')
+const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
+const MockAccessToken = require('../MockAccessToken')
 
-describe('User.ts/user plays endpoint test', () => {
-  require('../MockAccessToken')
+describe.skip('User.ts/user plays endpoint test', () => {
+  MockAccessToken(testUserId)
 
   let response = null
 

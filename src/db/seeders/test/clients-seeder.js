@@ -1,6 +1,4 @@
 
-// https://www.appsloveworld.com/sequelizejs/100/6/orm-sequelize-can-i-use-raw-queries-in-seeders-files
-
 module.exports = {
   up: (queryInterface, Sequelize) => {
     // Seeds something for a local client
