@@ -1,35 +1,35 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 const { request, expect } = require('../testConfig')
+const { faker } = require('@faker-js/faker')
+const { UserGroup, UserGroupType } = require('../../src/db/models')
 
-describe.skip('Api.ts/search endpoint test', () => {
-  let response = null
-
+describe('Api.ts/search endpoint test', () => {
   it('should handle no provided search term/s', async () => {
-    response = await request.get('/search')
+    const response = await request.get('/search')
 
     expect(response.status).to.eql(400)
   })
-  it('should return results for a search term', async () => {
+  it('should return empty results for a search term', async () => {
     const searchTerm = 'asdf'
 
-    response = await request.get(`/search?q=${searchTerm}`)
+    const response = await request.get(`/search?q=${searchTerm}`)
 
     expect(response.status).to.eql(200)
+    expect(response.body.data).to.include.keys('artists', 'labels', 'tracks', 'trackgroups', 'bands')
+  })
+  it('should return a usergroup with a matching search', async () => {
+    const displayName = faker.name.fullName()
+    const type = await UserGroupType.findOne({ where: { name: 'artist' } })
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    await UserGroup.create({
+      displayName: displayName,
+      typeId: type.id
+    })
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    const response = await request.get(`/search?q=${displayName}`)
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(response.status).to.eql(200)
+    expect(response.body.data.artists[0].displayName).to.eql(displayName)
   })
 })

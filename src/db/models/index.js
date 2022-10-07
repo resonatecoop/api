@@ -3,6 +3,7 @@ require('dotenv').config()
 require('pg').defaults.parseInt8 = true
 const sequelize = require('sequelize')
 const { Sequelize, DataTypes } = sequelize
+
 const env = process.env.NODE_ENV || 'development'
 const config = require('../../config/databases.js')[env]
 const db = {}
