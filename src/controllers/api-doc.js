@@ -16,6 +16,22 @@ const apiDoc = {
         }
       },
       required: ['code', 'message']
+    },
+    Trackgroup: {
+      type: 'object',
+      properties: {
+        about: {
+          type: 'string'
+        },
+        cover: {
+          type: 'string',
+          format: 'uuid'
+        },
+        type: {
+          type: 'string',
+          enum: ['lp', 'ep', 'single', 'compilation']
+        }
+      }
     }
   },
   responses: {

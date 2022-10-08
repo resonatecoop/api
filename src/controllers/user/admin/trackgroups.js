@@ -45,7 +45,7 @@ const validateTrackgroup = ajv.compile({
     },
     type: {
       type: 'string',
-      enum: ['lp', 'ep', 'single', 'playlist', 'compilation']
+      enum: ['lp', 'ep', 'single', 'compilation']
     },
     about: {
       type: 'string'

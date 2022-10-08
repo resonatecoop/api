@@ -3,11 +3,6 @@ const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 const { authenticate } = require('../../../authenticate')
 
-const {
-  validateParams
-  // validateTrackgroup
-} = require('../../../../../schemas/trackgroup')
-
 module.exports = function () {
   const operations = {
     GET: [authenticate, GET],
@@ -26,14 +21,6 @@ module.exports = function () {
   }
 
   async function DELETE (ctx, next) {
-    const isValid = validateParams(ctx.params)
-
-    if (!isValid) {
-      const { message, dataPath } = validateParams.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     try {
       const result = await TrackGroup.findOne({
         attributes: [
@@ -41,7 +28,7 @@ module.exports = function () {
           'type'
         ],
         where: {
-          userId: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -58,7 +45,7 @@ module.exports = function () {
 
       await TrackGroup.destroy({
         where: {
-          userId: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -80,10 +67,19 @@ module.exports = function () {
     await next()
   }
 
+  // FIXME: add properties for validation
   DELETE.apiDoc = {
     operationId: 'deleteTrackgroup',
     description: 'Delete trackgroup',
     tags: ['trackgroups'],
+    parameters: [{
+      name: 'id',
+      in: 'path',
+      type: 'string',
+      required: true,
+      description: 'Trackgroup uuid',
+      format: 'uuid'
+    }],
     responses: {
       200: {
         description: 'Trackgroup deleted response.',
@@ -109,10 +105,10 @@ module.exports = function () {
     try {
       let result = await TrackGroup.findOne({
         attributes: [
-          'artistId'
+          'creatorId'
         ],
         where: {
-          userId: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -124,7 +120,7 @@ module.exports = function () {
 
       result = await TrackGroup.update(body, {
         where: {
-          userId: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         },
         returning: true
@@ -140,7 +136,7 @@ module.exports = function () {
           'about',
           'composers',
           'cover',
-          'artistId',
+          'creatorId',
           'display_artist',
           'download',
           'id',
@@ -152,7 +148,7 @@ module.exports = function () {
           'type'
         ],
         where: {
-          userId: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -206,7 +202,7 @@ module.exports = function () {
       const { type } = ctx.request.query
 
       const where = {
-        userId: ctx.profile.id,
+        creatorId: ctx.profile.id,
         id: ctx.params.id
       }
 

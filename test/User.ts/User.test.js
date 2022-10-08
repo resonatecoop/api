@@ -4,7 +4,7 @@
 const { request, expect, testUserId, testAdminUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
 const MockAccessToken = require('../MockAccessToken')
 
-describe('User.ts/user endpoint test', () => {
+describe.only('User.ts/user endpoint test', () => {
   MockAccessToken(testAdminUserId)
 
   let response = null
@@ -12,9 +12,9 @@ describe('User.ts/user endpoint test', () => {
   it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/profile')
 
-    console.log('asdf ', response.status)
     expect(response.status).to.eql(401)
   })
+
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/profile').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
@@ -24,9 +24,8 @@ describe('User.ts/user endpoint test', () => {
   it('should get user profiles', async () => {
     response = await request.get('/user/profile/').set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('user profiles RESPONSE: ', response.text)
-
     expect(response.status).to.eql(200)
+    console.log('profile of user RESPONSE: ', response.text)
 
     // const attributes = response.body
     // expect(attributes).to.be.an('object')
@@ -43,11 +42,11 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should get user playlists by user id', async () => {
     response = await request.get(`/users/${testUserId}/playlists`).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('playlists by user id RESPONSE: ', response.text)
-
     expect(response.status).to.eql(200)
 
     // const attributes = response.body
@@ -65,6 +64,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should post to user/trackgroups', async () => {
     response = await request.post('/user/trackgroups').set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -87,7 +87,8 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should should update user trackgroups by trackgroup id', async () => {
+
+  it('should update user trackgroups by trackgroup id', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('put to user trackgroup by id RESPONSE: ', response.text)
@@ -109,6 +110,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should get user trackgroups', async () => {
     response = await request.get('/user/trackgroups').set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -131,6 +133,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should get user trackgroups by trackgroup id', async () => {
     response = await request.get(`/user/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -153,8 +156,9 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should post to a trackgroup by trackgroup id', async () => {
-    response = await request.get(`/user/trackgroups/${testTrackGroupId}/items/add`).set('Authorization', `Bearer ${testAccessToken}`)
+    response = await request.put(`/user/trackgroups/${testTrackGroupId}/items/add`).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to a trackgroup by trackgroup id RESPONSE: ', response.text)
 
@@ -175,6 +179,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should remove an item from a trackgroup by trackgroup id', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/items/remove`).set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -197,6 +202,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should update trackgroup items by trackgroup id', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/items`).set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -219,6 +225,7 @@ describe('User.ts/user endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
   it('should delete from trackgroups by trackgroup id', async () => {
     response = await request.delete(`/user/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 

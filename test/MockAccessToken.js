@@ -12,7 +12,7 @@ const { TestRedisAdapter, testAccessToken } = require('./testConfig')
 
 const MockAccessToken = (userId) => {
   // get a Redis
-  const adapter = new TestRedisAdapter()
+  const adapter = new TestRedisAdapter('AccessToken')
 
   // Give a test access token to a Redis. Then Redis will believe there is a valid login.
   before('send access token to Redis', () => {

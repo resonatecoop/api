@@ -54,11 +54,10 @@ module.exports = function () {
             model: User,
             required: false,
             attributes: ['id', 'displayName'],
-            as: 'user'
+            as: 'creator'
           }
         ],
         order: [
-          ['release_date', 'DESC'],
           ['createdAt', 'DESC']
         ]
       })
