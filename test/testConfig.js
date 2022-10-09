@@ -1,5 +1,5 @@
 
-const baseURL = 'http://localhost:4000/api/v3'
+const baseURL = `${process.env.APP_HOST}/api/v3`
 const request = require('supertest')(baseURL)
 
 const expect = require('chai').expect

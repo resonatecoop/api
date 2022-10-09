@@ -124,7 +124,6 @@
     "sequelize-cli": "^6.2.0",
     "server-destroy": "^1.0.1",
     "ssh2": "^1.11.0",
-    "ssh2-promise": "^1.0.3",
     "standard": "^16.0.4",
     "supertest": "^4.0.2",
     "tunnel-ssh": "^4.1.6"

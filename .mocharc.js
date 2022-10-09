@@ -5,7 +5,7 @@
 
 module.exports = {
     "reporter": "spec",
-    "watch": true,
+    "watch": process.env.CI ? false : true,
     "watch-files": ['test/**/*.js', 'src/**/*.js'],
     "watch-ignore": ['node_modules'],
     // "file": 'test/common.js',

@@ -15,7 +15,7 @@ services:
     expose:
       - 6379
     ports:
-      - "${REDIS_PORT}:6379"
+      - "${REDIS_PORT:-6379}:6379"
 
   api:
     networks:
@@ -35,9 +35,9 @@ services:
     volumes:
       - ~/.ssh:/root/.ssh
       - ./:/var/www/api
-      - ${MEDIA_LOCATION}incoming:/data/media/incoming
-      - ${MEDIA_LOCATION}audio:/data/media/audio
-      - ${MEDIA_LOCATION}images:/data/media/images
+      - ${MEDIA_LOCATION:-./data/media/}incoming:/data/media/incoming
+      - ${MEDIA_LOCATION:-./data/media/}audio:/data/media/audio
+      - ${MEDIA_LOCATION:-./data/media/}images:/data/media/images
 
   pgsql:
     image: postgres:14-alpine
@@ -52,7 +52,7 @@ services:
         aliases:
           - pgsql
     ports:
-      - '${POSTGRES_LOCAL_MACHINE_PORT}:5432'
+      - '${POSTGRES_LOCAL_MACHINE_PORT:-5432}:5432'
 
   nginx:
     restart: always
@@ -68,7 +68,7 @@ services:
       target: ${IMAGE:-dev-image}
 
     ports:
-      - "${NGINX_PORT}:80"
+      - "${NGINX_PORT:-80}:80"
       - 443:443
 
 networks:
