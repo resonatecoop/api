@@ -91,11 +91,11 @@ module.exports = function () {
 
     try {
       const [countResult] = await sequelize.query(`
-        SELECT count(favorite.fid) as count
+        SELECT count(favorite.id) as count
         FROM favorites as favorite
-        INNER JOIN tracks as track ON (track.tid = favorite.tid)
-        WHERE favorite.uid = :listenerId
-        AND favorite.type = 1
+        INNER JOIN tracks as track ON (track.id = favorite.track_id)
+        WHERE favorite.user_id = :listenerId
+        AND favorite.type IS TRUE
         AND track.status IN(0, 2, 3)
       `, {
         type: sequelize.QueryTypes.SELECT,
@@ -107,19 +107,19 @@ module.exports = function () {
       const { count } = countResult
 
       const result = await sequelize.query(`
-        SELECT track.tid as id, track.uid as creator_id, track.status, track.track_name, track.track_url, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_album, track.track_duration, meta.meta_value as artist
+        SELECT track.id as id, track.creator_id as creator_id, track.status, track.track_name, track.track_url, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_album, track.track_duration, meta.meta_value as artist
         FROM track_groups as trackgroup
         INNER JOIN track_group_items as item ON(item.track_group_id = trackgroup.id)
-        INNER JOIN tracks as track ON(item.track_id = track.tid AND track.status IN(0, 2, 3))
-        INNER JOIN favorites AS favorite ON (favorite.tid = track.tid AND favorite.uid = :listenerId AND favorite.type = 1)
-        INNER JOIN rsntr_usermeta as meta ON(meta.user_id = track.uid AND meta.meta_key = 'nickname')
+        INNER JOIN tracks as track ON(item.track_id = track.id AND track.status IN(0, 2, 3))
+        INNER JOIN favorites AS favorite ON (favorite.track_id = track.id AND favorite.user_id = :listenerId AND favorite.type IS TRUE)
+        INNER JOIN rsntr_usermeta as meta ON(meta.user_id = track.creator_id AND meta.meta_key = 'nickname')
         LEFT JOIN files as file ON(file.id = track.track_url)
         WHERE (trackgroup.type IS NULL OR trackgroup.type NOT IN ('playlist', 'compilation'))
         AND trackgroup.private = false
         AND trackgroup.enabled = true
         AND (trackgroup.release_date <= NOW() OR trackgroup.release_date IS NULL)
-        GROUP BY track.tid, trackgroup.cover, meta.meta_value, favorite.fid
-        ORDER BY favorite.fid DESC
+        GROUP BY track.id, file.id, trackgroup.cover, meta.meta_value, favorite.id
+        ORDER BY favorite.id DESC
         LIMIT :limit
         OFFSET :offset
       `, {

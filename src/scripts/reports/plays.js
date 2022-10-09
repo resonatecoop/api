@@ -16,12 +16,28 @@ module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format 
 
   if (typeof endDate !== 'string') throw new Error('End date is invalid')
 
+  console.log('inside find all play counts. creatorId: ', creatorId)
+  console.log('isLabel: ', isLabel)
+
+  // creatorId is 71175a23-9256-41c9-b8c1-cd2170aa6591
+
+  // const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
+  //   attributes: ['tid'],
+  //   where: {
+  //     uid: creatorId
+  //   }
+  // }).slice(0, -1)
+
   const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
-    attributes: ['tid'],
+    attributes: ['id'],
     where: {
-      uid: creatorId
+      creator_id: creatorId
     }
-  }).slice(0, -1)
+  })
+
+  // const subQuery = null
+
+  console.log('after subQuery ', subQuery)
 
   const event = ['free', 'paid'].indexOf(type)
 
@@ -63,21 +79,37 @@ module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format 
       }
     }).slice(0, -1)
 
+    // const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
+    //   attributes: ['tid'],
+    //   where: {
+    //     uid: {
+    //       [Op.in]: sequelize.literal('(' + subQueryLabel + ')')
+    //     }
+    //   }
+    // }).slice(0, -1)
+
     const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
-      attributes: ['tid'],
+      attributes: ['id'],
       where: {
-        uid: {
+        creator_id: {
           [Op.in]: sequelize.literal('(' + subQueryLabel + ')')
         }
       }
     }).slice(0, -1)
 
-    queryOptions.where.tid = {
+    // queryOptions.where.tid = {
+    //   [Op.in]: sequelize.literal('(' + subQuery + ')')
+    // }
+    queryOptions.where.id = {
       [Op.in]: sequelize.literal('(' + subQuery + ')')
     }
   }
 
+  console.log('queryOptions: ', queryOptions)
+
   const result = await Play.findAll(queryOptions)
+
+  console.log('plays line 98 result: ', result)
 
   return result.map(item => ({ date: item.d, plays: item.count }))
 }
