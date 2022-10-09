@@ -140,7 +140,6 @@ module.exports = (provider) => {
         })
       }
       case 'consent': {
-        console.log('prompt', prompt.details)
         return ctx.render('interaction', {
           client,
           uid,
