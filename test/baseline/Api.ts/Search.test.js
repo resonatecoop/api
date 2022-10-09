@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect } = require('../testConfig')
+const { request, expect } = require('../../testConfig')
 const { faker } = require('@faker-js/faker')
-const { UserGroup, UserGroupType } = require('../../src/db/models')
+const { UserGroup, UserGroupType } = require('../../../src/db/models')
 
 describe('Api.ts/search endpoint test', () => {
   it('should handle no provided search term/s', async () => {

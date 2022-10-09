@@ -62,6 +62,7 @@ module.exports.authenticate = async (ctx, next) => {
 
   try {
     const user = await findSession(ctx)
+
     if (user) {
       ctx.profile = user
     } else {

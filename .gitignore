@@ -1,6 +1,8 @@
 .env
 .vscode
 resonate-api.code-workspace
+reset.sh
+
 node_modules
 
 data

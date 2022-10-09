@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
-const MockAccessToken = require('../MockAccessToken')
+const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const MockAccessToken = require('../../MockAccessToken')
 
-describe.skip('User.ts/misc user info endpoint test', () => {
+describe('User.ts/misc user info endpoint test', () => {
   MockAccessToken(testUserId)
 
   let response = null
@@ -133,7 +133,9 @@ describe.skip('User.ts/misc user info endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should post to user favorites (no user id? all of them?)', async () => {
+  // FIXME: finish this test after update / delete / etc functionality is completed.
+  //    getting this endpoint to work and pass test will corrupt test data.
+  it.skip('should post to user favorites (no user id? all of them?)', async () => {
     response = await request.post('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to user favorites RESPONSE: ', response.text)
@@ -155,7 +157,9 @@ describe.skip('User.ts/misc user info endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should post to user favorites resolve (?)', async () => {
+  // FIXME: finish this test after update / delete / etc functionality is completed.
+  //    getting this endpoint to work and pass test will corrupt test data.
+  it.skip('should post to user favorites resolve (?)', async () => {
     response = await request.get('/user/favorites/resolve').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to user favorites resolve RESPONSE: ', response.text)

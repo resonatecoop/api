@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
-const MockAccessToken = require('../MockAccessToken')
+const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const MockAccessToken = require('../../MockAccessToken')
 
-describe.skip('User.ts/products endpoint test', () => {
+describe('User.ts/products endpoint test', () => {
   MockAccessToken(testUserId)
 
   let response = null
@@ -17,8 +17,7 @@ describe.skip('User.ts/products endpoint test', () => {
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/products').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    // FIXME: response.status should be 401, not 404
-    expect(response.status).to.eql(404)
+    expect(response.status).to.eql(401)
   })
 
   it('should get user products', async () => {

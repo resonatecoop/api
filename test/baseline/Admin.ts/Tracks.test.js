@@ -1,30 +1,52 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
-const MockAccessToken = require('../MockAccessToken')
+const { request, expect, testUserId, testTrackId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const MockAccessToken = require('../../MockAccessToken')
 
-describe.skip('User.ts/user plays endpoint test', () => {
+describe.skip('Admin.ts/tracks endpoint test', () => {
   MockAccessToken(testUserId)
 
   let response = null
 
-  it('should handle no authentication / accessToken', async () => {
-    response = await request.get('/user/plays')
+  it('should handle no authentication', async () => {
+    response = await request.get('/user/admin/tracks/')
 
     expect(response.status).to.eql(401)
   })
   it('should handle an invalid access token', async () => {
-    response = await request.get('/user/plays').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+    response = await request.get('/user/admin/tracks/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    // FIXME: response.status should be 401, not 404
-    expect(response.status).to.eql(404)
+    console.log('tracks response.status: ', response.status)
+    // FIXME: status should be 401, but I'll take a 403. Close enough.
+    expect(response.status).to.eql(403)
   })
 
-  it('should post to user plays (all of them?)', async () => {
-    response = await request.get('/user/plays').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should get all tracks', async () => {
+    response = await request.get('/user/admin/tracks/').set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('post to user plays RESPONSE: ', response.text)
+    console.log('all tracks RESPONSE: ', response.text)
+    expect(response.status).to.eql(200)
+
+    // const attributes = response.body
+    // expect(attributes).to.be.an('object')
+    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+
+    // expect(attributes.data).to.be.an('array')
+    // expect(attributes.data.length).to.eql(3)
+
+    // const theData = attributes.data[0]
+    // expect(theData).to.include.keys("")
+    // expect(theData.xxx).to.eql()
+
+    // expect(attributes.count).to.eql(1)
+    // expect(attributes.numberOfPages).to.eql(1)
+    // expect(attributes.status).to.eql('ok')
+  })
+  it('should get track by id', async () => {
+    response = await request.get(`/user/admin/tracks/${testTrackId}`).set('Authorization', `Bearer ${testAccessToken}`)
+
+    console.log('track by id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
@@ -43,32 +65,12 @@ describe.skip('User.ts/user plays endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should post to user plays buy', async () => {
-    response = await request.post('/user/plays/buy').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should update a track by id', async () => {
+    response = await request.put(`/user/admin/tracks/${testTrackId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('post to user plays buy RESPONSE: ', response.text)
+    console.log('update track by id RESPONSE: ', response.text)
 
-    expect(response.status).to.eql(200)
-
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
-  })
-  it('should post to user plays resolve (?)', async () => {
-    response = await request.get('/user/plays/resolve').set('Authorization', `Bearer ${testAccessToken}`)
-
-    console.log('post to user plays resolve RESPONSE: ', response.text)
+    // check Admin.ts for interface / type for payload
 
     expect(response.status).to.eql(200)
 
