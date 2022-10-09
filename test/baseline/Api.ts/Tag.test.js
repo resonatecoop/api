@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect, testTagId } = require('../testConfig')
+const { request, expect, testTagId } = require('../../testConfig')
 
 describe.skip('Api.ts/tag endpoint test', () => {
   let response = null

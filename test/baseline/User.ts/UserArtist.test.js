@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testArtistId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
-const MockAccessToken = require('../MockAccessToken')
+const { request, expect, testUserId, testArtistId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const MockAccessToken = require('../../MockAccessToken')
 
-describe.skip('User.ts/user artist endpoint test', () => {
+describe('User.ts/user artist endpoint test', () => {
   MockAccessToken(testUserId)
 
   let response = null
@@ -17,8 +17,7 @@ describe.skip('User.ts/user artist endpoint test', () => {
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/artists').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    // FIXME: response.status should be 401, not 404
-    expect(response.status).to.eql(404)
+    expect(response.status).to.eql(401)
   })
 
   it('should get user artists', async () => {
@@ -43,7 +42,7 @@ describe.skip('User.ts/user artist endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should user artists by artist id', async () => {
+  it('should get user artists by artist id', async () => {
     response = await request.get(`/user/artists/${testArtistId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('user artists by artist id RESPONSE: ', response.text)
@@ -65,7 +64,10 @@ describe.skip('User.ts/user artist endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should post to user artists', async () => {
+
+  // FIXME: finish this test after update / delete / etc functionality is completed.
+  //    getting this endpoint to work and pass test will corrupt test data.
+  it.skip('should post to user artists', async () => {
     response = await request.post('/user/artists').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to user artists RESPONSE: ', response.text)

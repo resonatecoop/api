@@ -25,9 +25,10 @@
     "lint:fix": "standard --fix",
     "test:all": "clear && docker exec -it resonate-api yarn mocha test",
     "test:accessTokenExample": "clear && docker exec -it resonate-api yarn mocha test/auth/AccessTokenExample.test.js",
-    "test:api": "clear && docker exec -it resonate-api yarn mocha test/Api.ts",
-    "test:admin": "clear && docker exec -it resonate-api yarn mocha test/Admin.ts",
-    "test:user": "clear && docker exec -it resonate-api yarn mocha test/User.ts"
+    "test:baseline:all": "clear && docker exec -it resonate-api yarn mocha test/baseline",
+    "test:api": "clear && docker exec -it resonate-api yarn mocha test/baseline/Api.ts",
+    "test:admin": "clear && docker exec -it resonate-api yarn mocha test/baseline/Admin.ts",
+    "test:user": "clear && docker exec -it resonate-api yarn mocha test/baseline/User.ts"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",

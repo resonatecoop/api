@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testTrackId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../testConfig')
-const MockAccessToken = require('../MockAccessToken')
+const { request, expect, testUserId, testTrackId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const MockAccessToken = require('../../MockAccessToken')
 
-describe.skip('User.ts/user tracks endpoint test', () => {
+describe('User.ts/user tracks endpoint test', () => {
   MockAccessToken(testUserId)
 
   let response = null
@@ -18,10 +18,12 @@ describe.skip('User.ts/user tracks endpoint test', () => {
     response = await request.get('/user/tracks').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
     // FIXME: response.status should be 401, not 404
-    expect(response.status).to.eql(404)
+    expect(response.status).to.eql(401)
   })
 
-  it('should post to user tracks', async () => {
+  // FIXME: finish this test after update / delete / etc functionality is completed.
+  //    getting this endpoint to work and pass test will corrupt test data.
+  it.skip('should post to user tracks', async () => {
     response = await request.post('/user/tracks').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to all user tracks RESPONSE: ', response.text)
@@ -43,7 +45,9 @@ describe.skip('User.ts/user tracks endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should upload a file based on track id', async () => {
+  // FIXME: finish this test after update / delete / etc functionality is completed.
+  //    getting this endpoint to work and pass test will corrupt test data.
+  it.skip('should upload a file based on track id', async () => {
     // FIXME: is put the right verb? should be post?
     response = await request.put(`/user/tracks/${testTrackId}/file `).set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -66,7 +70,9 @@ describe.skip('User.ts/user tracks endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should upload a cover (image?) based on trackgroup id', async () => {
+  // FIXME: finish this test after update / delete / etc functionality is completed.
+  //    getting this endpoint to work and pass test will corrupt test data.
+  it.skip('should upload a cover (image?) based on trackgroup id', async () => {
     // FIXME: is put the right verb? should be post?
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/cover`).set('Authorization', `Bearer ${testAccessToken}`)
 

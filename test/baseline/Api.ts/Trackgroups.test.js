@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testTrackGroupId } = require('../testConfig')
+const { request, expect, testTrackGroupId } = require('../../testConfig')
 
 describe('Api.ts/Trackgroups endpoint test', () => {
   let response = null
