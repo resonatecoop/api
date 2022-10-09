@@ -17,9 +17,13 @@ module.exports = function () {
       // FIXME: We should allow the user to select an artist to add the album to
       const artist = await UserGroup.findOne({
         where: {
-          userId: ctx.profile.id
+          ownerId: ctx.profile.id
         }
       })
+      if (!artist) {
+        ctx.status = 404
+        ctx.throw(ctx.status, 'UserGroup not found for user')
+      }
       const result = await TrackGroup.create(Object.assign(body, {
         enabled: body.type === 'playlist', // FIXME: what's this enforcing?
         creatorId: artist.id

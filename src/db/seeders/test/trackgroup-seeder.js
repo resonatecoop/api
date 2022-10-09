@@ -1,6 +1,4 @@
 
-// https://www.appsloveworld.com/sequelizejs/100/6/orm-sequelize-can-i-use-raw-queries-in-seeders-files
-
 // FIXME: original seeder duplicates user inserts. 'user' inserts are removed from this seeder
 
 module.exports = {

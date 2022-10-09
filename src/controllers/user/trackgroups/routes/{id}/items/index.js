@@ -1,11 +1,6 @@
 const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
 const { authenticate } = require('../../../../authenticate')
 
-const {
-  validateTrackgroupItems,
-  validateParams
-} = require('../../../../../../schemas/trackgroup')
-
 module.exports = function () {
   const operations = {
     PUT: [authenticate, PUT],
@@ -22,23 +17,7 @@ module.exports = function () {
   }
 
   async function PUT (ctx, next) {
-    let isValid = validateParams(ctx.params)
-
-    if (!isValid) {
-      const { message, dataPath } = validateParams.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     const body = ctx.request.body
-
-    isValid = validateTrackgroupItems(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validateTrackgroupItems.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
 
     try {
       let result = await TrackGroup.findOne({
@@ -108,6 +87,7 @@ module.exports = function () {
     await next()
   }
 
+  // FIXME: add body validation in open api spec
   PUT.apiDoc = {
     operationId: 'updateTrackgroupItems',
     description: 'Replace existing trackgroup items if any',

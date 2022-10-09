@@ -1,18 +1,17 @@
 
 const baseURL = 'http://localhost:4000/api/v3'
-// const baseURL = "https://stream.resonate.coop/api/v3/"
 const request = require('supertest')(baseURL)
-
-// Do this to enable auth persistence
-//      https://stackoverflow.com/questions/14001183/how-to-authenticate-supertest-requests-with-passport
-const persistedRequest = require('supertest').agent(baseURL)
 
 const expect = require('chai').expect
 
-//  FIXME: have to switch REDIS_HOST to 127.0.0.1 and comment out REDIS_PASSWORD to get tests to run.
 const TestRedisAdapter = require('../src/auth/redis-adapter')
 
+// generic user
 const testUserId = '17203153-e2b0-457f-929d-5abe4e322ea1'
+// admin user from table 'users'
+const testAdminUserId = '71175a23-9256-41c9-b8c1-cd2170aa6591'
+// listerner user from table 'users'
+const testListenerUserId = '251c01f6-7293-45f6-b8cd-242bdd76cd0d'
 const testTrackGroupId = '84322e4f-0247-427f-8bed-e7617c3df5ad'
 const testTagId = 'asdf'
 const testLabelId = 'asdf'
@@ -25,9 +24,10 @@ const testInvalidAccessToken = 'invalid-invalid-invalid-invalid'
 module.exports = {
   baseURL,
   request,
-  persistedRequest,
   expect,
   testUserId,
+  testAdminUserId,
+  testListenerUserId,
   testTrackGroupId,
   testTagId,
   testLabelId,
