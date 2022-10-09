@@ -23,7 +23,7 @@
     "docker:seed:undo:all:test": "docker exec -it resonate-api npx sequelize db:seed:undo:all --config src/config/databases.js --seeders-path src/db/seeders/test",
     "lint": "standard",
     "lint:fix": "standard --fix",
-    "test:all": "clear && docker exec -it resonate-api yarn mocha test",
+    "test:all": "docker exec -it resonate-api yarn mocha test",
     "test:accessTokenExample": "clear && docker exec -it resonate-api yarn mocha test/auth/AccessTokenExample.test.js",
     "test:baseline:all": "clear && docker exec -it resonate-api yarn mocha test/baseline",
     "test:api": "clear && docker exec -it resonate-api yarn mocha test/baseline/Api.ts",

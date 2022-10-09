@@ -17,6 +17,7 @@ describe('User.ts/misc user info endpoint test', () => {
 
     expect(response.status).to.eql(401)
   })
+
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/plays/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
@@ -45,6 +46,8 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
+
+  // FIXME: Skipping because it uses old mysql databases
   it('should get user plays history artists (?)', async () => {
     response = await request.get('/user/plays/history/artists').set('Authorization', `Bearer ${testAccessToken}`)
 

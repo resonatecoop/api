@@ -29,6 +29,7 @@ const findSession = async (ctx) => {
   if (!ctx.accessToken) {
     return null
   }
+
   const session = await adapter.find(ctx.accessToken)
   if (session?.accountId) {
     const user = await User.findOne({

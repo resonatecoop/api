@@ -33,7 +33,7 @@ module.exports = function () {
 
       const wallet = await Credit.findOne({
         where: {
-          user_id: ctx.profile.userId
+          user_id: ctx.profile.id
         }
       })
 
@@ -45,7 +45,7 @@ module.exports = function () {
       const currentCount = await Play.count({
         where: {
           track_id: tid,
-          user_id: ctx.profile.legacyId,
+          user_id: ctx.profile.id,
           event: 1
         }
       })

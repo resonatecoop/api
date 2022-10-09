@@ -15,13 +15,13 @@ const MockAccessToken = (userId) => {
   const adapter = new TestRedisAdapter('AccessToken')
 
   // Give a test access token to a Redis. Then Redis will believe there is a valid login.
-  before('send access token to Redis', () => {
-    adapter.upsert(testAccessToken, {
+  before('send access token to Redis', async () => {
+    await adapter.upsert(testAccessToken, {
       accountId: userId
     })
   })
   // Remove a test access token from a Redis.
-  after('remove access token from Redis', () => {
+  after('remove access token from Redis', async () => {
     adapter.destroy(testAccessToken)
   })
 }
