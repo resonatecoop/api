@@ -1,20 +1,36 @@
-name: Unit tests
 on:
   push:
     branches:
       - main
+      - features/**
+      - dependabot/**
   pull_request:
+    branches:
+      - main
 
 jobs:
-  unit:
+  docker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v1
 
-      - uses: actions/setup-node@v2
+      - name: Start containers
+        run: docker-compose -f "docker-compose.test.yml" up -d --build
 
-      - name: Install our packages
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Install dependencies
         run: yarn install
 
-      - name: Run our tests
-        run: yarn test
+      - name: Run tests
+        run: yarn test:all --exit
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
