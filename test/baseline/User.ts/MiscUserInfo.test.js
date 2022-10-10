@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const { request, expect, testAdminUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 
 describe('User.ts/misc user info endpoint test', () => {
-  MockAccessToken(testUserId)
+  MockAccessToken(testAdminUserId)
 
   let response = null
 
@@ -24,6 +24,8 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(response.status).to.eql(401)
   })
 
+  //  FIXME: still debugging this, but it looks like the problem comes from
+  //    .../scripts/reports/plays.js, first subQuery near line 30
   it('should get user plays within date range', async () => {
     response = await request.get(`/user/plays/stats?from=${from}&to=${to}`).set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -48,7 +50,7 @@ describe('User.ts/misc user info endpoint test', () => {
   })
 
   // FIXME: Skipping because it uses old mysql databases
-  it('should get user plays history artists (?)', async () => {
+  it.skip('should get user plays history artists (?)', async () => {
     response = await request.get('/user/plays/history/artists').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('user plays history artists RESPONSE: ', response.text)
@@ -73,26 +75,22 @@ describe('User.ts/misc user info endpoint test', () => {
   it('should get user collections', async () => {
     response = await request.get('/user/collection/').set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('user collections RESPONSE: ', response.text)
-
     expect(response.status).to.eql(200)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    const attributes = response.body
+    expect(attributes).to.be.an('object')
+    expect(attributes).to.include.keys('data', 'count', 'pages')
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    expect(attributes.data).to.be.an('array')
+    expect(attributes.data.length).to.eql(0)
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(attributes.count).to.eql(0)
+    expect(attributes.pages).to.eql(0)
   })
-  it('should get user plays history', async () => {
+  // FIXME: there are two possible endpoints here: artists.js and tracks.js
+  //    not sure which one to test, or both, or...
+  //    Figure this out then finish test
+  it.skip('should get user plays history', async () => {
     response = await request.get('/user/plays/history/').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('user plays history RESPONSE: ', response.text)
@@ -117,24 +115,19 @@ describe('User.ts/misc user info endpoint test', () => {
   it('should get user favorites', async () => {
     response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('user favorites RESPONSE: ', response.text)
+    expect(response.status).to.eql(200)
 
     expect(response.status).to.eql(200)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    const attributes = response.body
+    expect(attributes).to.be.an('object')
+    expect(attributes).to.include.keys('data', 'count', 'pages')
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    expect(attributes.data).to.be.an('array')
+    expect(attributes.data.length).to.eql(0)
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(attributes.count).to.eql(0)
+    expect(attributes.pages).to.eql(0)
   })
   // FIXME: finish this test after update / delete / etc functionality is completed.
   //    getting this endpoint to work and pass test will corrupt test data.

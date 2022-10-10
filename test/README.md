@@ -14,22 +14,14 @@ The api(v4) tests live in the `/api/test` directory. In this directory there are
 * `integration` tests are intended for Github Actions and any other CI/CD needs. These test will be developed once the `baseline` test sets are stable.
 
 ## How the test data was made
-You should never need to create test data. However, you can read an overview of how the test data was made [here](./HowTheTestDataWasMade.md). 
-
+You should never re-create or replace the base test data set. However, you can add new test data if and when needed. For help with adding new data, you can start by reading an overview of how the test data was made [here](./HowTheTestDataWasMade.md). 
+****
 ## Dev Notes
 This section changes over time, as issues arise and are dealt with.
 * We are currently skipping the `Admin.ts` endpoint tests. The concensus is that these endpoints should be rewritten.
 * We are skipping tests for `Labels`, and `Tags` because of upstream data migration issues and incomplete funcitonality to be resolved at some point soon.
-* These tests run locally under Mocha in watch mode. Watch mode is enabled locally in the `.mocharc.js` config file, which is located in the project root folder. You should not run these tests in watch mode when deploying them to CI/CD pipelines. For reference, here are the contents of the `mocharc.js` config file:
-```sh
-module.exports = {
-    "reporter": "spec",
-    "watch": true,
-    "watch-files": ['test/**/*.js', 'src/**/*.js'],
-    "watch-ignore": ['node_modules'],
-    "recursive": true
-};
-```
+* These tests run locally under Mocha in watch mode. Watch mode is enabled locally in the `.mocharc.js` config file, which is located in the project root folder. You should not run these tests in watch mode when deploying them to CI/CD pipelines. You can reference the `.mocharc.js` file [here](../.mocharc.js).
+
 * If you are not familiar with Mocha, take a moment and familiarize yourself with `only` and `skip`. `only` and `skip` are your friends, and can help focus on specific tests as they are being developed, or problems with tests, or when a test fails, etc.
 
 * You can create more test script commands in the api (v4) repo's `package.json` file, if you need something else.

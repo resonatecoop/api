@@ -1,9 +1,13 @@
 
 # How the test data was made
 
-You should not ever need to do this. If you do, you will have to rewrite every assertion in every test. You don't want to do that unless it is absolutely necessary.
+TL;DR: Add new test data by creating new SQL INSERT INTO statements into the appropriate test data seeder in the `api/src/db/seeders/test` folder.
 
-That being said, here is an overview of the process that created the test data:
+You should never replace the existing test data set. If you do, you will have to rewrite every assertion in every test.
+
+DO NOT change the existing SQL statements.
+
+That being said, you might need to add new test data. What follows is an overview of the process that created the original test data set. It might help you figure out how to create additional, new test data:
 
 * The development Docker container was started up
 * The pgsql service in this Docker container was accessed externally using pgAdmin

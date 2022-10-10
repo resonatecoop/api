@@ -22,7 +22,7 @@ const MockAccessToken = (userId) => {
   })
   // Remove a test access token from a Redis.
   after('remove access token from Redis', async () => {
-    adapter.destroy(testAccessToken)
+    await adapter.destroy(testAccessToken)
   })
 }
 
