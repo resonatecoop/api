@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     modelName: 'PlaylistItem',
     paranoid: true,
-    underscore: true,
+    underscored: true,
     tableName: 'playlist_items'
   })
 

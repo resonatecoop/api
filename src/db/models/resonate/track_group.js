@@ -131,7 +131,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
-    underscore: true,
+    underscored: true,
     modelName: 'TrackGroup',
     tableName: 'track_groups'
   })

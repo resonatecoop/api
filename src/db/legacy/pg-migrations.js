@@ -72,7 +72,7 @@ const migrateUserGroups = async (client) => {
         description: result.description,
         shortBio: result.short_bio,
         email: result.group_email,
-        typeId: typeMap[result.type.Name]?.id ?? typeMap.artist?.id
+        typeId: typeMap.artist?.id // See https://github.com/resonatecoop/api/issues/101
       })))
 
     await sequelize.query(`

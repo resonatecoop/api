@@ -477,6 +477,10 @@ const migrateLinks = async (client) => {
   })
 }
 
+const migrateLabels = async (client) => {
+  // TODO
+}
+
 module.exports = async (client) => {
   await migrateTracks(client)
   await migratePlaylists(client)
@@ -488,4 +492,5 @@ module.exports = async (client) => {
   await migratePlays(client)
   await migrateImages(client)
   await migrateLinks(client)
+  await migrateLabels(client)
 }
