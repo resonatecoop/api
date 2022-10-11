@@ -1,13 +1,13 @@
 
 # How the test data was made
 
-TL;DR: Add new test data by creating new SQL INSERT INTO statements into the appropriate test data seeder in the `api/src/db/seeders/test` folder.
+TL;DR: Add new test data by creating new SQL INSERT INTO statements in a new test data seeder in the `api/src/db/seeders/test` folder. Create a new seeder in order to not disrupt the existing test data. You will need to re-seed the test database, as if you were starting the test container for the first time.
 
 You should never replace the existing test data set. If you do, you will have to rewrite every assertion in every test.
 
-DO NOT change the existing SQL statements.
+Please DO NOT change the existing SQL statements / test seeders. You can add new test data to the test data set by creating new test seeders in the `api/src/db/seeders/test` directory and adding the appropriate SQL INSERT INTO statements into the new seeders.
 
-That being said, you might need to add new test data. What follows is an overview of the process that created the original test data set. It might help you figure out how to create additional, new test data:
+What follows is an overview of the process that created the original test data set. It might help you figure out how to create additional, new test data:
 
 * The development Docker container was started up
 * The pgsql service in this Docker container was accessed externally using pgAdmin
@@ -28,6 +28,6 @@ That being said, you might need to add new test data. What follows is an overvie
 * Now there is a plain text/sql file at the name/location you saved
   * This file should contain a lot of INSERT INTO statements.
   * These statements go into api/src/db/seeders/test files.
-    * You will need to work out which statements belong in which file.
+    * You will need to work out which statements belong in which file. It is probably best to create new seeder files, so that the original, base data is not disrupted.
 
-* Don't forget to run the test seeders after you enter all of the INSERT INTO statements.
+* Don't forget to re-seed the database after you enter all of the INSERT INTO statements.
