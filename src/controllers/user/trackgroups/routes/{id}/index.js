@@ -204,11 +204,15 @@ module.exports = function () {
       const where = {
         creatorId: ctx.profile.id,
         id: ctx.params.id
+        // creatorId: '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', // creator_id from database
+        // id: '84322e4f-0247-427f-8bed-e7617c3df5ad' // track group id from database
       }
 
       if (type) {
         where.type = type
       }
+
+      console.log('trackgroups/where: ', where)
 
       // if (ctx.profile.role === 'label-owner') {
       //   const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
