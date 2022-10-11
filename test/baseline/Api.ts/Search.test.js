@@ -31,5 +31,13 @@ describe('Api.ts/search endpoint test', () => {
 
     expect(response.status).to.eql(200)
     expect(response.body.data.artists[0].displayName).to.eql(displayName)
+
+    // remove the record created by UserGroup.create()
+    await UserGroup.destroy({
+      where: {
+        displayName,
+        typeId: type.id
+      }
+    })
   })
 })
