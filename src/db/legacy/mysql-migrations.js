@@ -1,6 +1,6 @@
 const { keyBy, uniq } = require('lodash')
 const { Op } = require('sequelize')
-const { User, Favorite, Play, File, UserGroup, Playlist, PlaylistItem, Track, TrackGroupItem, TrackGroup, Image, UserGroupLink } = require('../models')
+const { User, Favorite, Play, File, UserGroup, UserGroupType, UserGroupMember, Playlist, PlaylistItem, Track, TrackGroupItem, TrackGroup, Image, UserGroupLink, Resonate: sequelize } = require('../models')
 
 // eslint-disable-next-line
 function sleep (ms) {
@@ -478,7 +478,46 @@ const migrateLinks = async (client) => {
 }
 
 const migrateLabels = async (client) => {
-  // TODO
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+  const types = await UserGroupType.findAll()
+  const typeMap = keyBy(types, 'name')
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_usermeta WHERE meta_key IN ('mylabel')
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        // First we need to create labels for everyone who claims to be a label
+        const labelIds = uniq(results
+          .filter(r => r !== '')
+          .map(r => +r.meta_value)
+          .filter(r => !isNaN(r)))
+        console.log('labelIds', labelIds.length)
+
+        await sequelize.query(`
+          update user_groups 
+          set type_id = ${typeMap.label.id}
+          where user_groups.owner_id in (select id from users where legacy_id in (${labelIds.join(',')}))
+        `)
+        // Then we need to insert those connections into UserGroupMember
+        await UserGroupMember.bulkCreate(results
+          .filter(r => usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id &&
+            r.meta_value !== '' &&
+            !isNaN(+r.meta_value) &&
+            usersGroupedByLegacyId[+r.meta_value]?.user_groups?.[0]?.id)
+          .map(r => ({
+            memberId: usersGroupedByLegacyId[r.user_id].user_groups?.[0].id,
+            belongsToId: usersGroupedByLegacyId[+r.meta_value].user_groups?.[0].id
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      console.log('added labels')
+      resolve()
+    })
+  })
 }
 
 module.exports = async (client) => {

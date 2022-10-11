@@ -3,11 +3,13 @@ module.exports = {
     return queryInterface.createTable('user_group_members', {
       member_id: {
         type: DataTypes.UUID,
-        field: 'member_id'
+        field: 'member_id',
+        primaryKey: true
       },
       belongsToId: {
         type: DataTypes.UUID,
-        field: 'belongs_to_id'
+        field: 'belongs_to_id',
+        primaryKey: true
       }
     })
   },

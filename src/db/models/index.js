@@ -36,6 +36,7 @@ db.Image = require(path.join(__dirname, '/resonate', 'image.js'))(db.Resonate, D
 db.UserGroupLink = require(path.join(__dirname, '/resonate', 'user_group_link.js'))(db.Resonate, DataTypes)
 db.Playlist = require(path.join(__dirname, '/resonate', 'playlist.js'))(db.Resonate, DataTypes)
 db.PlaylistItem = require(path.join(__dirname, '/resonate', 'playlist_item.js'))(db.Resonate, DataTypes)
+db.UserGroupMember = require(path.join(__dirname, '/resonate', 'user_group_member.js'))(db.Resonate, DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

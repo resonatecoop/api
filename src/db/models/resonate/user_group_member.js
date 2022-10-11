@@ -4,13 +4,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       validate: {
         isUUID: 4
-      }
+      },
+      primaryKey: true
     },
     belongsToId: {
       type: DataTypes.UUID,
       validate: {
         isUUID: 4
-      }
+      },
+      primaryKey: true
     }
   }, {
     sequelize,
