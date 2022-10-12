@@ -142,6 +142,7 @@ module.exports = function () {
           'performers',
           'release_date'
         ],
+        distinct: true,
         include: [
           {
             model: File,

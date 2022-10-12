@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testAdminUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const { request, expect, testUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 
 describe('User.ts/user endpoint test', () => {
-  MockAccessToken(testAdminUserId)
+  MockAccessToken(testArtistUserId)
 
   let response = null
 
@@ -34,19 +34,19 @@ describe('User.ts/user endpoint test', () => {
     expect(theData).to.be.an('object')
 
     expect(theData).to.include.keys('nickname', 'token', 'id', 'country', 'newsletterNotification', 'email', 'role', 'credit', 'userGroups', 'gravatar', 'profiles', 'avatar')
-    expect(theData.nickname).to.eql('admin')
+    expect(theData.nickname).to.eql('artist')
     expect(theData.token).to.eql('test-!@#$-test-%^&*')
-    expect(theData.id).to.eql('71175a23-9256-41c9-b8c1-cd2170aa6591')
+    expect(theData.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
     expect(theData.country).to.be.null
     expect(theData.newsletterNotification).to.be.null
-    expect(theData.email).to.eql('admin@admin.com')
+    expect(theData.email).to.eql('artist@admin.com')
 
     const theRole = theData.role
     expect(theRole).to.be.an('object')
     expect(theRole).to.include.keys('id', 'name', 'description', 'isDefault')
-    expect(theRole.id).to.eql(1)
-    expect(theRole.name).to.eql('superadmin')
-    expect(theRole.description).to.eql('SuperAdminRole has all permissions and can assign admins')
+    expect(theRole.id).to.eql(4)
+    expect(theRole.name).to.eql('artist')
+    expect(theRole.description).to.eql('An artist')
     expect(theRole.isDefault).to.be.false
 
     const theCredit = theData.credit
@@ -56,9 +56,9 @@ describe('User.ts/user endpoint test', () => {
 
     const theUserGroups = theData.userGroups
     expect(theUserGroups).to.be.an('array')
-    expect(theUserGroups.length).to.eql(0)
+    expect(theUserGroups.length).to.eql(1)
 
-    expect(theData.gravatar).to.eql('https://s.gravatar.com/avatar/64e1b8d34f425d19e1ee2ea7236d3028')
+    expect(theData.gravatar).to.eql('https://s.gravatar.com/avatar/97f8b41e7967dcc56a5a0de728807d23')
 
     const theProfiles = theData.profiles
     expect(theProfiles).to.be.an('array')
@@ -144,10 +144,10 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'numberOfPages', 'status')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(0)
+    expect(attributes.data.length).to.eql(3)
 
-    expect(attributes.count).to.eql(0)
-    expect(attributes.numberOfPages).to.eql(0)
+    expect(attributes.count).to.eql(3)
+    expect(attributes.numberOfPages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
 

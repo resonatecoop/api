@@ -202,7 +202,6 @@ module.exports = function () {
       const { type } = ctx.request.query
 
       const where = {
-        creatorId: ctx.profile.id,
         id: ctx.params.id
       }
 
@@ -266,9 +265,12 @@ module.exports = function () {
         include: [
           {
             model: UserGroup,
-            required: false,
+            required: true,
             attributes: ['id', 'displayName'],
-            as: 'userGroup'
+            as: 'userGroup',
+            where: {
+              ownerId: ctx.profile.id
+            }
           },
           {
             model: File,

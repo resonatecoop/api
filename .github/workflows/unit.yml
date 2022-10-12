@@ -1,20 +1,55 @@
 name: Unit tests
+
 on:
   push:
     branches:
       - main
+      - features/**
+      - dependabot/**
   pull_request:
+    branches:
+      - main
 
 jobs:
-  unit:
+  docker:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v1
 
-      - uses: actions/setup-node@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
 
-      - name: Install our packages
-        run: yarn install
+      - name: Copy env file
+        run: |
+          cp .env.example .env
+          cp jwk-keys.json.example jwk-keys.json
+          cp cookies-keys.json.example cookies-keys.json
+      - name: Echo CI
+        run: echo ${CI}
 
-      - name: Run our tests
-        run: yarn test
+      - name: Install
+        run: yarn install --force
+
+      - name: Start containers
+        run: docker-compose -f docker-compose.yml -f docker-compose.test.yml up -d --build
+
+      - name: Migrations
+        run: docker exec resonate-api npx sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations
+
+      - name: Seed data
+        run: docker exec resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders/test
+
+      - name: Sleep to give things time to start
+        run: sleep 30s
+
+      - name: Run tests
+        run: docker exec resonate-api yarn mocha test --exit
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose down
