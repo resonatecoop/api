@@ -157,7 +157,7 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     const where = {
-      // creator_id: ctx.profile.id,
+      creatorId: ctx.profile.id,
       id: ctx.params.id
     }
 
