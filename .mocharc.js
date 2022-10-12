@@ -3,9 +3,11 @@
 // https://www.testim.io/blog/mocharc-configuration/
 // https://stackoverflow.com/questions/72479267/mocha-watch-with-docker
 
+const shouldWatch = process.env.CI === "true" ? false : true;
+
 module.exports = {
     "reporter": "spec",
-    "watch": process.env.CI ? false : true,
+    "watch": shouldWatch,
     "watch-files": ['test/**/*.js', 'src/**/*.js'],
     "watch-ignore": ['node_modules'],
     // "file": 'test/common.js',

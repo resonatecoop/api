@@ -76,6 +76,7 @@ module.exports = function () {
         limit,
         offset: page > 1 ? (page - 1) * limit : 0,
         where,
+        distinct: true,
         include: [
           {
             model: TrackGroup,

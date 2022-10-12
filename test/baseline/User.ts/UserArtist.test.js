@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testArtistId, testAdminUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const { request, expect, testArtistId, testArtistUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 
 describe('User.ts/user artist endpoint test', () => {
-  MockAccessToken(testAdminUserId)
+  MockAccessToken(testArtistUserId)
 
   let response = null
 
@@ -14,6 +14,7 @@ describe('User.ts/user artist endpoint test', () => {
 
     expect(response.status).to.eql(401)
   })
+
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/artists').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
@@ -30,12 +31,13 @@ describe('User.ts/user artist endpoint test', () => {
     expect(attributes).to.include.keys('count', 'data', 'pages', 'status')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(0)
+    expect(attributes.data.length).to.eql(1)
 
-    expect(attributes.count).to.eql(0)
-    expect(attributes.pages).to.eql(0)
+    expect(attributes.count).to.eql(1)
+    expect(attributes.pages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
+
   it('should get user artists by artist id', async () => {
     response = await request.get(`/user/artists/${testArtistId}`).set('Authorization', `Bearer ${testAccessToken}`)
 

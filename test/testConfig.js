@@ -8,6 +8,8 @@ const TestRedisAdapter = require('../src/auth/redis-adapter')
 
 // generic user
 const testUserId = '17203153-e2b0-457f-929d-5abe4e322ea1'
+// artist user from table 'users'
+const testArtistUserId = '1c88dea6-0519-4b61-a279-4006954c5d4c'
 // admin user from table 'users'
 const testAdminUserId = '71175a23-9256-41c9-b8c1-cd2170aa6591'
 // listerner user from table 'users'
@@ -27,6 +29,7 @@ module.exports = {
   expect,
   testUserId,
   testAdminUserId,
+  testArtistUserId,
   testListenerUserId,
   testTrackGroupId,
   testTagId,

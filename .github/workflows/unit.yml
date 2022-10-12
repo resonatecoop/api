@@ -29,6 +29,8 @@ jobs:
           cp .env.example .env
           cp jwk-keys.json.example jwk-keys.json
           cp cookies-keys.json.example cookies-keys.json
+      - name: Echo CI
+        run: echo ${CI}
 
       - name: Install
         run: yarn install --force
