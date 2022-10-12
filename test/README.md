@@ -40,7 +40,7 @@ yarn docker:compose:test:up
 ```
 If this is the first time you have started this test container, you will need to seed the test database. You should only do this once. You don't have to do this every time you start the test container.
 ```sh
-docker:seed:all:test
+yarn docker:seed:all:test
 ```
 * You might need to shutdown then restart the Docker test container after seeding the test data.
  
@@ -86,7 +86,7 @@ As work on the new API continues, you might need to change the test runner confi
 * `Template.test.js` in the `test` folder. You can copy this file to start writing new tests more quickly.
 * `testConfig.js` in the `test` folder. It has vars and modules that are used in test files. It's basically used as an include header at the beginning of each test file. If you create new tests, this file will help you go faster. **Look through this file before adding new `requires` to your tests. What you need might already be in this file.**
 * `MockAccessToken.js` in the `test` folder. This file can help you test endpoints that require authentication. It's rather simple. Refer to the file for more infos.
-* If you use a model to `.create()` a record during a test set-up, make sure that you `.destroy()` the record during test tear-down. Please do not leave abandoned data in the test database. [Here is an example](./test/../baseline/Api.ts/Search.test.js) of a test that does this. 
+* If you use a model to `.create()` a record during a test set-up, make sure that you `.destroy()` the record during test tear-down. Please do not leave abandoned data in the test database. [Here is an example](./test/../baseline/Api.ts/Search.test.js) of a test that properly sets up and tears down with an in-test data record. 
 
 ## To Do
 * Rearrange / refactor the test seeder files, to better reflect what the different groups of seeders actually do.
