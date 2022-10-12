@@ -158,7 +158,8 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
+  //    it is described as a POST but tested as a GET. figure this out first.
+  //    getting this endpoint to work and pass test might corrupt test data.
   it.skip('should post to user favorites resolve (?)', async () => {
     response = await request.get('/user/favorites/resolve').set('Authorization', `Bearer ${testAccessToken}`)
 

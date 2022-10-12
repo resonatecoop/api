@@ -3,9 +3,8 @@
 
 // Examaple for how to use the MockAccessToken.js file
 
-const { testAccessToken, testUserId } = require('../../testConfig')
+const { expect, testAccessToken, testUserId } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
-const { expect } = require('chai')
 
 describe('Access token example test', () => {
   // Provides before() and after(). sets dummy accessToken, in order to test protected routes.
@@ -14,10 +13,10 @@ describe('Access token example test', () => {
   //  FIXME: should actually get the token from Redis then display it, in order to confirm
   //    that is was set correctly.
 
-  it('should use correct test access token', async () => {
+  it('should have correct test access token', async () => {
     expect(testAccessToken).to.eql('test-!@#$-test-%^&*')
   })
-  it('should use correct test user id', async () => {
+  it('should have correct test user id', async () => {
     expect(testUserId).to.eql('17203153-e2b0-457f-929d-5abe4e322ea1')
   })
 })

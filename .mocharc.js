@@ -10,6 +10,5 @@ module.exports = {
     "watch": shouldWatch,
     "watch-files": ['test/**/*.js', 'src/**/*.js'],
     "watch-ignore": ['node_modules'],
-    // "file": 'test/common.js',
     "recursive": true
 };

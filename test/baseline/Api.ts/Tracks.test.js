@@ -19,7 +19,6 @@ describe('Api.ts/track endpoint test', () => {
     expect(attributes.data).to.be.an('array')
     expect(attributes.data.length).to.eql(30)
 
-    //  FIXME: find a way to test all elements of data array. for now, just test the first one.
     const theData = attributes.data[0]
     expect(theData).to.include.keys('id', 'title', 'album', 'cover_metadata', 'artist', 'status', 'url', 'images')
     expect(theData.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')

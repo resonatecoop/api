@@ -22,7 +22,8 @@ describe('User.ts/user plays endpoint test', () => {
   })
 
   // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
+  //    it's described as a POST but tested as a GET. Figure this out before proceeding.
+  //    getting this endpoint to work and pass test might corrupt test data.
   it.skip('should post to user plays (all of them?)', async () => {
     response = await request.get('/user/plays').set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -70,7 +71,8 @@ describe('User.ts/user plays endpoint test', () => {
     // expect(attributes.status).to.eql('ok')
   })
   // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
+  //    it's described as a POST but tested as a GET. Figure this out before proceeding.
+  //    getting this endpoint to work and pass test might corrupt test data.
   it.skip('should post to user plays resolve (?)', async () => {
     response = await request.get('/user/plays/resolve').set('Authorization', `Bearer ${testAccessToken}`)
 
