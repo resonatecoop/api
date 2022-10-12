@@ -202,7 +202,7 @@ module.exports = function () {
       const { type } = ctx.request.query
 
       const where = {
-        // creatorId: ctx.profile.id,
+        creatorId: ctx.profile.id,
         id: ctx.params.id
       }
 
