@@ -157,7 +157,7 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     const where = {
-      creator_id: ctx.profile.id,
+      ownerId: ctx.profile.id,
       id: ctx.params.id
     }
 
@@ -168,8 +168,8 @@ module.exports = function () {
           {
             model: User,
             required: false,
-            attributes: ['id', 'displayName'],
-            as: 'user'
+            attributes: ['id', 'displayName']
+            // as: 'user'
           }
         ]
       })

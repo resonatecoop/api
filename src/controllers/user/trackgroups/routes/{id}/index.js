@@ -1,4 +1,4 @@
-const { User, TrackGroup, TrackGroupItem, Track, File } = require('../../../../../db/models')
+const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 const { authenticate } = require('../../../authenticate')
@@ -204,15 +204,11 @@ module.exports = function () {
       const where = {
         creatorId: ctx.profile.id,
         id: ctx.params.id
-        // creatorId: '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', // creator_id from database
-        // id: '84322e4f-0247-427f-8bed-e7617c3df5ad' // track group id from database
       }
 
       if (type) {
         where.type = type
       }
-
-      console.log('trackgroups/where: ', where)
 
       // if (ctx.profile.role === 'label-owner') {
       //   const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
@@ -251,7 +247,8 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'artistId',
+          // 'artistId',
+          'creatorId',
           'display_artist',
           'download',
           'id',
@@ -268,10 +265,10 @@ module.exports = function () {
         ],
         include: [
           {
-            model: User,
+            model: UserGroup,
             required: false,
             attributes: ['id', 'displayName'],
-            as: 'user'
+            as: 'userGroup'
           },
           {
             model: File,
@@ -348,7 +345,7 @@ module.exports = function () {
           artistId: data.artistId,
           display_artist: data.display_artist,
           user: {
-            id: data.user.id
+            id: data.user?.id
           },
           download: data.download,
           id: data.id,

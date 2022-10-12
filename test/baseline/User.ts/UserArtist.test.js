@@ -36,45 +36,40 @@ describe('User.ts/user artist endpoint test', () => {
     expect(attributes.pages).to.eql(0)
     expect(attributes.status).to.eql('ok')
   })
-
-  //  FIXME: 20221011 mb. Skip.
-  //  Returns error:
-  //    {"status":404,"message":"User is associated to UserGroup using an alias. You've included an alias (user), but it does not match the alias(es) defined in your association (User).","data":null}
-  //  Not clear if:
-  //    - The use case for this endpoint is correct
-  //    - The code for this endpoint is correct
-  //    - The data for this endpoint is correct
-  //
-  //    Can't find an instance of message 'User is associated to UserGroup using an alias. You've included an alias ...' anywhere in the codebase, so
-  //      it's difficult to find where the error is actually thrown. It has to be somewhere, but I just can't find it
-  //
-  //    The assumption is that an admin user should be able to look at a user's artists, by artist id. No idea what this UserGroup / alias / association
-  //      business is about
-  //
-  //    It is very possible that I'm missing something simple / obvious here, but as-built this endpoint doesn't make sense
-  //      - So, skip for now, until we can resolve these issues
-  //
-  it.skip('should get user artists by artist id', async () => {
+  it('should get user artists by artist id', async () => {
     response = await request.get(`/user/artists/${testArtistId}`).set('Authorization', `Bearer ${testAccessToken}`)
-
-    console.log('user artists by artist id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    const attributes = response.body
+    expect(attributes).to.be.an('object')
+    expect(attributes).to.include.keys('data', 'status')
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    expect(attributes.data).to.be.an('object')
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
+    const theData = attributes.data
+    // FIXME: has addressId and AddressId
+    expect(theData).to.include.keys('id', 'ownerId', 'typeId', 'displayName', 'description', 'shortBio', 'email', 'addressId', 'updatedAt', 'createdAt', 'deletedAt', 'AddressId', 'User')
+    expect(theData.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theData.ownerId).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
+    expect(theData.typeId).to.eql(1)
+    expect(theData.displayName).to.eql('matrix')
+    expect(theData.description).to.be.null
+    expect(theData.shortBio).to.be.null
+    expect(theData.email).to.be.null
+    expect(theData.addressId).to.be.null
+    expect(theData.updatedAt).to.eql('2022-09-28T17:31:59.495Z')
+    expect(theData.createdAt).to.eql('2022-09-28T17:31:59.495Z')
+    expect(theData.deletedAt).to.be.null
+    expect(theData.AddressId).to.be.null
 
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    const theUser = theData.User
+    expect(theUser).to.be.an('object')
+    expect(theUser).to.include.keys('id', 'displayName')
+    expect(theUser.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
+    expect(theUser.displayName).to.eql('artist')
+
+    expect(attributes.status).to.eql('ok')
   })
 
   // FIXME: finish this test after update / delete / etc functionality is completed.

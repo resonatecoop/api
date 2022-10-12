@@ -151,46 +151,98 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  //  FIXME: 20221011 mb. Skip.
-  //  Returns error:
-  //    {"status":404,"message":"User is not associated to TrackGroup!","data":null}
-  //  Not clear if:
-  //    - The use case for this endpoint is correct
-  //    - The code for this endpoint is correct
-  //    - The data for this endpoint is correct
-  //
-  //    Can't find an instance of message 'User is not associated to TrackGroup!' anywhere in the codebase, so
-  //      it's difficult to find where the error is actually thrown. It has to be somewhere, but I just can't find it.
-  //
-  //    The assumption is that an admin user should be able to look at a user's trackgroups, by track group id
-  //      - However, the code looks like it only associates trackgroups to creator id
-  //        - The way the code is currently written, it expects the admin user to be the creator
-  //          - Admin user is not the creator, so there is no way this test can pass, meaning it is possible
-  //            that there is something off with the assumptions / design / coding of this endpoint
-  //    It is very possible that I'm missing something simple / obvious here, but as-built this endpoint doesn't make sense
-  //      - So, skip for now, until we can resolve this issues that make this test appear un-passable
-  //
-  it.skip('should get user trackgroups by trackgroup id', async () => {
+  it('should get user trackgroups by trackgroup id', async () => {
     response = await request.get(`/user/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
-
-    console.log('user trackgroup by trackgroup id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    const attributes = response.body
+    expect(attributes).to.be.an('object')
+    expect(attributes).to.include.keys('data', 'status')
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    expect(attributes.data).to.be.an('object')
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
+    const theData = attributes.data
+    expect(theData).to.include.keys('about', 'cover_metadata', 'display_artist', 'user', 'download', 'id', 'items', 'images', 'private', 'release_date', 'slug', 'tags', 'title', 'type')
+    expect(theData.about).to.eql('this is the best album')
 
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    const theCoverMetatdata = theData.cover_metadata
+    expect(theCoverMetatdata).to.be.an('object')
+    expect(theCoverMetatdata).to.include.keys('id')
+    expect(theCoverMetatdata.id).to.be.null
+
+    expect(theData.display_artist).to.eql('Jack')
+
+    const theUser = theData.user
+    expect(theUser).to.be.an('object')
+
+    expect(theData.download).to.be.false
+    expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')
+
+    const theItems = theData.items
+    expect(theItems).to.be.an('array')
+    expect(theItems.length).to.eql(10)
+
+    const theItem = theItems[0]
+    expect(theItem).to.be.an('object')
+    expect(theItem).to.include.keys('index', 'track')
+    expect(theItem.index).to.eql(0)
+
+    const theTrack = theItem.track
+    expect(theTrack).to.be.an('object')
+    expect(theTrack).to.include.keys('id', 'title', 'status', 'album', 'creator_id', 'artist', 'images', 'url')
+    expect(theTrack.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
+    expect(theTrack.title).to.eql('Ergonomic interactive concept')
+    expect(theTrack.status).to.eql('free')
+    expect(theTrack.album).to.eql('firewall')
+    expect(theTrack.creator_id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theTrack.artist).to.eql('Laurie Yost')
+
+    //  images for the track
+    let theImages = theTrack.images
+    expect(theImages).to.include.keys('small', 'medium', 'large')
+    expect(theImages.small).to.be.an('object')
+    expect(theImages.small).to.include.keys('width', 'height')
+    expect(theImages.small.width).to.eql(120)
+    expect(theImages.small.height).to.eql(120)
+    expect(theImages.medium).to.be.an('object')
+    expect(theImages.medium).to.include.keys('width', 'height')
+    expect(theImages.medium.width).to.eql(600)
+    expect(theImages.medium.height).to.eql(600)
+    expect(theImages.large).to.be.an('object')
+    expect(theImages.large).to.include.keys('width', 'height')
+    expect(theImages.large.width).to.eql(1500)
+    expect(theImages.large.height).to.eql(1500)
+
+    expect(theTrack.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/44a28752-1101-4e0d-8c40-2c36dc82d035')
+
+    // images for the trackgroups
+    theImages = theData.images
+    expect(theImages).to.include.keys('small', 'medium', 'large')
+    expect(theImages.small).to.be.an('object')
+    expect(theImages.small).to.include.keys('width', 'height')
+    expect(theImages.small.width).to.eql(120)
+    expect(theImages.small.height).to.eql(120)
+    expect(theImages.medium).to.be.an('object')
+    expect(theImages.medium).to.include.keys('width', 'height')
+    expect(theImages.medium.width).to.eql(600)
+    expect(theImages.medium.height).to.eql(600)
+    expect(theImages.large).to.be.an('object')
+    expect(theImages.large).to.include.keys('width', 'height')
+    expect(theImages.large.width).to.eql(1500)
+    expect(theImages.large.height).to.eql(1500)
+
+    expect(theData.private).to.be.false
+    expect(theData.release_date).to.eql('2019-01-01')
+    expect(theData.slug).to.eql('best-album-ever')
+
+    expect(theData.tags).to.be.an('array')
+    expect(theData.tags.length).to.eql(0)
+
+    expect(theData.title).to.eql('Best album ever')
+    expect(theData.type).to.eql('lp')
+
+    expect(attributes.status).to.eql('ok')
   })
 
   // FIXME: finish this test after update / delete / etc functionality is completed.
