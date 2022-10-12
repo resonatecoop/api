@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    underscore: true,
+    underscored: true,
     paranoid: true,
     modelName: 'Credit',
     tableName: 'credits'

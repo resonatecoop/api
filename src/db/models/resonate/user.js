@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
-    underscore: true,
+    underscored: true,
     modelName: 'User',
     tableName: 'users',
     hooks: {

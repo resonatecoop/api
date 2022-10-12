@@ -1,5 +1,6 @@
-const { User, Role, UserGroupType, UserGroup, Credit, MembershipClass, UserMembership, ShareTransaction, Client } = require('../models')
+const { User, Role, UserGroupType, UserGroup, Credit, MembershipClass, UserMembership, ShareTransaction, Client, Resonate: sequelize } = require('../models')
 const { keyBy } = require('lodash')
+const { Op } = require('sequelize')
 
 const role = {
   1: 'superadmin',
@@ -11,6 +12,14 @@ const role = {
 }
 
 const migrateUsers = async (client) => {
+  await User.destroy({
+    force: true,
+    where: {
+      email: {
+        [Op.notLike]: '%admin.com' // Don't delete test admin accounts
+      }
+    }
+  })
   const roles = await Role.findAll()
   const rolesMap = keyBy(roles, 'name')
   const duplicateUsers = []
@@ -63,8 +72,17 @@ const migrateUserGroups = async (client) => {
         description: result.description,
         shortBio: result.short_bio,
         email: result.group_email,
-        typeId: typeMap[result.type.Name]?.id ?? typeMap.artist?.id
+        typeId: typeMap.artist?.id // See https://github.com/resonatecoop/api/issues/101
       })))
+
+    await sequelize.query(`
+        UPDATE users
+          SET display_name = (
+            SELECT user_groups.display_name 
+            FROM user_groups 
+            WHERE users.id = user_groups.owner_id 
+            LIMIT 1)
+      `)
   } catch (e) {
     console.error('error CREATING USER GROUP', e)
     throw e
