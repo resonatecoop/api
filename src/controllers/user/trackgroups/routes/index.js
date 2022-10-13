@@ -26,8 +26,6 @@ module.exports = function () {
         ctx.throw(ctx.status, 'UserGroup not found for user')
       }
 
-      console.log('artist', artist)
-
       const result = await TrackGroup.create(Object.assign(body, {
         enabled: false,
         creatorId: artist.id
