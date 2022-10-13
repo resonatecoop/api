@@ -63,8 +63,14 @@ module.exports = (sequelize, DataTypes) => {
     lastPasswordChange: {
       type: DataTypes.DATE
     },
+    emailConfirmationToken: {
+      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.UUID,
+      unique: true
+    },
     roleId: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     updatedAt: {
       allowNull: false,

@@ -8,7 +8,7 @@ const generateTracks = async (trackgroup, listener) => {
       const track = await Track.create({
         creatorId: trackgroup.creatorId,
         title: faker.company.catchPhrase(),
-        artist: faker.name.findName(),
+        artist: faker.name.fullName(),
         album: faker.hacker.noun(),
         status: 'free',
         date: faker.date.past(1)
@@ -139,7 +139,7 @@ module.exports = {
         id: testTrackId,
         creatorId: albums[0].creatorId,
         title: faker.company.catchPhrase(),
-        artist: faker.name.findName(),
+        artist: faker.name.fullName(),
         album: faker.hacker.noun(),
         status: 'free',
         date: faker.date.past(1)

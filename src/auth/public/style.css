@@ -60,6 +60,23 @@ form button {
   list-style: none;
 }
 
+.error ul,
+.success ul {
+  padding: 1.5rem 2rem;
+  list-style: none;
+  max-width: 600px;
+}
+
+.error ul {
+  background: #ffe9e9;
+  color: red;
+}
+
+.success ul {
+  background: lightblue;
+  color: navy;
+}
+
 #footer {
   text-align: center;
   font-size: .75rem;

@@ -8,6 +8,6 @@ module.exports = {
   signed: true,
   rolling: false,
   renew: false,
-  secure: true,
+  secure: process.env.NODE_ENV === 'production',
   sameSite: 'None'
 }
