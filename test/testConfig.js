@@ -3,6 +3,7 @@ const baseURL = `${process.env.APP_HOST}/api/v3`
 const request = require('supertest')(baseURL)
 
 const expect = require('chai').expect
+const { faker } = require('@faker-js/faker')
 
 const TestRedisAdapter = require('../src/auth/redis-adapter')
 
@@ -27,6 +28,7 @@ module.exports = {
   baseURL,
   request,
   expect,
+  faker,
   testUserId,
   testAdminUserId,
   testArtistUserId,
