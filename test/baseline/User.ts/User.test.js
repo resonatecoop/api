@@ -2,7 +2,10 @@
 /* eslint-env mocha */
 
 const { request, expect, testUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
+const { TrackGroup } = require('../../../src/db/models')
+
 const MockAccessToken = require('../../MockAccessToken')
+const { faker } = require('@faker-js/faker')
 
 describe('User.ts/user endpoint test', () => {
   MockAccessToken(testArtistUserId)
@@ -86,29 +89,47 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should post to user/trackgroups', async () => {
-    response = await request.post('/user/trackgroups').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should fail to post to trackgroups if title not provided', async () => {
+    response = await request.post('/user/trackgroups')
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-    // console.log('post to user trackgroups RESPONSE: ', response.text)
+    expect(response.status).to.eql(400)
+    expect(response.body.message).to.include('Title is a required field')
+  })
 
-    expect(response.status).to.eql(200)
+  it('should fail to post to trackgroups if cover is not provided', async () => {
+    response = await request.post('/user/trackgroups')
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    expect(response.status).to.eql(400)
+    expect(response.body.message).to.include('TrackGroup.cover cannot be null')
+  })
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+  it('should post to user/trackgroups', async () => {
+    const title = faker.lorem.sentence(4)
+    const cover = faker.datatype.uuid()
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
+    response = await request.post('/user/trackgroups')
+      .send({ title, cover })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(response.status).to.eql(201)
+
+    const result = response.body.data
+
+    expect(result.title).to.eql(title)
+    expect(result.private).to.eql(true)
+    expect(result.enabled).to.eql(false)
+    expect(result.release_date).to.eql(new Date().toISOString().split('T')[0])
+    expect(result.cover).to.eql(cover)
+
+    // Clean up
+    TrackGroup.destroy({
+      where: {
+        id: result.id
+      },
+      force: true
+    })
   })
 
   // FIXME: finish this test after update / delete / etc functionality is completed.

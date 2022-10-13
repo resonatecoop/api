@@ -141,7 +141,7 @@ module.exports = (sequelize, DataTypes) => {
     const result = await TrackGroup.findOne({
       attributes: ['id'],
       where: {
-        artistId: trackGroup.artistId,
+        creatorId: trackGroup.creatorId,
         slug: slugTitle // slug needs to be unique within user scope
       }
     })
