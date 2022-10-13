@@ -40,19 +40,26 @@ const sendMail = async (job) => {
           relativeTo: path.resolve(viewsDir)
         }
       },
-      transport: nodemailer.createTransport(mailgun({
-        auth: {
-          api_key: process.env.MAILGUN_API_KEY,
-          domain: process.env.MAILGUN_DOMAIN
-        }
-      }))
+      transport: nodemailer.createTransport(
+        mailgun({
+          auth: {
+            api_key: process.env.MAILGUN_API_KEY,
+            domain: process.env.MAILGUN_DOMAIN
+          }
+        })
+      )
     })
 
-    await email.send({
-      template: job.data.template,
-      message: job.data.message,
-      locals: job.data.locals
-    })
+    if (process.env.NODE_ENV === 'production') {
+      await email.send({
+        template: job.data.template,
+        message: job.data.message,
+        locals: job.data.locals
+      })
+    } else {
+      email.render(job.data.template + '/html', job.data.locals)
+        .then(logger.info)
+    }
 
     logger.info('Email sent')
 

@@ -8,8 +8,14 @@ html
     block scripts
       //- script(src='/jquery.js')
   body
+    if messages
+    for val, key in messages
+        div(class=key)
+          ul
+            each val in messages[key]
+              li #{val}
     div.content
       block content
     block foot
       #footer
-        p Logging in to Resonate Services
+        p Authentication provided by #[a(href="https://resonate.coop") Resonate].

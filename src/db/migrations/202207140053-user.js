@@ -59,6 +59,12 @@ module.exports = {
         type: DataTypes.DATE,
         field: 'last_password_change'
       },
+      emailConfirmationToken: {
+        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.UUID,
+        unique: true,
+        field: 'email_confirmation_token'
+      },
       roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,

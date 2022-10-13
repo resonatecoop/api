@@ -18,6 +18,7 @@ const { koaSwagger } = require('koa2-swagger-ui')
 const cors = require('@koa/cors')
 const ratelimit = require('koa-ratelimit')
 const Redis = require('ioredis')
+const flash = require('koa-flash')
 
 const KeyGrip = require('keygrip')
 
@@ -75,6 +76,7 @@ app
     }
   }))
   .use(session(sessionConfig, app))
+  .use(flash())
   .use(compress(compressConfig()))
   .use(koaSwagger(swaggerConfig())) // swagger-ui at /docs
   .use(koaCash(koaCashConfig()))
