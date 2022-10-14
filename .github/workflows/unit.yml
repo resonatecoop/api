@@ -41,8 +41,8 @@ jobs:
       - name: Migrations
         run: docker exec resonate-api npx sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations
 
-      - name: Seed data
-        run: docker exec resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders/test
+      # - name: Seed data
+      #   run: docker exec resonate-api npx sequelize db:seed:all --config src/config/databases.js --seeders-path src/db/seeders/test
 
       - name: Sleep to give things time to start
         run: sleep 30s
