@@ -43,7 +43,7 @@ module.exports = (env) => {
       }
     },
     test: {
-      maxAge: CACHE_MAX_AGE,
+      maxAge: 0,
       compression: true, // https://github.com/koajs/cash#compression
       setCachedHeader: true, // https://github.com/koajs/cash#setcachedheader
       get (key, maxAge) {

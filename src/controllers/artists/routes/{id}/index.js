@@ -25,8 +25,6 @@ module.exports = function () {
     if (await ctx.cashed()) return
 
     try {
-      // TODO replace all of this with a call to the mongodb Profile data once we have enough data there
-
       const result = await UserGroup.findOne({
         where: {
           id: ctx.params.id

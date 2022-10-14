@@ -159,7 +159,9 @@ module.exports = {
         INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (17, '7c5864c6-634d-476d-a8b0-ca7ed5900345', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.883006+00');
         INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (18, 'b6d160d1-be16-48a4-8c4f-0c0574c4c6aa', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.885134+00');
       `
-    )
+    ).catch(e => {
+      console.log('e', e)
+    })
   },
 
   down: async (queryInterface, Sequelize) => {

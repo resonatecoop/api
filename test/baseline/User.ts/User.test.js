@@ -1,15 +1,17 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
-const { TrackGroup } = require('../../../src/db/models')
+const { request, expect, testUserId, testArtistId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
+const { TrackGroup, Track, TrackGroupItem } = require('../../../src/db/models')
 
 const MockAccessToken = require('../../MockAccessToken')
+const ResetDB = require('../../ResetDB')
+
 const { faker } = require('@faker-js/faker')
 
 describe('User.ts/user endpoint test', () => {
+  ResetDB()
   MockAccessToken(testArtistUserId)
-
   let response = null
 
   it('should handle no authentication / accessToken', async () => {
@@ -140,8 +142,9 @@ describe('User.ts/user endpoint test', () => {
     const trackgroup = await TrackGroup.create({
       cover: oldCover,
       title: oldTitle,
-      creatorId: testArtistUserId
+      creatorId: testArtistId
     })
+
     response = await request.put(`/user/trackgroups/${trackgroup.id}`)
       .send({ title: newTitle })
       .set('Authorization', `Bearer ${testAccessToken}`)
@@ -150,7 +153,7 @@ describe('User.ts/user endpoint test', () => {
     const result = response.body.data
 
     expect(result.id).to.eql(trackgroup.id)
-    expect(result.creatorId).to.eql(testArtistUserId)
+    expect(result.creatorId).to.eql(testArtistId)
     expect(result.title).to.eql(newTitle)
     expect(result.cover).to.eql(oldCover)
 
@@ -268,79 +271,119 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should add an item to a trackgroup by trackgroup id', async () => {
-    response = await request.put(`/user/trackgroups/${testTrackGroupId}/items/add`).set('Authorization', `Bearer ${testAccessToken}`)
+  it('should add an item to a trackgroup by trackgroup id', async () => {
+    const trackgroup = await TrackGroup.create({
+      cover: faker.datatype.uuid(),
+      title: faker.lorem.sentence(4),
+      creatorId: testArtistId
+    })
 
-    console.log('post to a trackgroup by trackgroup id RESPONSE: ', response.text)
+    const track = await Track.create({
+      creatorId: testArtistId
+    })
 
+    response = await request.put(`/user/trackgroups/${trackgroup.id}/items/add`)
+      .send({
+        tracks: [{
+          track_id: track.id,
+          index: 1
+        }]
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
     expect(response.status).to.eql(200)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    const data = response.body.data
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    expect(data.length).to.eql(1)
+    expect(data[0].trackgroupId).to.eql(trackgroup.id)
+    expect(data[0].trackId).to.eql(track.id)
+    expect(data[0].track.id).to.eql(track.id)
+    expect(data[0].track.status).to.eql('hidden')
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    await trackgroup.destroy({ force: true })
+    await track.destroy({ force: true })
+    await TrackGroupItem.destroy({
+      where: {
+        id: data[0].id
+      },
+      force: true
+    })
   })
 
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should remove an item from a trackgroup by trackgroup id', async () => {
-    response = await request.put(`/user/trackgroups/${testTrackGroupId}/items/remove`).set('Authorization', `Bearer ${testAccessToken}`)
+  it('should remove an item from a trackgroup by trackgroup id', async () => {
+    const trackgroup = await TrackGroup.create({
+      cover: faker.datatype.uuid(),
+      title: faker.lorem.sentence(4),
+      creatorId: testArtistId
+    })
 
-    console.log('remove an item from a trackgroup by trackgroup id RESPONSE: ', response.text)
+    const track = await Track.create({
+      creatorId: testArtistId
+    })
+
+    const trackgroupItem = await TrackGroupItem.create({
+      trackId: track.id,
+      trackgroupId: trackgroup.id,
+      index: 0
+    })
+
+    response = await request.put(`/user/trackgroups/${trackgroup.id}/items/remove`)
+      .send({
+        tracks: [{ track_id: track.id }]
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    const data = response.body.data
 
     expect(response.status).to.eql(200)
+    expect(data.length).to.eql(0)
+    await trackgroupItem.reload({ paranoid: false })
+    expect(trackgroupItem.deletedAt).to.be.not.null
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    await trackgroup.destroy({ force: true })
+    await track.destroy({ force: true })
+    await trackgroupItem.destroy({
+      force: true
+    })
   })
 
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should update trackgroup items by trackgroup id', async () => {
-    response = await request.put(`/user/trackgroups/${testTrackGroupId}/items`).set('Authorization', `Bearer ${testAccessToken}`)
+  it('should update trackgroup items by trackgroup id', async () => {
+    const trackgroup = await TrackGroup.create({
+      cover: faker.datatype.uuid(),
+      title: faker.lorem.sentence(4),
+      creatorId: testArtistId
+    })
 
-    console.log('update trackgroup items by trackgroup id RESPONSE: ', response.text)
+    const track = await Track.create({
+      creatorId: testArtistId
+    })
+
+    response = await request.put(`/user/trackgroups/${trackgroup.id}/items`)
+      .send({
+        tracks: [{
+          trackId: track.id,
+          index: 2
+        }]
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    const data = response.body.data
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    expect(data[0].index).to.eql(2)
+    expect(data[0].trackgroupId).to.eql(trackgroup.id)
+    expect(data[0].trackId).to.eql(track.id)
+    expect(data.length).to.eql(1)
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    await trackgroup.destroy({ force: true })
+    await track.destroy({ force: true })
+    await TrackGroupItem.destroy({
+      where: {
+        id: data[0].id
+      },
+      force: true
+    })
   })
 
   it('should delete from trackgroups by trackgroup id', async () => {

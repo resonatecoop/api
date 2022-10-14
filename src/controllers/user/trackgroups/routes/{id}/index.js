@@ -103,12 +103,19 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
+      // FIXME: We should allow the user to select an artist to add the album to
+      const artists = await UserGroup.findAll({
+        where: {
+          ownerId: ctx.profile.id
+        }
+      })
+
       let result = await TrackGroup.findOne({
         attributes: [
           'creatorId'
         ],
         where: {
-          creatorId: ctx.profile.id,
+          creatorId: artists.map(a => a.id),
           id: ctx.params.id
         }
       })
@@ -120,7 +127,6 @@ module.exports = function () {
 
       result = await TrackGroup.update(body, {
         where: {
-          creatorId: ctx.profile.id,
           id: ctx.params.id
         },
         returning: true
@@ -148,7 +154,6 @@ module.exports = function () {
           'type'
         ],
         where: {
-          creatorId: ctx.profile.id,
           id: ctx.params.id
         }
       })

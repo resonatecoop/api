@@ -127,7 +127,8 @@
     "ssh2": "^1.11.0",
     "standard": "^16.0.4",
     "supertest": "^4.0.2",
-    "tunnel-ssh": "^4.1.6"
+    "tunnel-ssh": "^4.1.6",
+    "umzug": "2.3.0"
   },
   "standard": {
     "ignore": [
