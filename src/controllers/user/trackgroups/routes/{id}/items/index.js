@@ -1,4 +1,4 @@
-const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
+const { TrackGroup, TrackGroupItem, Track, UserGroup } = require('../../../../../../db/models')
 const { authenticate } = require('../../../../authenticate')
 
 module.exports = function () {
@@ -20,10 +20,16 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
-      let result = await TrackGroup.findOne({
-        attributes: ['creator_id'],
+      const creators = await UserGroup.findAll({
         where: {
-          creator_id: ctx.profile.id,
+          ownerId: ctx.profile.id
+        }
+      })
+
+      let result = await TrackGroup.findOne({
+        attributes: ['creatorId'],
+        where: {
+          creatorId: creators.map(c => c.id),
           id: ctx.params.id
         },
         include: [{
@@ -100,13 +106,43 @@ module.exports = function () {
         required: true,
         description: 'Trackgroup uuid',
         format: 'uuid'
+      }, {
+        in: 'body',
+        name: 'trackgroupItems',
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['tracks'],
+          properties: {
+            tracks: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['trackId'],
+                properties: {
+                  trackId: {
+                    type: 'string',
+                    format: 'uuid'
+                  },
+                  title: {
+                    type: 'string'
+                  },
+                  index: {
+                    type: 'number',
+                    minimum: 1
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     ],
     responses: {
       200: {
         description: 'The updated trackgroup items',
         schema: {
-          type: 'object'
+          $ref: '#definitions/ArrayOfTrackGroupItems'
         }
       },
       404: {

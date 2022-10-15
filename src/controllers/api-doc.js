@@ -32,6 +32,35 @@ const apiDoc = {
           enum: ['lp', 'ep', 'single', 'compilation']
         }
       }
+    },
+    Track: {
+      type: 'object'
+    },
+    ArrayOfTrackgroupItems: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            format: 'uuid'
+          },
+          index: {
+            type: 'number'
+          },
+          trackgroupId: {
+            type: 'string',
+            format: 'uuid'
+          },
+          trackId: {
+            type: 'string',
+            format: 'uuid'
+          },
+          track: {
+            type: 'object'
+          }
+        }
+      }
     }
   },
   responses: {

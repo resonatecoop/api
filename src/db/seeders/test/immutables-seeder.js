@@ -19,7 +19,7 @@ module.exports = {
         INSERT INTO public.user_group_types (id, name, description) VALUES (3, 'label', 'Label');
         INSERT INTO public.user_group_types (id, name, description) VALUES (4, 'distributor', 'Distributor');
       `
-    )
+    ).catch(console.error)
   },
 
   down: async (queryInterface, Sequelize) => {

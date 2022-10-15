@@ -1,11 +1,6 @@
-const { TrackGroup, TrackGroupItem, Track } = require('../../../../../../db/models')
+const { TrackGroup, TrackGroupItem, Track, UserGroup } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
 const { authenticate } = require('../../../../authenticate')
-
-const {
-  validateTrackgroupItems,
-  validateParams
-} = require('../../../../../../schemas/trackgroup')
 
 module.exports = function () {
   const operations = {
@@ -23,30 +18,20 @@ module.exports = function () {
   }
 
   async function PUT (ctx, next) {
-    let isValid = validateParams(ctx.params)
-
-    if (!isValid) {
-      const { message, dataPath } = validateParams.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
-
     const body = ctx.request.body
-    isValid = validateTrackgroupItems(body)
-
-    if (!isValid) {
-      const { message, dataPath } = validateTrackgroupItems.errors[0]
-      ctx.status = 400
-      ctx.throw(400, `${dataPath}: ${message}`)
-    }
 
     const ids = body.tracks.map((item) => item.track_id)
-
     try {
+      const creators = await UserGroup.findAll({
+        where: {
+          ownerId: ctx.profile.id
+        }
+      })
+
       let result = await TrackGroup.findOne({
         attributes: ['id'],
         where: {
-          creator_id: ctx.profile.id,
+          creatorId: creators.map(creator => creator.id),
           id: ctx.params.id
         }
       })
@@ -144,8 +129,8 @@ module.exports = function () {
                 required: ['track_id'],
                 properties: {
                   track_id: {
-                    type: 'number',
-                    minimum: 1
+                    type: 'string',
+                    format: 'uuid'
                   },
                   title: {
                     type: 'string'
@@ -165,7 +150,7 @@ module.exports = function () {
       200: {
         description: 'The updated trackgroup items',
         schema: {
-          type: 'object'
+          $ref: '#definitions/ArrayOfTrackgroupItems'
         }
       },
       404: {

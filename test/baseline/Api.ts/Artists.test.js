@@ -1,9 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
+const ResetDB = require('../../ResetDB')
 const { request, expect, testArtistId } = require('../../testConfig')
 
 describe('Api.ts/artists endpoint test', () => {
+  ResetDB()
+
   let response = null
 
   it('should get all artists', async () => {
@@ -14,7 +17,6 @@ describe('Api.ts/artists endpoint test', () => {
     const attributes = response.body
     expect(attributes).to.be.an('object')
     expect(attributes).to.include.keys('data', 'count', 'pages', 'status')
-
     expect(attributes.data).to.be.an('array')
     expect(attributes.data.length).to.eql(1)
 
@@ -101,6 +103,7 @@ describe('Api.ts/artists endpoint test', () => {
     expect(attributes.pages).to.eql(2)
     expect(attributes.status).to.eql('ok')
   })
+
   it('should get an artist by id', async () => {
     response = await request.get(`/artists/${testArtistId}`)
 
@@ -130,6 +133,7 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.User.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
     expect(theData.User.displayName).to.eql('artist')
   })
+
   it('should get an artist\'s releases by artist id', async () => {
     response = await request.get(`/artists/${testArtistId}/releases`)
 

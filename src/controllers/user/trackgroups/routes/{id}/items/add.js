@@ -20,15 +20,16 @@ module.exports = function () {
   async function PUT (ctx, next) {
     const body = ctx.request.body
     try {
-      const artists = UserGroup.findAll({
+      const creators = await UserGroup.findAll({
         where: {
           ownerId: ctx.profile.id
         }
       })
+
       let result = await TrackGroup.findOne({
         attributes: ['id'],
         where: {
-          creatorId: artists.map(a => a.id),
+          creatorId: creators.map(creator => creator.id),
           id: ctx.params.id
         },
         include: [{
@@ -119,8 +120,8 @@ module.exports = function () {
                 required: ['track_id'],
                 properties: {
                   track_id: {
-                    type: 'number',
-                    minimum: 1
+                    type: 'string',
+                    format: 'uuid'
                   },
                   title: {
                     type: 'string'
@@ -140,7 +141,7 @@ module.exports = function () {
       200: {
         description: 'The updated trackgroup items',
         schema: {
-          type: 'object'
+          $ref: '#/definitions/ArrayOfTrackgroupItems'
         }
       },
       404: {

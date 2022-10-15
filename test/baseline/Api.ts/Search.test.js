@@ -11,6 +11,7 @@ describe('Api.ts/search endpoint test', () => {
 
     expect(response.status).to.eql(400)
   })
+
   it('should return empty results for a search term', async () => {
     const searchTerm = 'asdf'
 
@@ -19,6 +20,7 @@ describe('Api.ts/search endpoint test', () => {
     expect(response.status).to.eql(200)
     expect(response.body.data).to.include.keys('artists', 'labels', 'tracks', 'trackgroups', 'bands')
   })
+
   it('should return a usergroup with a matching search', async () => {
     const displayName = faker.name.fullName()
     const type = await UserGroupType.findOne({ where: { name: 'artist' } })

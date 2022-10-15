@@ -88,7 +88,8 @@ module.exports = function () {
         ],
         order: [
           ['release_date', 'DESC'],
-          ['createdAt', 'DESC']
+          ['createdAt', 'DESC'],
+          ['title', 'ASC']
         ]
       }
 

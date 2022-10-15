@@ -20,12 +20,14 @@ module.exports = function () {
           ownerId: ctx.profile.id
         }
       })
+
       if (!artist) {
         ctx.status = 404
         ctx.throw(ctx.status, 'UserGroup not found for user')
       }
+
       const result = await TrackGroup.create(Object.assign(body, {
-        enabled: body.type === 'playlist', // FIXME: what's this enforcing?
+        enabled: false,
         creatorId: artist.id
       }))
 
@@ -37,8 +39,7 @@ module.exports = function () {
         status: 201
       }
     } catch (err) {
-      console.log(err)
-      ctx.status = err.status || 500
+      ctx.status = err.status ?? (err.constructor.name === 'ValidationError' ? 400 : 500)
       ctx.throw(ctx.status, err.message)
     }
 
@@ -90,7 +91,7 @@ module.exports = function () {
       })
 
       const where = {
-        creatorId: userArtists.map(a => a.id),
+        creatorId: userArtists.map(artist => artist.id),
         type: {
           [Op.or]: {
             [Op.eq]: null,
