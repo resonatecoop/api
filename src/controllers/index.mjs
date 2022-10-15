@@ -1,108 +1,170 @@
-const Router = require('@koa/router')
+import Router from '@koa/router'
+import { initialize } from 'koa-openapi'
+import cors from '@koa/cors'
+import koaBody from 'koa-body'
+import bytes from 'bytes'
+import path from 'path'
 
-const { initialize } = require('koa-openapi')
-const cors = require('@koa/cors')
-const koaBody = require('koa-body')
+import apiDoc from './api-doc.js'
+import apiDocs from './apiDocs.js'
+import artistReleases from './artists/routes/{id}/releases.js'
+import artistTopTracks from './artists/routes/{id}/tracks/top.js'
+import artistTracks from './artists/routes/{id}/tracks/index.js'
+import artists from './artists/routes/index.js'
+import artistsFeatured from './artists/routes/featured.js'
+import artistsId from './artists/routes/{id}/index.js'
+import artistsUpdated from './artists/routes/updated.js'
+import labelAlbums from './labels/routes/{id}/albums.js'
+import labelArtists from './labels/routes/{id}/artists.js'
+import labelReleases from './labels/routes/{id}/releases.js'
+import labels from './labels/routes/index.js'
+import labelsId from './labels/routes/{id}/index.js'
+import playlists from './playlists/routes/index.js'
+import playlistsId from './playlists/routes/{id}.js'
+import resolve from './resolve/routes/index.js'
+import search from './search/routes/index.js'
+import tagRoutesTag from './tag/routes/{tag}.js'
+import trackService from './tracks/services/trackService.js'
+import trackgroups from './trackgroups/routes/index.js'
+import trackgroupsId from './trackgroups/routes/{id}.js'
+import tracksId from './tracks/routes/{id}.js'
+import tracksRoutes from './tracks/routes/index.js'
+import tracksRoutesLatest from './tracks/routes/latest.js'
+import userArtists from './user/artists/routes/index.js'
+import userArtistsId from './user/artists/routes/{id}/index.js'
+import userCollection from './user/collection/routes/index.js'
+import userFavorites from './user/favorites/routes/index.js'
+import userFavoritesResolve from './user/favorites/routes/resolve.js'
+import userPlaylist from './user/playlists/routes/{id}/index.js'
+import userPlaylistAddItems from './user/playlists/routes/{id}/items/add.js'
+import userPlaylistCover from './user/playlists/routes/{id}/cover.js'
+import userPlaylistItems from './user/playlists/routes/{id}/items/index.js'
+import userPlaylistPrivacy from './user/playlists/routes/{id}/privacy.js'
+import userPlaylists from './user/playlists/routes/index.js'
+import userPlaylistsRemoveItems from './user/playlists/routes/{id}/items/remove.js'
+import userPlays from './user/plays/routes/index.js'
+import userPlaysBuy from './user/plays/routes/buy.js'
+import userPlaysHistory from './user/plays/routes/history/tracks.js'
+import userPlaysHistoryArtists from './user/plays/routes/history/artists.js'
+import userPlaysResolve from './user/plays/routes/resolve.js'
+import userPlaysSpendings from './user/plays/routes/spendings.js'
+import userPlaysStats from './user/plays/routes/stats.js'
+import userProducts from './user/products/routes/index.js'
+import userProductsCancel from './user/products/routes/cancel.js'
+import userProductsCheckout from './user/products/routes/checkout.js'
+import userProductsSuccess from './user/products/routes/success.js'
+import userProfile from './user/profile/routes/index.js'
+import userStream from './user/stream/routes/{id}.js'
+import userTrack from './user/tracks/routes/{id}/index.js'
+import userTrackFile from './user/tracks/routes/{id}/file.js'
+import userTrackgroup from './user/trackgroups/routes/{id}/index.js'
+import userTrackgroupAddItems from './user/trackgroups/routes/{id}/items/add.js'
+import userTrackgroupCover from './user/trackgroups/routes/{id}/cover.js'
+import userTrackgroupItems from './user/trackgroups/routes/{id}/items/index.js'
+import userTrackgroupPrivacy from './user/trackgroups/routes/{id}/privacy.js'
+import userTrackgroupRemoveItems from './user/trackgroups/routes/{id}/items/remove.js'
+import userTrackgroups from './user/trackgroups/routes/index.js'
+import userTracks from './user/tracks/routes/index.js'
+import usersId from './users/routes/{id}/index.js'
+import usersIdPlaylists from './users/routes/{id}/playlists.js'
 
-const bytes = require('bytes')
-const path = require('path')
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
 const root = '/api/v3'
 
-const apiRouter = new Router()
+export const apiRouter = new Router()
 const openApiRouter = new Router()
 
 // Initialize the API!
 initialize({
   router: openApiRouter,
   basePath: root,
-  apiDoc: require('./api-doc'),
+  apiDoc: apiDoc,
   paths: [
-    { path: `${root}/tracks`, module: require('./tracks/routes') },
-    { path: `${root}/tracks/latest`, module: require('./tracks/routes/latest') },
-    { path: `${root}/tracks/{id}`, module: require('./tracks/routes/{id}') },
+    { path: `${root}/tracks`, module: tracksRoutes },
+    { path: `${root}/tracks/latest`, module: tracksRoutesLatest },
+    { path: `${root}/tracks/{id}`, module: tracksId },
 
     // FIXME: This one is broken cause it relies on elastic search.
-    { path: `${root}/tag/{tag}`, module: require('./tag/routes/{tag}') },
+    { path: `${root}/tag/{tag}`, module: tagRoutesTag },
 
-    { path: `${root}/artists/featured`, module: require('./artists/routes/featured') },
-    { path: `${root}/artists/updated`, module: require('./artists/routes/updated') },
-    { path: `${root}/artists`, module: require('./artists/routes') },
-    { path: `${root}/artists/{id}`, module: require('./artists/routes/{id}') },
-    { path: `${root}/artists/{id}/releases`, module: require('./artists/routes/{id}/releases') },
-    { path: `${root}/artists/{id}/tracks`, module: require('./artists/routes/{id}/tracks') },
-    { path: `${root}/artists/{id}/tracks/top`, module: require('./artists/routes/{id}/tracks/top') },
+    { path: `${root}/artists/featured`, module: artistsFeatured },
+    { path: `${root}/artists/updated`, module: artistsUpdated },
+    { path: `${root}/artists`, module: artists },
+    { path: `${root}/artists/{id}`, module: artistsId },
+    { path: `${root}/artists/{id}/releases`, module: artistReleases },
+    { path: `${root}/artists/{id}/tracks`, module: artistTracks },
+    { path: `${root}/artists/{id}/tracks/top`, module: artistTopTracks },
 
-    { path: `${root}/labels`, module: require('./labels/routes') },
-    { path: `${root}/labels/{id}`, module: require('./labels/routes/{id}') },
-    { path: `${root}/labels/{id}/albums`, module: require('./labels/routes/{id}/albums') },
-    { path: `${root}/labels/{id}/releases`, module: require('./labels/routes/{id}/releases') },
-    { path: `${root}/labels/{id}/artists`, module: require('./labels/routes/{id}/artists') },
+    { path: `${root}/labels`, module: labels },
+    { path: `${root}/labels/{id}`, module: labelsId },
+    { path: `${root}/labels/{id}/albums`, module: labelAlbums },
+    { path: `${root}/labels/{id}/releases`, module: labelReleases },
+    { path: `${root}/labels/{id}/artists`, module: labelArtists },
 
     // FIXME: This one is broken cause it relies on elastic search.
-    { path: `${root}/search`, module: require('./search/routes') },
+    { path: `${root}/search`, module: search },
 
     // FIXME: Not entirely clear on what the point of this route is
-    { path: `${root}/resolve`, module: require('./resolve/routes') },
+    { path: `${root}/resolve`, module: resolve },
 
-    { path: `${root}/trackgroups`, module: require('./trackgroups/routes') },
-    { path: `${root}/trackgroups/{id}`, module: require('./trackgroups/routes/{id}') },
+    { path: `${root}/trackgroups`, module: trackgroups },
+    { path: `${root}/trackgroups/{id}`, module: trackgroupsId },
 
-    { path: `${root}/playlists`, module: require('./playlists/routes') },
-    { path: `${root}/playlists/{id}`, module: require('./playlists/routes/{id}') },
+    { path: `${root}/playlists`, module: playlists },
+    { path: `${root}/playlists/{id}`, module: playlistsId },
 
-    { path: `${root}/users/{id}`, module: require('./users/routes/{id}') },
-    { path: `${root}/users/{id}/playlists`, module: require('./users/routes/{id}/playlists') },
+    { path: `${root}/users/{id}`, module: usersId },
+    { path: `${root}/users/{id}/playlists`, module: usersIdPlaylists },
 
-    { path: `${root}/user/profile`, module: require('./user/profile/routes') },
-    { path: `${root}/user/artists`, module: require('./user/artists/routes') },
-    { path: `${root}/user/artists/{id}`, module: require('./user/artists/routes/{id}') },
-    { path: `${root}/user/collection`, module: require('./user/collection/routes') },
+    { path: `${root}/user/profile`, module: userProfile },
+    { path: `${root}/user/artists`, module: userArtists },
+    { path: `${root}/user/artists/{id}`, module: userArtistsId },
+    { path: `${root}/user/collection`, module: userCollection },
 
-    { path: `${root}/user/favorites/resolve`, module: require('./user/favorites/routes/resolve') },
-    { path: `${root}/user/favorites`, module: require('./user/favorites/routes') },
+    { path: `${root}/user/favorites/resolve`, module: userFavoritesResolve },
+    { path: `${root}/user/favorites`, module: userFavorites },
 
-    { path: `${root}/user/plays`, module: require('./user/plays/routes') },
-    { path: `${root}/user/plays/resolve`, module: require('./user/plays/routes/resolve') },
-    { path: `${root}/user/plays/spendings`, module: require('./user/plays/routes/spendings') },
-    { path: `${root}/user/plays/buy`, module: require('./user/plays/routes/buy') },
-    { path: `${root}/user/plays/stats`, module: require('./user/plays/routes/stats') },
-    { path: `${root}/user/plays/history`, module: require('./user/plays/routes/history/tracks') },
-    { path: `${root}/user/plays/history/artists`, module: require('./user/plays/routes/history/artists') },
+    { path: `${root}/user/plays`, module: userPlays },
+    { path: `${root}/user/plays/resolve`, module: userPlaysResolve },
+    { path: `${root}/user/plays/spendings`, module: userPlaysSpendings },
+    { path: `${root}/user/plays/buy`, module: userPlaysBuy },
+    { path: `${root}/user/plays/stats`, module: userPlaysStats },
+    { path: `${root}/user/plays/history`, module: userPlaysHistory },
+    { path: `${root}/user/plays/history/artists`, module: userPlaysHistoryArtists },
 
-    { path: `${root}/user/playlists`, module: require('./user/playlists/routes') },
-    { path: `${root}/user/playlists/{id}`, module: require('./user/playlists/routes/{id}') },
-    { path: `${root}/user/playlists/{id}/cover`, module: require('./user/playlists/routes/{id}/cover') },
-    { path: `${root}/user/playlists/{id}/privacy`, module: require('./user/playlists/routes/{id}/privacy') },
-    { path: `${root}/user/playlists/{id}/items`, module: require('./user/playlists/routes/{id}/items') },
-    { path: `${root}/user/playlists/{id}/items/add`, module: require('./user/playlists/routes/{id}/items/add') },
-    { path: `${root}/user/playlists/{id}/items/remove`, module: require('./user/playlists/routes/{id}/items/remove') },
+    { path: `${root}/user/playlists`, module: userPlaylists },
+    { path: `${root}/user/playlists/{id}`, module: userPlaylist },
+    { path: `${root}/user/playlists/{id}/cover`, module: userPlaylistCover },
+    { path: `${root}/user/playlists/{id}/privacy`, module: userPlaylistPrivacy },
+    { path: `${root}/user/playlists/{id}/items`, module: userPlaylistItems },
+    { path: `${root}/user/playlists/{id}/items/add`, module: userPlaylistAddItems },
+    { path: `${root}/user/playlists/{id}/items/remove`, module: userPlaylistsRemoveItems },
 
-    { path: `${root}/user/products`, module: require('./user/products/routes') },
-    { path: `${root}/user/products/success`, module: require('./user/products/routes/success') },
-    { path: `${root}/user/products/cancel`, module: require('./user/products/routes/cancel') },
-    { path: `${root}/user/products/checkout`, module: require('./user/products/routes/checkout') },
+    { path: `${root}/user/products`, module: userProducts },
+    { path: `${root}/user/products/success`, module: userProductsSuccess },
+    { path: `${root}/user/products/cancel`, module: userProductsCancel },
+    { path: `${root}/user/products/checkout`, module: userProductsCheckout },
 
-    { path: `${root}/user/stream/{id}`, module: require('./user/stream/routes/{id}') },
+    { path: `${root}/user/stream/{id}`, module: userStream },
 
-    { path: `${root}/user/trackgroups`, module: require('./user/trackgroups/routes') },
-    { path: `${root}/user/trackgroups/{id}`, module: require('./user/trackgroups/routes/{id}') },
-    { path: `${root}/user/trackgroups/{id}/cover`, module: require('./user/trackgroups/routes/{id}/cover') },
-    { path: `${root}/user/trackgroups/{id}/privacy`, module: require('./user/trackgroups/routes/{id}/privacy') },
-    { path: `${root}/user/trackgroups/{id}/items`, module: require('./user/trackgroups/routes/{id}/items') },
-    { path: `${root}/user/trackgroups/{id}/items/add`, module: require('./user/trackgroups/routes/{id}/items/add') },
-    { path: `${root}/user/trackgroups/{id}/items/remove`, module: require('./user/trackgroups/routes/{id}/items/remove') },
+    { path: `${root}/user/trackgroups`, module: userTrackgroups },
+    { path: `${root}/user/trackgroups/{id}`, module: userTrackgroup },
+    { path: `${root}/user/trackgroups/{id}/cover`, module: userTrackgroupCover },
+    { path: `${root}/user/trackgroups/{id}/privacy`, module: userTrackgroupPrivacy },
+    { path: `${root}/user/trackgroups/{id}/items`, module: userTrackgroupItems },
+    { path: `${root}/user/trackgroups/{id}/items/add`, module: userTrackgroupAddItems },
+    { path: `${root}/user/trackgroups/{id}/items/remove`, module: userTrackgroupRemoveItems },
 
-    { path: `${root}/user/tracks`, module: require('./user/tracks/routes') },
-    { path: `${root}/user/tracks/{id}`, module: require('./user/tracks/routes/{id}') },
-    { path: `${root}/user/tracks/{id}/file`, module: require('./user/tracks/routes/{id}/file') },
+    { path: `${root}/user/tracks`, module: userTracks },
+    { path: `${root}/user/tracks/{id}`, module: userTrack },
+    { path: `${root}/user/tracks/{id}/file`, module: userTrackFile },
 
     {
-      path: `${root}/apiDocs`, module: require('./apiDocs')
+      path: `${root}/apiDocs`, module: apiDocs
     }],
   dependencies: {
-    trackService: require('./tracks/services/trackService')
+    trackService: trackService
   }
 })
 
@@ -123,5 +185,3 @@ apiRouter.use(koaBody({
 
 apiRouter.use(cors())
 apiRouter.use('', openApiRouter.routes(), openApiRouter.allowedMethods({ throw: true }))
-
-module.exports = apiRouter
