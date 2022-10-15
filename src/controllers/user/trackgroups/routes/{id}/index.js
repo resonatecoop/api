@@ -115,7 +115,7 @@ module.exports = function () {
           'creatorId'
         ],
         where: {
-          creatorId: artists.map(a => a.id),
+          creatorId: artists.map(artist => artist.id),
           id: ctx.params.id
         }
       })

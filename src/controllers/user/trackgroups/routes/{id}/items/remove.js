@@ -31,7 +31,7 @@ module.exports = function () {
       let result = await TrackGroup.findOne({
         attributes: ['id'],
         where: {
-          creatorId: creators.map(c => c.id),
+          creatorId: creators.map(creator => creator.id),
           id: ctx.params.id
         }
       })

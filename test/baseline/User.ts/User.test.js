@@ -150,7 +150,7 @@ describe('User.ts/user endpoint test', () => {
       .set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
-    const result = response.body.data
+    const { data: result } = response.body
 
     expect(result.id).to.eql(trackgroup.id)
     expect(result.creatorId).to.eql(testArtistId)
@@ -292,7 +292,7 @@ describe('User.ts/user endpoint test', () => {
       .set('Authorization', `Bearer ${testAccessToken}`)
     expect(response.status).to.eql(200)
 
-    const data = response.body.data
+    const { data } = response.body
 
     expect(data.length).to.eql(1)
     expect(data[0].trackgroupId).to.eql(trackgroup.id)
@@ -333,7 +333,7 @@ describe('User.ts/user endpoint test', () => {
       })
       .set('Authorization', `Bearer ${testAccessToken}`)
 
-    const data = response.body.data
+    const { data } = response.body
 
     expect(response.status).to.eql(200)
     expect(data.length).to.eql(0)
@@ -369,7 +369,7 @@ describe('User.ts/user endpoint test', () => {
 
     expect(response.status).to.eql(200)
 
-    const data = response.body.data
+    const { data } = response.body
 
     expect(data[0].index).to.eql(2)
     expect(data[0].trackgroupId).to.eql(trackgroup.id)

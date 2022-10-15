@@ -91,7 +91,7 @@ module.exports = function () {
       })
 
       const where = {
-        creatorId: userArtists.map(a => a.id),
+        creatorId: userArtists.map(artist => artist.id),
         type: {
           [Op.or]: {
             [Op.eq]: null,
