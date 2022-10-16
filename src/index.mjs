@@ -1,46 +1,43 @@
-const dotenv = require('dotenv-safe')
+import dotenv from 'dotenv-safe'
 dotenv.config()
 
-const Koa = require('koa')
-const logger = require('koa-logger')
-const compress = require('koa-compress')
-const error = require('koa-json-error')
-const mount = require('koa-mount')
-const etag = require('koa-etag')
-const serve = require('koa-static')
-const path = require('path')
-const send = require('koa-send')
-const Pug = require('koa-pug')
-
-const session = require('koa-session')
-const koaCash = require('koa-cash')
-const { koaSwagger } = require('koa2-swagger-ui')
-const cors = require('@koa/cors')
-const ratelimit = require('koa-ratelimit')
-const Redis = require('ioredis')
-const flash = require('koa-flash')
-
-const KeyGrip = require('keygrip')
-
-const swaggerConfig = require('./config/swagger')
-const koaCashConfig = require('./config/cache')
-const errorConfig = require('./config/error')
-const compressConfig = require('./config/compression')
-const sessionConfig = require('./config/session')
-const corsConfig = require('./config/cors')
+import Koa from 'koa'
+import logger from 'koa-logger'
+import compress from 'koa-compress'
+import error from 'koa-json-error'
+import mount from 'koa-mount'
+import etag from 'koa-etag'
+import serve from 'koa-static'
+import path from 'path'
+import send from 'koa-send'
+import Pug from 'koa-pug'
+import session from 'koa-session'
+import koaCash from 'koa-cash'
+import { koaSwagger } from 'koa2-swagger-ui'
+import cors from '@koa/cors'
+import ratelimit from 'koa-ratelimit'
+import Redis from 'ioredis'
+import flash from 'koa-flash'
+import KeyGrip from 'keygrip'
+import _ from 'lodash'
+import swaggerConfig from './config/swagger.js'
+import koaCashConfig from './config/cache.js'
+import errorConfig from './config/error.js'
+import compressConfig from './config/compression.js'
+import sessionConfig from './config/session.js'
+import corsConfig from './config/cors.js'
 
 /**
  * Koa apps
  */
-
-const user = require('./controllers/user/index')
-const { provider, routes: authRoutes } = require('./auth/index')
-const apiRouter = require('./controllers')
-
-const stream = require('./controllers/stream/index')
-const Router = require('@koa/router')
+import user from './controllers/user/index.js'
+import { provider, routes as authRoutes } from './auth/index.js'
+import { apiRouter } from './controllers/index.mjs'
+import stream from './controllers/stream/index.js'
+import Router from '@koa/router'
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
+const dirname = new URL('.', import.meta.url).pathname;
 
 const app = new Koa({
   keys: new KeyGrip([process.env.APP_KEY, process.env.APP_KEY_2], 'sha256'),
@@ -91,7 +88,7 @@ app.use(mount('/api/v3/user', user)) // TODO: put this in the API
 
 // FIXME: koa-static is currently insecure and out of date.
 // https://github.com/koajs/static/issues/202
-app.use(mount('/public', serve(path.join(__dirname, 'auth/public'))))
+app.use(mount('/public', serve(path.join(dirname, 'auth/public'))))
 
 // In production we will presumably use a different way to
 // serve static files
@@ -115,15 +112,15 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const pug = new Pug({ // eslint-disable-line no-unused-vars
-  viewPath: path.resolve(__dirname, './auth/views'),
+  viewPath: path.resolve(dirname, './auth/views'),
   locals: { /* variables and helpers */ },
   // basedir: 'path/for/pug/extends',
   helperPath: [
     // 'path/to/pug/helpers',
     // { random: 'path/to/lib/random.js' },
-    { _: require('lodash') }
+    { _: _ }
   ],
   app: app // Binding `ctx.render()`, equals to pug.use(app)
 })
 
-module.exports = app
+export default app

@@ -1,5 +1,5 @@
-const dotenv = require('dotenv-safe')
-const app = require('./src/index.js')
+import dotenv from 'dotenv-safe'
+import app from './src/index.mjs'
 
 dotenv.config()
 
