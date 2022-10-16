@@ -1,5 +1,4 @@
 import dotenv from 'dotenv-safe'
-dotenv.config()
 
 import Koa from 'koa'
 import logger from 'koa-logger'
@@ -35,9 +34,10 @@ import { provider, routes as authRoutes } from './auth/index.js'
 import { apiRouter } from './controllers/index.mjs'
 import stream from './controllers/stream/index.js'
 import Router from '@koa/router'
+dotenv.config()
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
-const dirname = new URL('.', import.meta.url).pathname;
+const dirname = new URL('.', import.meta.url).pathname
 
 const app = new Koa({
   keys: new KeyGrip([process.env.APP_KEY, process.env.APP_KEY_2], 'sha256'),
