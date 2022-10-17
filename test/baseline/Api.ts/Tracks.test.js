@@ -64,7 +64,7 @@ describe('Api.ts/track endpoint test', () => {
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('Paid')
-    expect(theData.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/' + track.id)
+    expect(theData.url).to.eql(`https://beta.stream.resonate.localhost/api/v3/user/stream/${track.id}`)
 
     expect(theData.images).to.include.keys('small', 'medium')
     expect(theData.images.small).to.include.keys('width', 'height')
