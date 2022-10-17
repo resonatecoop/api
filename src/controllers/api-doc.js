@@ -1,3 +1,21 @@
+const Artist = {
+  displayName: {
+    type: 'string'
+  },
+  description: {
+    type: 'string'
+  },
+  shortBio: {
+    type: 'string'
+  },
+  email: {
+    type: 'string'
+  },
+  addressId: {
+    type: 'string'
+  }
+}
+
 const apiDoc = {
   swagger: '2.0',
   info: {
@@ -5,6 +23,28 @@ const apiDoc = {
     version: '4.0.0'
   },
   definitions: {
+    Artist: {
+      type: 'object',
+      properties: {
+        ...Artist,
+        id: {
+          type: 'string',
+          format: 'uuid'
+        },
+        ownerId: {
+          type: 'string',
+          format: 'uuid'
+        },
+        typeId: {
+          type: 'number'
+        }
+      }
+    },
+    ArtistCreate: {
+      type: 'object',
+      required: ['displayName'],
+      properties: Artist
+    },
     Error: {
       type: 'object',
       properties: {
@@ -33,6 +73,7 @@ const apiDoc = {
         }
       }
     },
+
     Track: {
       type: 'object'
     },

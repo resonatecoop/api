@@ -1,4 +1,4 @@
-const { UserGroup, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
+const { UserGroup, UserGroupType, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
 const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
@@ -11,8 +11,14 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
+      const artistType = await UserGroupType.findOne({
+        where: {
+          name: 'artist'
+        }
+      })
       const result = await UserGroup.create(Object.assign(body, {
-        userId: ctx.profile.id
+        ownerId: ctx.profile.id,
+        typeId: artistType.id
       }))
 
       ctx.status = 201
@@ -41,7 +47,7 @@ module.exports = function () {
         name: 'artist',
         description: 'The artist to create.',
         schema: {
-          $ref: '#/definitions/Artist'
+          $ref: '#/definitions/ArtistCreate'
         }
       }
     ],

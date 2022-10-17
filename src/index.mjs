@@ -76,8 +76,11 @@ app
   .use(flash())
   .use(compress(compressConfig()))
   .use(koaSwagger(swaggerConfig())) // swagger-ui at /docs
-  .use(koaCash(koaCashConfig()))
   .use(etag()) // required for koa-cash to propertly set 304
+
+if (process.env.NODE_ENV !== 'test') {
+  app.use(koaCash(koaCashConfig()))
+}
 
 app.use(apiRouter.routes())
 

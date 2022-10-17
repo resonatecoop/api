@@ -138,27 +138,7 @@ module.exports = {
             VALUES ('f84a89e1-1e5c-47d5-a07e-9bfc64ef4ff0', 6, '58991f22-b172-48e4-8b27-e0a4c946f9b2', '2684ca14-9864-4377-aab9-7a471b1f8d14', NULL, NULL, '2022-09-28 17:31:59.858+00', '2022-09-28 17:31:59.858+00', NULL);
         INSERT INTO public.track_group_items (id, index, track_group_id, track_id, track_performers, track_composers, updated_at, created_at, deleted_at) 
             VALUES ('ed84cd42-8990-4d8e-a9f6-e00aaacdc2bb', 8, '58991f22-b172-48e4-8b27-e0a4c946f9b2', '374d19fc-18af-474d-8c19-debc993db991', NULL, NULL, '2022-09-28 17:31:59.861+00', '2022-09-28 17:31:59.861+00', NULL);
-      
-
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (1, '706cff12-ba44-49f7-8982-98b3996a2919', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.805211+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (2, '56ea16b1-f732-4e46-a9a2-4a6bb3e64ecc', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.807661+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (3, '39565f69-cb1c-4e96-89d4-dc02b8fa6b16', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.81305+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (4, '556c6f38-9cfa-4b83-b379-1f663f8901e4', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.815236+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (5, '0bd6bdcb-ee99-4c30-b637-668c4ac0fee2', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.824911+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (6, '2d1f5012-dff5-401d-8503-628439ca8ef2', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.828731+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (7, '7c5864c6-634d-476d-a8b0-ca7ed5900345', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.82986+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (8, '1e14bc37-c5a8-4667-bc78-01a633a23520', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.833065+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (9, '51cfa034-9e56-4564-9ed7-e3b4bceda731', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.834663+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (10, '78f6da45-91e4-40c9-8447-b99581528139', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.836149+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (11, 'c8bbe191-823c-430f-86d2-d8c2b2ee7a6c', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.838528+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (12, '3dc37b61-31ef-4070-b9eb-73e869e8e0ab', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.848358+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (13, 'fcf41302-e549-4ab9-9937-f0bfead5a44f', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.848776+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (14, '96b5e86a-76b0-40ee-94ab-5226da627b62', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.851426+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (15, '2684ca14-9864-4377-aab9-7a471b1f8d14', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.853032+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (16, '374d19fc-18af-474d-8c19-debc993db991', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.855257+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (17, '7c5864c6-634d-476d-a8b0-ca7ed5900345', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.883006+00');
-        INSERT INTO public.plays (id, track_id, user_id, event, created_at) VALUES (18, 'b6d160d1-be16-48a4-8c4f-0c0574c4c6aa', '251c01f6-7293-45f6-b8cd-242bdd76cd0d', 1, '2022-09-28 17:31:59.885134+00');
-      `
+       `
     ).catch(e => {
       console.log('e', e)
     })
@@ -169,6 +149,7 @@ module.exports = {
     await queryInterface.bulkDelete('tracks', null, {})
     await queryInterface.bulkDelete('track_group_items', null, {})
     await queryInterface.bulkDelete('plays', null, {})
-    return queryInterface.bulkDelete('user_groups', null, {})
+    await queryInterface.bulkDelete('user_groups', null, {})
+    return queryInterface.bulkDelete('credits', null, {})
   }
 }

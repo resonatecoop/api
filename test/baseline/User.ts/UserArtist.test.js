@@ -3,8 +3,12 @@
 
 const { request, expect, testArtistId, testArtistUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
+const ResetDB = require('../../ResetDB')
+const { faker } = require('@faker-js/faker')
+const { UserGroupType, UserGroup } = require('../../../src/db/models')
 
 describe('User.ts/user artist endpoint test', () => {
+  ResetDB()
   MockAccessToken(testArtistUserId)
 
   let response = null
@@ -74,28 +78,53 @@ describe('User.ts/user artist endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should post to user artists', async () => {
-    response = await request.post('/user/artists').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should handle an invalid access token', async () => {
+    response = await request.post('/user/artists')
+      .send({
+        displayName: 'blah'
+      })
+      .set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    console.log('post to user artists RESPONSE: ', response.text)
+    expect(response.status).to.eql(401)
+  })
 
-    expect(response.status).to.eql(200)
+  it('should post to user/artists', async () => {
+    const name = faker.name.fullName()
+    const artistType = await UserGroupType.findOne({
+      where: {
+        name: 'artist'
+      }
+    })
+    response = await request.post('/user/artists')
+      .send({
+        displayName: name
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
+    expect(response.status).to.eql(201)
 
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
+    const { data } = response.body
 
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
+    expect(data.displayName).to.eql(name)
+    expect(data.typeId).to.eql(artistType.id)
+    expect(data.ownerId).to.eql(testArtistUserId)
 
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    await UserGroup.destroy({
+      where: {
+        id: data.id
+      },
+      paranoid: true
+    })
+  })
+
+  it('should fail to post to user/artists if displayName not provided', async () => {
+    response = await request.post('/user/artists')
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(400)
+
+    const { body } = response
+    expect(body.message).to.contain('Bad Request')
+    expect(body.errors[0].path).to.eql('displayName')
   })
 })

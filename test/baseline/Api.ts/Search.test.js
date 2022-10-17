@@ -21,7 +21,7 @@ describe('Api.ts/search endpoint test', () => {
     expect(response.body.data).to.include.keys('artists', 'labels', 'tracks', 'trackgroups', 'bands')
   })
 
-  it('should return a usergroup with a matching search', async () => {
+  it('should GET /search?q=', async () => {
     const displayName = faker.name.fullName()
     const type = await UserGroupType.findOne({ where: { name: 'artist' } })
 

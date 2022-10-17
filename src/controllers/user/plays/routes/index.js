@@ -14,12 +14,12 @@ module.exports = function () {
   }
 
   async function POST (ctx, next) {
-    const { track_id: tid } = ctx.request.body
+    const { track_id: id } = ctx.request.body
 
     try {
       const track = await Track.findOne({
         where: {
-          tid: tid,
+          id,
           status: {
             [Op.in]: [0, 2, 3]
           }
@@ -33,7 +33,7 @@ module.exports = function () {
 
       const wallet = await Credit.findOne({
         where: {
-          user_id: ctx.profile.id
+          userId: ctx.profile.id
         }
       })
 
@@ -44,7 +44,7 @@ module.exports = function () {
 
       const currentCount = await Play.count({
         where: {
-          track_id: tid,
+          track_id: id,
           user_id: ctx.profile.id,
           event: 1
         }
@@ -58,9 +58,8 @@ module.exports = function () {
       }
 
       const play = Play.build({
-        track_id: track.id,
-        user_id: ctx.profile.legacyId,
-        createdAt: new Date().getTime() / 1000 | 0
+        trackId: track.id,
+        userId: ctx.profile.id
       })
 
       if (cost > 0 && wallet.total >= cost) {
@@ -76,13 +75,14 @@ module.exports = function () {
 
       ctx.body = {
         data: {
-          tid: play.tid,
+          trackId: play.trackId,
           count: newCount,
           cost: cost,
           total: formatCredit(wallet.total)
         }
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 
@@ -103,8 +103,8 @@ module.exports = function () {
           required: ['track_id'],
           properties: {
             track_id: {
-              type: 'number',
-              minimum: 1
+              type: 'string',
+              format: 'uuid'
             }
           }
         }

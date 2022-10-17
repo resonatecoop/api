@@ -8,7 +8,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed(ms('30s'))) return
+    if (await ctx.cashed?.(ms('30s'))) return
 
     const q = ctx.request.query.q
     try {
@@ -68,8 +68,10 @@ module.exports = function () {
         },
         include: [{
           model: TrackGroupItem,
+          as: 'trackOn',
           include: [{
             model: TrackGroup,
+            as: 'trackGroup',
             where: {
               private: false
             }

@@ -17,7 +17,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed()) return
+    if (await ctx.cashed?.()) return
 
     const { limit = 50, page = 1 } = ctx.request.query
 

@@ -135,7 +135,9 @@ describe('User.ts/misc user info endpoint test', () => {
   })
   // FIXME: finish this test after update / delete / etc functionality is completed.
   //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should post to user favorites (no user id? all of them?)', async () => {
+  // NOTE: anything nested under the `/user/` route references the user who's bearer
+  // token is being sent
+  it.skip('should post to user favorites', async () => {
     response = await request.post('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to user favorites RESPONSE: ', response.text)

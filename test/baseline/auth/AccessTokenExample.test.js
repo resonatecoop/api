@@ -17,6 +17,6 @@ describe('Access token example test', () => {
     expect(testAccessToken).to.eql('test-!@#$-test-%^&*')
   })
   it('should have correct test user id', async () => {
-    expect(testUserId).to.eql('17203153-e2b0-457f-929d-5abe4e322ea1')
+    expect(testUserId).to.eql('251c01f6-7293-45f6-b8cd-242bdd76cd0d')
   })
 })

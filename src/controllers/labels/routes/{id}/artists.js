@@ -19,7 +19,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed()) return
+    if (await ctx.cashed?.()) return
 
     const { limit = 50, page = 1 } = ctx.request.query
     const offset = page > 1 ? (page - 1) * limit : 0

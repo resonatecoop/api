@@ -21,7 +21,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed(ms('30s'))) return
+    if (await ctx.cashed?.(ms('30s'))) return
 
     try {
       const { type, limit = 90, page = 1, order } = ctx.request.query

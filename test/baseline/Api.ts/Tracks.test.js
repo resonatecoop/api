@@ -1,13 +1,46 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect, testTrackId } = require('../../testConfig')
+const { request, expect, testTrackId, testUserId, testArtistId } = require('../../testConfig')
+const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
+const { faker } = require('@faker-js/faker')
+const ResetDB = require('../../ResetDB')
 
 describe('Api.ts/track endpoint test', () => {
+  ResetDB()
   let response = null
 
-  it('should get tracks when options.order is not \'random\'', async () => {
+  it('should GET /tracks/latest', async () => {
     //  GET /tracks/${options.order !== "random" ? "latest" : ""}
     //    if the endpoint call has options.order NOT 'random', add 'latest' to end of endpoint
+    const displayName = 'Test test'
+    const track = await Track.create({
+      title: displayName,
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const trackgroup = await TrackGroup.create({
+      title: displayName + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      trackId: track.id,
+      index: 1
+    })
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+
     response = await request.get('/tracks/latest')
 
     expect(response.status).to.eql(200)
@@ -17,20 +50,21 @@ describe('Api.ts/track endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'numberOfPages')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(30)
+    expect(attributes.data.length).to.eql(31)
 
     const theData = attributes.data[0]
-    expect(theData).to.include.keys('id', 'title', 'album', 'cover_metadata', 'artist', 'status', 'url', 'images')
-    expect(theData.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
-    expect(theData.title).to.eql('Ergonomic interactive concept')
-    expect(theData.album).to.eql('firewall')
+
+    expect(theData).to.include.keys('id', 'title', 'trackgroup', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theData.id).to.eql(track.id)
+    expect(theData.title).to.eql(track.title)
+    expect(theData.trackgroup.title).to.eql(trackgroup.title)
 
     expect(theData.cover_metadata).to.include.keys('id')
     expect(theData.cover_metadata.id).to.be.null
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('Paid')
-    expect(theData.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/44a28752-1101-4e0d-8c40-2c36dc82d035')
+    expect(theData.url).to.eql(`https://beta.stream.resonate.localhost/api/v3/user/stream/${track.id}`)
 
     expect(theData.images).to.include.keys('small', 'medium')
     expect(theData.images.small).to.include.keys('width', 'height')
@@ -40,11 +74,17 @@ describe('Api.ts/track endpoint test', () => {
     expect(theData.images.medium.width).to.eql(600)
     expect(theData.images.medium.height).to.eql(600)
 
-    expect(attributes.count).to.eql(30)
+    expect(attributes.count).to.eql(31)
     expect(attributes.numberOfPages).to.eql(1)
+
+    track.destroy({ force: true })
+    play.destroy({ force: true })
+    play2.destroy({ force: true })
+    trackgroup.destroy({ force: true })
+    tgi.destroy({ force: true })
   })
 
-  it('should get tracks when options.order is \'random\'', async () => {
+  it('should GET /tracks when options.order is \'random\'', async () => {
     //  GET /tracks/${options.order !== "random" ? "latest" : ""}
     //    if the endpoint call has options.order is 'random', add nothing to end of endpoint
     response = await request.get('/tracks')
@@ -60,11 +100,11 @@ describe('Api.ts/track endpoint test', () => {
 
     const theData = attributes.data[0]
     expect(theData).to.be.an('object')
-    expect(theData).to.include.keys('id', 'title', 'album', 'year', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theData).to.include.keys('id', 'title', 'trackgroup', 'year', 'cover_metadata', 'artist', 'status', 'url', 'images')
 
     expect(theData.id).to.eql('fcf41302-e549-4ab9-9937-f0bfead5a44f')
     expect(theData.title).to.eql('Virtual clear-thinking standardization')
-    expect(theData.album).to.eql('driver')
+    expect(theData.trackgroup.title).to.eql('Best album ever 3')
     expect(theData.year).to.be.null
 
     expect(theData.cover_metadata).to.be.an('object')

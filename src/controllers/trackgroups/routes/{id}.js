@@ -19,7 +19,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed(ms('30s'))) return
+    if (await ctx.cashed?.(ms('30s'))) return
     const { type } = ctx.request.query
 
     const where = {

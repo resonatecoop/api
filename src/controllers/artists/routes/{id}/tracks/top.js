@@ -17,13 +17,13 @@ module.exports = function (trackService) {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed(ms('30s'))) return
-
+    if (await ctx.cashed?.(ms('30s'))) return
     const { limit = 3 } = ctx.request.query
 
     try {
+      // FIXME: Sequelize this
       const result = await sequelize.query(`
-        SELECT track.id as id, track.creator_id as "artistId", track.status, track.track_name, track.track_url, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_album, track.track_duration, "userGroup".display_name as artist, count(play.id)
+      SELECT track.id as id, track.creator_id as "creatorId", track.status, track.track_name , track.track_url, trackgroup.title as "trackgroup.title", trackgroup.type as type, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_duration, "userGroup".display_name as artist, count(play.id)
         FROM track_groups as trackgroup
         INNER JOIN track_group_items as item ON(item.track_group_id = trackgroup.id)
         INNER JOIN tracks as track ON(item.track_id = track.id AND track.status IN(0, 2, 3))
@@ -41,7 +41,7 @@ module.exports = function (trackService) {
         AND trackgroup.private = false
         AND trackgroup.enabled = true
         AND (trackgroup.release_date <= NOW() OR trackgroup.release_date IS NULL)
-        GROUP BY track.id, trackgroup.cover, "userGroup".id, file.id
+        GROUP BY track.id, trackgroup.cover, "userGroup".id, file.id, trackgroup.type, trackgroup.title
         ORDER by count(play.id) desc
         LIMIT :limit
       `, {
@@ -53,11 +53,6 @@ module.exports = function (trackService) {
         mapToModel: true,
         model: Track
       })
-
-      if (!result.length) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'No results')
-      }
 
       ctx.body = {
         data: trackService(ctx).list(result)

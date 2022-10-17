@@ -1,4 +1,4 @@
-const { Resonate: Sequelize, UserGroup, Track, File } = require('../../../db/models')
+const { Resonate: Sequelize, UserGroup, Track, File, TrackGroup, TrackGroupItem } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 
@@ -8,7 +8,7 @@ module.exports = function (trackService) {
   }
 
   async function GET (ctx, next) {
-    if (ctx.request.query.order !== 'random' && await ctx.cashed(ms('30s'))) return
+    if (ctx.request.query.order !== 'random' && await ctx.cashed?.(ms('30s'))) return
 
     const { limit = 50, page = 1, order } = ctx.request.query
 
@@ -28,7 +28,7 @@ module.exports = function (trackService) {
       },
       attributes: [
         'id',
-        'creator_id',
+        'creatorId',
         'title',
         'url',
         'cover_art',
@@ -42,6 +42,15 @@ module.exports = function (trackService) {
           model: File,
           attributes: ['id'],
           as: 'cover'
+        },
+        {
+          model: TrackGroupItem,
+          as: 'trackOn',
+          include: [{
+            model: TrackGroup,
+            as: 'trackGroup',
+            attributes: ['title']
+          }]
         },
         {
           model: File,
