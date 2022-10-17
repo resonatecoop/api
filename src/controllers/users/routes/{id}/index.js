@@ -19,7 +19,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed()) return
+    if (await ctx.cashed?.()) return
 
     try {
       const result = await sequelize.query(`

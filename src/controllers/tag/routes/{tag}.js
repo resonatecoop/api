@@ -18,7 +18,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed()) return
+    if (await ctx.cashed?.()) return
 
     try {
       const hostname = process.env.SEARCH_API_PROTOCOL + '://' + process.env.SEARCH_API_HOST

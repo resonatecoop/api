@@ -7,7 +7,7 @@ const expect = require('chai').expect
 const TestRedisAdapter = require('../src/auth/redis-adapter')
 
 // generic user
-const testUserId = '17203153-e2b0-457f-929d-5abe4e322ea1'
+const testUserId = '251c01f6-7293-45f6-b8cd-242bdd76cd0d'
 // artist user from table 'users'
 const testArtistUserId = '1c88dea6-0519-4b61-a279-4006954c5d4c'
 // admin user from table 'users'

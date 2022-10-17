@@ -29,7 +29,9 @@ const trackService = (ctx) => {
           creator_id: item.creator_id,
           title: item.title,
           duration: item.duration,
-          album: item.album,
+          trackgroup: {
+            title: item.get('trackgroup.title') ?? item.trackOn?.[0]?.trackGroup.title
+          },
           year: item.year,
           cover: item.cover_art
             ? coverSrc(item.cover_art, '600', ext, !item.dataValues.cover)

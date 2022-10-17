@@ -8,11 +8,12 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     trackId: {
-      type: DataTypes.UUID
-      // FIXME: allowNull: false
+      type: DataTypes.UUID,
+      allowNull: false
     },
     userId: {
-      type: DataTypes.UUID
+      type: DataTypes.UUID,
+      allowNull: false
     },
     type: {
       type: DataTypes.INTEGER,

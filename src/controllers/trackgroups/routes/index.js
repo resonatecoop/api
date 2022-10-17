@@ -10,7 +10,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (ctx.request.query.order !== 'random' && await ctx.cashed(ms('30s'))) return
+    if (ctx.request.query.order !== 'random' && await ctx.cashed?.(ms('30s'))) return
 
     try {
       const { type, limit = 90, page = 1, featured, order } = ctx.request.query

@@ -19,7 +19,7 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    if (await ctx.cashed(ms('30s'))) return
+    if (await ctx.cashed?.(ms('30s'))) return
 
     try {
       const { limit = 100, page = 1 } = ctx.request.query

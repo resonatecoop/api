@@ -2,14 +2,16 @@
 /* eslint-env mocha */
 
 const ResetDB = require('../../ResetDB')
-const { request, expect, testArtistId } = require('../../testConfig')
+const { request, expect, testUserId, testArtistId } = require('../../testConfig')
+const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
+const { faker } = require('@faker-js/faker')
 
 describe('Api.ts/artists endpoint test', () => {
   ResetDB()
 
   let response = null
 
-  it('should get all artists', async () => {
+  it('should GET /artists', async () => {
     response = await request.get('/artists')
 
     expect(response.status).to.eql(200)
@@ -104,7 +106,7 @@ describe('Api.ts/artists endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  it('should get an artist by id', async () => {
+  it('should GET /artists/:id', async () => {
     response = await request.get(`/artists/${testArtistId}`)
 
     expect(response.status).to.eql(200)
@@ -134,7 +136,7 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.User.displayName).to.eql('artist')
   })
 
-  it('should get an artist\'s releases by artist id', async () => {
+  it('should GET /artists/:id/releases', async () => {
     response = await request.get(`/artists/${testArtistId}/releases`)
 
     expect(response.status).to.eql(200)
@@ -206,7 +208,35 @@ describe('Api.ts/artists endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  it('should get an artist\'s top tracks by artist id', async () => {
+  it('should GET /artists/:id/tracks/top', async () => {
+    const displayName = 'Test test'
+    const track = await Track.create({
+      title: displayName,
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const trackgroup = await TrackGroup.create({
+      title: displayName + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      trackId: track.id,
+      index: 1
+    })
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+
     response = await request.get(`/artists/${testArtistId}/tracks/top`)
 
     expect(response.status).to.eql(200)
@@ -220,11 +250,11 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.length).to.eql(1)
 
     const theItem = theData[0]
-    expect(theItem).to.include.keys('id', 'title', 'album', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theItem).to.include.keys('id', 'title', 'cover_metadata', 'cover', 'artist', 'status', 'url', 'images')
 
-    expect(theItem.id).to.eql('7c5864c6-634d-476d-a8b0-ca7ed5900345')
-    expect(theItem.title).to.eql('Exclusive methodical success')
-    expect(theItem.album).to.eql('array')
+    expect(theItem.id).to.eql(track.id)
+    expect(theItem.title).to.eql(displayName)
+    expect(theItem.trackgroup.title).to.eql(displayName + 'Album')
 
     expect(theItem.cover_metadata).to.be.an('object')
     expect(theItem.cover_metadata).to.include.keys('id')
@@ -232,7 +262,7 @@ describe('Api.ts/artists endpoint test', () => {
 
     expect(theItem.artist).to.eql('matrix')
     expect(theItem.status).to.eql('Paid')
-    expect(theItem.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/7c5864c6-634d-476d-a8b0-ca7ed5900345')
+    expect(theItem.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/' + track.id)
 
     expect(theItem.images).to.be.an('object')
     expect(theItem.images).to.include.keys('small', 'medium')
@@ -241,5 +271,11 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theItem.images.small.height).to.eql(120)
     expect(theItem.images.medium.width).to.eql(600)
     expect(theItem.images.medium.height).to.eql(600)
+
+    track.destroy({ force: true })
+    play.destroy({ force: true })
+    play2.destroy({ force: true })
+    trackgroup.destroy({ force: true })
+    tgi.destroy({ force: true })
   })
 })

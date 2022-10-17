@@ -6,7 +6,7 @@ const { request, expect, testTrackGroupId } = require('../../testConfig')
 describe('Api.ts/Trackgroups endpoint test', () => {
   let response = null
 
-  it('should get all trackgroups', async () => {
+  it('should GET /trackgroups', async () => {
     response = await request.get('/trackgroups')
 
     expect(response.status).to.eql(200)
@@ -59,7 +59,7 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(response.status).to.eql(400)
   })
 
-  it('should get trackgroup by id', async () => {
+  it('should GET trackgroup/s:id', async () => {
     response = await request.get(`/trackgroups/${testTrackGroupId}`)
 
     expect(response.status).to.eql(200)
