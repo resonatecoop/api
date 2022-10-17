@@ -16,7 +16,7 @@ cd <repo>
 cp .env.example .env
 cp jwk-keys.json.example jwk-keys.json
 cp cookies-keys.json.example cookies-keys.json
-
+yarn install
 docker-compose up
 ```
 
