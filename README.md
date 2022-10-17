@@ -29,6 +29,13 @@ yarn docker:seed:all
 ```
 
 Now go to http://localhost:4000 and you should see the swagger docs!
+
+## Code standards
+
+We use [Standard Style](https://standardjs.com/) throughout the project. We recommend installing a plugin in whatever your favorite editor is to automatically format code on save, so that you don't have to worry about it. A check will run on any Pull Request that will fail if it's not styled correctly.
+
+We use [commitlint](https://commitlint.js.org/) to verify that commits are machine and human readable using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). A check will run on any Pull Request that will fail if it commits are not named correctly.
+
 ## Clients
 
 This API is an API, and as such, it needs clients to be particularly useful!
