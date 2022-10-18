@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect } = require('../../testConfig')
+const { request, expect, testArtistUserId } = require('../../testConfig')
 const { faker } = require('@faker-js/faker')
 const { UserGroup, UserGroupType } = require('../../../src/db/models')
 
@@ -27,6 +27,7 @@ describe('Api.ts/search endpoint test', () => {
 
     await UserGroup.create({
       displayName: displayName,
+      ownerId: testArtistUserId,
       typeId: type.id
     })
 

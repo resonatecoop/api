@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const UserGroupType = sequelize.define('UserGroupMember', {
+  const UserGroupMember = sequelize.define('UserGroupMember', {
     memberId: {
       type: DataTypes.UUID,
       validate: {
@@ -23,9 +23,10 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'user_group_members'
   })
 
-  UserGroupType.associate = function (models) {
-    UserGroupType.hasMany(models.UserGroup, { as: 'groups', targetKey: 'id', foreignKey: 'typeId' })
+  UserGroupMember.associate = function (models) {
+    // UserGroupMember.belongsTo(models.UserGroup, { as: 'members', targetKey: 'id', foreignKey: 'memberId' })
+    // UserGroupMember.hasMany(models.UserGroup, { as: 'parents', targetKey: 'id', foreignKey: 'belongsToId' })
   }
 
-  return UserGroupType
+  return UserGroupMember
 }

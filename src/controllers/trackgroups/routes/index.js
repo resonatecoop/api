@@ -60,8 +60,7 @@ module.exports = function () {
             model: UserGroup,
             required: false,
             attributes: ['id', 'displayName'],
-            as: 'userGroup'
-
+            as: 'creator'
           }
         ],
         order: [

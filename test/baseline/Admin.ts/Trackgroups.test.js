@@ -143,7 +143,6 @@ describe.skip('Admin.ts/trackgroups endpoint test', () => {
   it('should update a trackgroup by id', async () => {
     response = await request.put(`/user/admin/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
-    // console.log('ADSFASDF ', response.body)
     // { error: "undefined: must have required property 'title'" }
     expect(response.status).to.eql(200)
 

@@ -10,7 +10,7 @@ const shouldWatch = process.env.CI === "true" ? false : true;
 module.exports = {
     "reporter": "spec",
     "watch": shouldWatch,
-    "watch-files": ['test/**/*.js', 'src/**/*.js'],
+    "watch-files": ['test/**/*.js', 'src/**/*.js', 'src/**/*.mjs'],
     "watch-ignore": ['node_modules'],
     "recursive": true
 };

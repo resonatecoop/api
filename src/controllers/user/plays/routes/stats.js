@@ -19,18 +19,13 @@ module.exports = function () {
     const format = getDateFormat(ctx.request.period)
     const isLabel = ctx.profile.role === 'label-owner'
 
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-
     try {
       const res = await findAllPlayCounts(ctx.profile.id, from, to, format, type, isLabel)
-
-      console.log('stats res: ', res)
 
       ctx.body = {
         data: res
       }
     } catch (err) {
-      console.log('???????????????????????')
       ctx.throw(ctx.status, err.message)
     }
 

@@ -272,7 +272,7 @@ module.exports = function () {
             model: UserGroup,
             required: true,
             attributes: ['id', 'displayName'],
-            as: 'userGroup',
+            as: 'creator',
             where: {
               ownerId: ctx.profile.id
             }

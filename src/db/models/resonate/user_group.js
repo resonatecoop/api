@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       validate: {
         isUUID: 4
-      }
+      },
+      allowNull: false
     },
     typeId: {
       type: DataTypes.INTEGER,
@@ -55,6 +56,9 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   UserGroup.associate = function (models) {
+    UserGroup.belongsToMany(models.UserGroup, { through: models.UserGroupMember, as: 'members', foreignKey: 'memberId', otherKey: 'belongsToId' })
+    UserGroup.hasMany(models.UserGroupMember, { foreignKey: 'belongsToId', as: 'parent' })
+    UserGroup.hasMany(models.UserGroupMember, { foreignKey: 'memberId', as: 'memberOf' })
     UserGroup.belongsTo(models.UserGroupType, { foreignKey: 'typeId' })
     UserGroup.belongsTo(models.User, { foreignKey: 'ownerId' })
     UserGroup.hasMany(models.TrackGroup, { foreignKey: 'creatorId' })

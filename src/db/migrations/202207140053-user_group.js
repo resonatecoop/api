@@ -17,7 +17,8 @@ module.exports = {
         validate: {
           isUUID: 4
         },
-        field: 'owner_id'
+        field: 'owner_id',
+        allowNull: false
       },
       typeId: {
         type: DataTypes.INTEGER,

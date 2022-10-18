@@ -1,8 +1,7 @@
-const { User, TrackGroup, TrackGroupItem, Track, UserMeta, File, Resonate: sequelize } = require('../../../../db/models')
+const { UserGroup, UserGroupMember, TrackGroup, TrackGroupItem, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
-const map = require('awaity/map')
 const ms = require('ms')
 
 module.exports = function () {
@@ -26,31 +25,14 @@ module.exports = function () {
     try {
       const { type, limit = 90, page = 1, order } = ctx.request.query
 
-      const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
-        attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
-        where: {
-          meta_value: ctx.params.id,
-          meta_key: 'mylabel'
-        }
-      }).slice(0, -1)
-
       const query = {
         where: {
           private: false,
-          creator_id: {
-            [Op.in]: sequelize.literal('(' + subQuery + ')')
-          },
           enabled: true,
           release_date: {
             [Op.or]: {
               [Op.lte]: new Date(),
               [Op.eq]: null
-            }
-          },
-          type: {
-            [Op.or]: {
-              [Op.eq]: null,
-              [Op.notIn]: ['playlist', 'compilation'] // hide playlists and compilations
             }
           }
         },
@@ -58,13 +40,13 @@ module.exports = function () {
         attributes: [
           'about',
           'cover',
-          'creator_id',
-          'display_artist',
+          'creatorId',
           'id',
           'slug',
           'tags',
           'title',
-          'type'
+          'type',
+          'createdAt'
         ],
         include: [
           {
@@ -79,10 +61,18 @@ module.exports = function () {
             }
           },
           {
-            model: User,
-            required: false,
+            model: UserGroup,
             attributes: ['id', 'displayName'],
-            as: 'user'
+            required: true,
+            as: 'creator',
+            include: [{
+              model: UserGroupMember,
+              required: true,
+              as: 'memberOf',
+              where: {
+                belongsToId: ctx.params.id
+              }
+            }]
           }
         ],
         order: [
@@ -104,12 +94,7 @@ module.exports = function () {
         query.where.type = type
       }
 
-      const { rows: result, count } = await TrackGroup.findAndCountAll(query)
-
-      if (!result.length) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'No releases')
-      }
+      const { count, rows: result } = await TrackGroup.findAndCountAll(query)
 
       let ext = '.jpg'
 
@@ -120,7 +105,7 @@ module.exports = function () {
       const variants = [120, 600, 1500]
 
       ctx.body = {
-        data: await map(result, async (item) => {
+        data: await Promise.all(result.map(async (item) => {
           const o = Object.assign({}, item.dataValues)
 
           const slugTitle = item.get('slug')
@@ -139,7 +124,7 @@ module.exports = function () {
             ],
             include: [{
               model: Track,
-              attributes: ['id', 'creator_id', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
+              attributes: ['id', 'creatorId', 'cover_art', 'title', 'duration', 'status'],
               as: 'track',
               where: {
                 status: {
@@ -147,14 +132,6 @@ module.exports = function () {
                 }
               },
               include: [
-                {
-                  model: UserMeta,
-                  attributes: ['meta_key', 'meta_value'],
-                  where: {
-                    meta_key: 'nickname'
-                  },
-                  as: 'meta'
-                },
                 {
                   model: File,
                   required: false,
@@ -232,12 +209,13 @@ module.exports = function () {
           }, {})
 
           return o
-        }),
-        count: count,
-        numberOfPages: Math.ceil(count / limit),
+        })),
+        count,
+        pages: Math.ceil(count / limit),
         status: 'ok'
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 
