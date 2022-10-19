@@ -30,7 +30,7 @@ describe('User.ts/misc user info endpoint test', () => {
   //
   //    Not clear if the code for this endpoint is correct or if it needs to be redone.
   //    Skip for now, until these issues can be resolved.
-  it.skip('should get user plays within date range', async () => {
+  it.skip('should GET /user/plays/stats?from&to plays within date range', async () => {
     response = await request.get(`/user/plays/stats?from=${from}&to=${to}`).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('user plays within date range RESPONSE: ', response.text)
@@ -54,7 +54,7 @@ describe('User.ts/misc user info endpoint test', () => {
   })
 
   // FIXME: Skipping because it uses old mysql databases
-  it.skip('should get user plays history artists (?)', async () => {
+  it.skip('should GET /user/plays/history/artists history artists (?)', async () => {
     response = await request.get('/user/plays/history/artists').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('user plays history artists RESPONSE: ', response.text)
@@ -76,7 +76,7 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should get user collections', async () => {
+  it('should GET /user/collection', async () => {
     response = await request.get('/user/collection/').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -94,7 +94,7 @@ describe('User.ts/misc user info endpoint test', () => {
   // FIXME: there are two possible endpoints here: artists.js and tracks.js
   //    not sure which one to test, or both, or...
   //    Figure this out then finish test
-  it.skip('should get user plays history', async () => {
+  it.skip('should GET /user/plays/history', async () => {
     response = await request.get('/user/plays/history/').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('user plays history RESPONSE: ', response.text)
@@ -116,7 +116,7 @@ describe('User.ts/misc user info endpoint test', () => {
     // expect(attributes.numberOfPages).to.eql(1)
     // expect(attributes.status).to.eql('ok')
   })
-  it('should get user favorites', async () => {
+  it('should GET /user/favorites', async () => {
     response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -137,7 +137,7 @@ describe('User.ts/misc user info endpoint test', () => {
   //    getting this endpoint to work and pass test will corrupt test data.
   // NOTE: anything nested under the `/user/` route references the user who's bearer
   // token is being sent
-  it.skip('should post to user favorites', async () => {
+  it.skip('should POST /user/favorites', async () => {
     response = await request.post('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('post to user favorites RESPONSE: ', response.text)
