@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
+const ResetDB = require('../../ResetDB')
 const { request, expect, testTrackGroupId } = require('../../testConfig')
 
 describe('Api.ts/Trackgroups endpoint test', () => {
+  ResetDB()
   let response = null
 
   it('should GET /trackgroups', async () => {

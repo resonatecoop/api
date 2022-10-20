@@ -225,7 +225,7 @@ describe('Api.ts/artists endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
     const play = await Play.create({

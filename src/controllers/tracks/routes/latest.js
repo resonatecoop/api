@@ -15,7 +15,6 @@ module.exports = function (trackService) {
 
     try {
       // FIXME: is it possible to use Sequelize for this query?
-
       const [countResult] = await sequelize.query(`
         SELECT count(*) as count
         FROM track_groups as trackgroup

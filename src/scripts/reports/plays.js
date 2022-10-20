@@ -9,7 +9,7 @@ const { Op } = require('sequelize')
  * @returns {Array} ISO date for play count
  */
 
-module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format = '%Y-%m', type = 'paid', isLabel) => {
+module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format = '%Y-%m', type = 'paid') => {
   if (!creatorId) throw new Error('Creator id is required')
 
   if (typeof startDate !== 'string') throw new Error('Start date is invalid')
@@ -17,21 +17,20 @@ module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format 
   if (typeof endDate !== 'string') throw new Error('End date is invalid')
 
   console.log('inside find all play counts. creatorId: ', creatorId)
-  console.log('isLabel: ', isLabel)
 
   // creatorId is 71175a23-9256-41c9-b8c1-cd2170aa6591
 
-  // const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
+  // const subQuery = sequelize.dialect.queryGenerator.selectQuery('tracks', {
   //   attributes: ['tid'],
   //   where: {
   //     uid: creatorId
   //   }
   // }).slice(0, -1)
 
-  const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
+  const subQuery = sequelize.dialect.queryGenerator.selectQuery('tracks', {
     attributes: ['id'],
     where: {
-      creator_id: creatorId
+      creatorId
     }
   })
 
@@ -47,62 +46,22 @@ module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format 
       [sequelize.fn('IF', [sequelize.fn('count', sequelize.col('pid')), 'count'] > 8, 9, sequelize.fn('count', sequelize.col('pid'))), 'count']
     ],
     where: {
-      tid: {
+      trackId: {
         [Op.in]: sequelize.literal('(' + subQuery + ')')
       },
-      uid: {
+      userId: {
         [Op.ne]: creatorId
       },
       event: event,
       date: {
-        [Op.and]: {
-          [Op.gt]: sequelize.fn('UNIX_TIMESTAMP', startDate),
-          [Op.lt]: sequelize.fn('UNIX_TIMESTAMP', endDate)
-        }
+        [Op.between]: [startDate, endDate]
       }
     },
-    group: [
-      sequelize.fn('FROM_UNIXTIME', sequelize.col('date'), format)
-    ],
+    group: ['createdAt'],
     order: [
-      [[sequelize.literal('d'), 'desc']]
+      [[sequelize.literal('createdAt'), 'desc']]
     ],
     raw: true
-  }
-
-  if (isLabel) {
-    const subQueryLabel = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
-      attributes: ['user_id'],
-      where: {
-        meta_key: 'mylabel',
-        meta_value: creatorId
-      }
-    }).slice(0, -1)
-
-    // const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
-    //   attributes: ['tid'],
-    //   where: {
-    //     uid: {
-    //       [Op.in]: sequelize.literal('(' + subQueryLabel + ')')
-    //     }
-    //   }
-    // }).slice(0, -1)
-
-    const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', {
-      attributes: ['id'],
-      where: {
-        creator_id: {
-          [Op.in]: sequelize.literal('(' + subQueryLabel + ')')
-        }
-      }
-    }).slice(0, -1)
-
-    // queryOptions.where.tid = {
-    //   [Op.in]: sequelize.literal('(' + subQuery + ')')
-    // }
-    queryOptions.where.id = {
-      [Op.in]: sequelize.literal('(' + subQuery + ')')
-    }
   }
 
   console.log('queryOptions: ', queryOptions)

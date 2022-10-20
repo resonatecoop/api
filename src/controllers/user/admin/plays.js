@@ -5,8 +5,7 @@ const ajvFormats = require('ajv-formats')
 const Koa = require('koa')
 const Roles = require('koa-roles')
 const Router = require('@koa/router')
-const { User, UserMeta } = require('../../../db/models')
-const { Op } = require('sequelize')
+
 const { findAllPlayCounts } = require('../../../scripts/reports/plays')
 
 const ajv = new AJV({
@@ -83,47 +82,8 @@ router.get('/', user.can('access plays'), async (ctx, next) => {
   const type = query.type || 'paid'
   const creatorId = query.creator_id
 
-  const user = await User.findOne({
-    attributes: [
-      'id',
-      'login',
-      'email',
-      'registered'
-    ],
-    where: {
-      id: creatorId
-    },
-    include: [
-      {
-        model: UserMeta,
-        as: 'meta',
-        required: true,
-        attributes: ['meta_key', 'meta_value'],
-        where: {
-          meta_key: {
-            [Op.in]: ['role']
-          }
-        }
-      }
-    ]
-  })
-
-  const { role: umRole } = Object.fromEntries(Object.entries(user.meta)
-    .map(([key, value]) => {
-      const metaKey = value.meta_key
-      let metaValue = value.meta_value
-
-      if (!isNaN(Number(metaValue))) {
-        metaValue = Number(metaValue)
-      }
-
-      return [metaKey, metaValue]
-    }))
-
-  const isLabel = umRole.replace('um_', '') === 'label-owner'
-
   try {
-    const res = await findAllPlayCounts(creatorId, periodStart, periodEnd, format, type, isLabel)
+    const res = await findAllPlayCounts(creatorId, periodStart, periodEnd, format, type)
 
     ctx.body = {
       data: res

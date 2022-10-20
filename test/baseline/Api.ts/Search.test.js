@@ -4,8 +4,11 @@
 const { request, expect, testArtistUserId } = require('../../testConfig')
 const { faker } = require('@faker-js/faker')
 const { UserGroup, UserGroupType } = require('../../../src/db/models')
+const ResetDB = require('../../ResetDB')
 
 describe('Api.ts/search endpoint test', () => {
+  ResetDB()
+
   it('should handle no provided search term/s', async () => {
     const response = await request.get('/search')
 

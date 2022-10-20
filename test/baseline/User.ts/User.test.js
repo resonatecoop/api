@@ -107,7 +107,7 @@ describe('User.ts/user endpoint test', () => {
     expect(response.body.message).to.include('TrackGroup.cover cannot be null')
   })
 
-  it('should post to user/trackgroups', async () => {
+  it('should POST user/trackgroups', async () => {
     const title = faker.lorem.sentence(4)
     const cover = faker.datatype.uuid()
 
@@ -134,7 +134,7 @@ describe('User.ts/user endpoint test', () => {
     })
   })
 
-  it('should update user trackgroups by trackgroup id', async () => {
+  it('should PUT /user/trackgroups/:id', async () => {
     const oldTitle = faker.lorem.sentence(4)
     const oldCover = faker.datatype.uuid()
     const newTitle = faker.lorem.sentence(3)
@@ -160,7 +160,7 @@ describe('User.ts/user endpoint test', () => {
     await trackgroup.destroy({ force: true })
   })
 
-  it('should get user trackgroups', async () => {
+  it('should GET /user/trackgroups', async () => {
     response = await request.get('/user/trackgroups').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -177,7 +177,7 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  it('should get user trackgroups by trackgroup id', async () => {
+  it('should GET /user/trackgroups/:id', async () => {
     response = await request.get(`/user/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -271,7 +271,7 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  it('should add an item to a trackgroup by trackgroup id', async () => {
+  it('should PUT /user/trackgroups/:id/items/add', async () => {
     const trackgroup = await TrackGroup.create({
       cover: faker.datatype.uuid(),
       title: faker.lorem.sentence(4),
@@ -290,13 +290,14 @@ describe('User.ts/user endpoint test', () => {
         }]
       })
       .set('Authorization', `Bearer ${testAccessToken}`)
+
     expect(response.status).to.eql(200)
 
     const { data } = response.body
 
     expect(data.length).to.eql(1)
     expect(data[0].trackgroupId).to.eql(trackgroup.id)
-    expect(data[0].trackId).to.eql(track.id)
+    expect(data[0].track_id).to.eql(track.id)
     expect(data[0].track.id).to.eql(track.id)
     expect(data[0].track.status).to.eql('hidden')
 
@@ -310,7 +311,7 @@ describe('User.ts/user endpoint test', () => {
     })
   })
 
-  it('should remove an item from a trackgroup by trackgroup id', async () => {
+  it('should PUT /user/trackgroups/:id/items/remove', async () => {
     const trackgroup = await TrackGroup.create({
       cover: faker.datatype.uuid(),
       title: faker.lorem.sentence(4),
@@ -322,7 +323,7 @@ describe('User.ts/user endpoint test', () => {
     })
 
     const trackgroupItem = await TrackGroupItem.create({
-      trackId: track.id,
+      track_id: track.id,
       trackgroupId: trackgroup.id,
       index: 0
     })
@@ -347,7 +348,7 @@ describe('User.ts/user endpoint test', () => {
     })
   })
 
-  it('should update trackgroup items by trackgroup id', async () => {
+  it('should PUT /users/trackgroups/:id/items', async () => {
     const trackgroup = await TrackGroup.create({
       cover: faker.datatype.uuid(),
       title: faker.lorem.sentence(4),
@@ -373,7 +374,7 @@ describe('User.ts/user endpoint test', () => {
 
     expect(data[0].index).to.eql(2)
     expect(data[0].trackgroupId).to.eql(trackgroup.id)
-    expect(data[0].trackId).to.eql(track.id)
+    expect(data[0].track_id).to.eql(track.id)
     expect(data.length).to.eql(1)
 
     await trackgroup.destroy({ force: true })
@@ -386,7 +387,7 @@ describe('User.ts/user endpoint test', () => {
     })
   })
 
-  it('should delete from trackgroups by trackgroup id', async () => {
+  it('should DELETE /user/trackgroups/:id', async () => {
     const oldTitle = faker.lorem.sentence(4)
     const oldCover = faker.datatype.uuid()
 

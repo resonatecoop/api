@@ -2,7 +2,7 @@
 >
 > This project is currently broken and under very active development.
 
-# Tracks API (v4 lol)
+# Tracks API
 
 A rewrite of the Resonate tracks api, but with one database to rule them all.
 
@@ -29,6 +29,28 @@ yarn docker:seed:all
 ```
 
 Now go to http://localhost:4000 and you should see the swagger docs!
+
+## Tests
+
+In short, you need to start the special test container. 
+
+```sh
+yarn docker:compose:test:up
+```
+
+Load in some preliminary test data
+
+```sh
+yarn docker:seed:all:test
+```
+
+And then run the tests.
+
+```sh
+yarn test:all
+```
+
+Check out the test [README.md](/tests/README.md) for more details.
 
 ## Code standards
 

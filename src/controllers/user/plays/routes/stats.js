@@ -1,13 +1,14 @@
-const { findAllPlayCounts } = require('../../../../scripts/reports/plays')
 const { authenticate } = require('../../authenticate')
+const { Play, Resonate: sequelize } = require('../../../../db/models')
+const { Op } = require('sequelize')
 
-const getDateFormat = (period = 'monthly') => {
-  return {
-    yearly: '%Y',
-    monthly: '%Y-%m',
-    daily: '%Y-%m-%d'
-  }[period]
-}
+// const getDateFormat = (period = 'monthly') => {
+//   return {
+//     yearly: '%Y',
+//     monthly: '%Y-%m',
+//     daily: '%Y-%m-%d'
+//   }[period]
+// }
 
 module.exports = function () {
   const operations = {
@@ -15,17 +16,36 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    const { from = '2020-01-01', to = '2020-12-01', type = 'paid' } = ctx.request.query
-    const format = getDateFormat(ctx.request.period)
-    const isLabel = ctx.profile.role === 'label-owner'
+    const currentDate = new Date()
+    const {
+      from = new Date().setFullYear(currentDate.getFullYear() - 1).toISOString().split('T')[0],
+      to = currentDate.toISOString().split('T')[0]
+      // type = 'paid'
+    } = ctx.request.query
+    // FIXME: add filtering by type and date
+    // const format = getDateFormat(ctx.request.period)
 
     try {
-      const res = await findAllPlayCounts(ctx.profile.id, from, to, format, type, isLabel)
+      const res = await Play.findAll({
+        attributes: [
+          [sequelize.literal('DATE("created_at")'), 'date'],
+          [sequelize.literal('COUNT(*)'), 'count']
+        ],
+        where: {
+          userId: ctx.profile.id,
+          createdAt: {
+            [Op.between]: [from, to]
+          }
+        },
+        group: ['created_at'],
+        order: [['count', 'DESC']]
+      })
 
       ctx.body = {
         data: res
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 

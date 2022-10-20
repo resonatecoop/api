@@ -24,7 +24,7 @@ const findAllListeners = async (startDate, endDate, creatorId, isLabel = false) 
   }
 
   if (isLabel) {
-    const subQueryLabelArtists = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
+    const subQueryLabelArtists = sequelize.dialect.queryGenerator.selectQuery('rsntr_usermeta', {
       attributes: ['user_id'],
       where: {
         meta_key: 'mylabel',
@@ -37,7 +37,7 @@ const findAllListeners = async (startDate, endDate, creatorId, isLabel = false) 
     }
   }
 
-  const subQuery = sequelize.dialect.QueryGenerator.selectQuery('tracks', subQueryOptions).slice(0, -1)
+  const subQuery = sequelize.dialect.queryGenerator.selectQuery('tracks', subQueryOptions).slice(0, -1)
 
   const queryOptions = {
     attributes: [

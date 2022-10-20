@@ -3,8 +3,10 @@
 
 const { request, expect, testUserId, testTrackId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
+const ResetDB = require('../../ResetDB')
 
 describe('User.ts/user tracks endpoint test', () => {
+  ResetDB()
   MockAccessToken(testUserId)
 
   let response = null

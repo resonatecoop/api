@@ -106,8 +106,8 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Track.associate = function (models) {
-    Track.hasMany(models.TrackGroupItem, { foreignKey: 'trackId', as: 'trackOn' })
-    Track.hasMany(models.Play, { foreignKey: 'trackId', sourceKey: 'id' })
+    Track.hasMany(models.TrackGroupItem, { targetKey: 'trackId', as: 'trackOn' })
+    Track.hasMany(models.Play, { targetKey: 'trackId', as: 'plays' })
     // Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
     // Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
     Track.hasOne(models.UserGroup, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })

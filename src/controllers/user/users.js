@@ -135,7 +135,7 @@ router.get('/', user.can('access users'), async (ctx, next) => {
       parameters.q = '%' + q + '%'
     }
 
-    const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
+    const subQuery = sequelize.dialect.queryGenerator.selectQuery('rsntr_usermeta', {
       attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
       where: {
         [Op.or]: [
@@ -211,7 +211,7 @@ router.get('/:id', user.can('access users'), async (ctx, next) => {
   }
 
   try {
-    const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
+    const subQuery = sequelize.dialect.queryGenerator.selectQuery('rsntr_usermeta', {
       attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
       where: {
         [Op.or]: [

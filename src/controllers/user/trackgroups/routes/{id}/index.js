@@ -215,7 +215,7 @@ module.exports = function () {
       }
 
       // if (ctx.profile.role === 'label-owner') {
-      //   const subQuery = sequelize.dialect.QueryGenerator.selectQuery('rsntr_usermeta', {
+      //   const subQuery = sequelize.dialect.queryGenerator.selectQuery('rsntr_usermeta', {
       //     attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
       //     where: {
       //       [Op.or]: [
