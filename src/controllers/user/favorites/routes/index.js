@@ -90,6 +90,7 @@ module.exports = function () {
     const offset = page > 1 ? (page - 1) * limit : 0
 
     try {
+      // FIXME switch to sequelize query
       const [countResult] = await sequelize.query(`
         SELECT count(favorite.id) as count
         FROM favorites as favorite

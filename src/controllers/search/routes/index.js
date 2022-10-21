@@ -68,12 +68,15 @@ module.exports = function () {
         },
         include: [{
           model: TrackGroupItem,
+          required: true,
           as: 'trackOn',
           include: [{
             model: TrackGroup,
+            required: true,
             as: 'trackGroup',
             where: {
-              private: false
+              private: false,
+              enabled: true
             }
           }]
         }]
@@ -84,7 +87,8 @@ module.exports = function () {
           title: {
             [Op.iLike]: `%${q}%`
           },
-          private: false
+          private: false,
+          enabled: true
         }
       })
 

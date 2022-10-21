@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-
-const { request, expect, testUserId, testTrackId, testTrackGroupId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const { Track } = require('../../../src/db/models')
+const { request, expect, testUserId, testTrackId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistId } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
+const { faker } = require('@faker-js/faker')
 
 describe('User.ts/user tracks endpoint test', () => {
   ResetDB()
@@ -19,82 +20,49 @@ describe('User.ts/user tracks endpoint test', () => {
   it('should handle an invalid access token', async () => {
     response = await request.get('/user/tracks').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-    // FIXME: response.status should be 401, not 404
     expect(response.status).to.eql(401)
   })
 
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should post to user tracks', async () => {
-    response = await request.post('/user/tracks').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should fail POST /user/tracks without creatorId', async () => {
+    response = await request.post('/user/tracks')
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('post to all user tracks RESPONSE: ', response.text)
-
-    expect(response.status).to.eql(200)
-
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(response.status).to.eql(400)
+    expect(response.body.message).to.eql('Bad Request')
+    expect(response.body.errors[0].path).to.eql('creatorId')
   })
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should upload a file based on track id', async () => {
-    // FIXME: is put the right verb? should be post?
+
+  it('should POST /user/tracks', async () => {
+    const title = faker.animal.cat()
+    response = await request.post('/user/tracks')
+      .send({ creatorId: testArtistId, title })
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    const { data } = response.body
+    expect(response.status).to.eql(201)
+    expect(data.creatorId).to.eql(testArtistId)
+    expect(data.title).to.eql(title)
+    Track.destroy({
+      where: {
+        id: data.id
+      },
+      force: true
+    })
+  })
+  // FIXME: we need workers running for these tests to succeed
+  it.skip('should PUT /user/tracks/:id/file', async () => {
     response = await request.put(`/user/tracks/${testTrackId}/file `).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('upload a file based on track id RESPONSE: ', response.text)
 
     expect(response.status).to.eql()
-
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
   })
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should upload a cover (image?) based on trackgroup id', async () => {
-    // FIXME: is put the right verb? should be post?
+  // FIXME: we need workers running for these tests to succeed
+  it.skip('should PUT /user/trackgroups/:id/cover', async () => {
     response = await request.put(`/user/trackgroups/${testTrackGroupId}/cover`).set('Authorization', `Bearer ${testAccessToken}`)
 
     console.log('upload a cover based on trackgroup id RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
-
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
   })
 })

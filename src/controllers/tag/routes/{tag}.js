@@ -1,7 +1,5 @@
-const fetch = require('node-fetch')
-const { Track, TrackGroup, File } = require('../../../db/models')
+const { Track, TrackGroup, TrackGroupItem } = require('../../../db/models')
 const { Op } = require('sequelize')
-const coverSrc = require('../../../util/cover-src')
 
 module.exports = function () {
   const operations = {
@@ -20,142 +18,56 @@ module.exports = function () {
   async function GET (ctx, next) {
     if (await ctx.cashed?.()) return
 
+    const tag = ctx.params.tag?.toLowerCase()
+
+    if (!tag) {
+      ctx.throw(400, 'Please supply a tag')
+    }
+
     try {
-      const hostname = process.env.SEARCH_API_PROTOCOL + '://' + process.env.SEARCH_API_HOST
-      const url = new URL(`/tag/${ctx.params.tag}`, hostname)
-      url.search = new URLSearchParams(ctx.request.query)
-      const response = await fetch(url.href)
-
-      if (response.status === 404) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'No results')
-      }
-
-      const data = await Promise.all(response.data.map(async (item) => {
-        if (item.kind === 'album') {
-          const result = await TrackGroup.findOne({
-            attributes: [
-              'cover',
-              'creator_id',
-              'slug'
-            ],
+      const tracks = await Track.findAll({
+        where: {
+          tags: {
+            [Op.contains]: [`${tag}`]
+          }
+        },
+        attributes: ['id', 'creatorId', 'title', 'year', 'status', 'tags'],
+        include: [{
+          model: TrackGroupItem,
+          attributes: ['index', 'track_id', 'trackgroupId'],
+          required: true,
+          as: 'trackOn',
+          include: [{
+            model: TrackGroup,
+            attributes: ['id', 'title', 'type'],
+            required: true,
+            as: 'trackGroup',
             where: {
-              id: item.track_group_id,
-              private: false
-            },
-            include: [
-              {
-                model: File,
-                required: false,
-                attributes: ['id', 'owner_id'],
-                as: 'cover_metadata',
-                where: {
-                  mime: {
-                    [Op.in]: ['image/jpeg', 'image/png']
-                  }
-                }
-              }
-            ]
-          })
+              private: false,
+              enabled: true
+            }
+          }]
+        }]
+      })
 
-          if (!result) {
-            return false
-          }
-
-          const data = result.get({
-            plain: true
-          })
-
-          item.creator_id = data.creator_id
-          item.slug = data.slug
-
-          let ext = '.jpg'
-
-          if (ctx.accepts('image/webp')) {
-            ext = '.webp'
-          }
-
-          const variants = [120, 600, 1500]
-
-          item.cover = coverSrc(data.cover, '1500', ext, !data.cover_metadata)
-
-          item.images = variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(data.cover, key, ext, !data.cover_metadata)
-                }
-              }
-            )
-          }, {})
-
-          if (!data.cover_metadata) {
-            item.cover_metadata = { id: data.cover }
-          }
+      const trackgroups = await TrackGroup.findAll({
+        where: {
+          tags: {
+            [Op.iLike]: `%${tag}%`
+          },
+          private: false,
+          enabled: true
         }
-
-        if (item.kind === 'track') {
-          let ext = '.jpg'
-
-          if (ctx.accepts('image/webp')) {
-            ext = '.webp'
-          }
-
-          const variants = [120, 600]
-
-          const result = await Track.findOne({
-            attributes: ['cover_art'],
-            where: {
-              id: item.track_id
-            },
-            include: [
-              {
-                attributes: ['id'],
-                model: File,
-                as: 'cover_metadata'
-              }
-            ]
-          })
-
-          const data = result.get({
-            plain: true
-          })
-
-          item.cover = coverSrc(data.cover_art, '600', ext, !data.cover_metadata)
-
-          item.images = variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign({}, o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(data.cover_art, key, ext, !data.cover_metadata)
-                }
-              }
-            )
-          }, {})
-        }
-
-        return item
-      }))
-
-      if (!data.length) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'No results')
-      }
+      })
 
       ctx.body = {
-        count: response.count,
-        numberOfPages: response.numberOfPages,
-        data: data.filter(Boolean)
+        data: {
+          tracks: tracks.map(l => l.toJSON()),
+          trackgroups: trackgroups.map(l => l.toJSON())
+        }
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 

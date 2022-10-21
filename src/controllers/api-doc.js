@@ -16,6 +16,13 @@ const Artist = {
   }
 }
 
+const TrackProperties = {
+  creatorId: {
+    type: 'string',
+    format: 'uuid'
+  }
+}
+
 const apiDoc = {
   swagger: '2.0',
   info: {
@@ -73,9 +80,20 @@ const apiDoc = {
         }
       }
     },
-
+    TrackCreate: {
+      type: 'object',
+      required: ['creatorId'],
+      properties: TrackProperties
+    },
     Track: {
-      type: 'object'
+      type: 'object',
+      properties: {
+        ...TrackProperties,
+        id: {
+          type: 'string',
+          format: 'uuid'
+        }
+      }
     },
     ArrayOfTrackgroupItems: {
       type: 'array',

@@ -229,29 +229,41 @@ describe('User.ts/misc user info endpoint test', () => {
       force: true
     })
   })
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    it is described as a POST but tested as a GET. figure this out first.
-  //    getting this endpoint to work and pass test might corrupt test data.
-  it.skip('should post to user favorites resolve (?)', async () => {
-    response = await request.get('/user/favorites/resolve').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should fail GET /user/favorites/resolve without ids', async () => {
+    response = await request.get('/user/favorites/resolve')
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('post to user favorites resolve RESPONSE: ', response.text)
+    expect(response.status).to.eql(400)
+    expect(response.body.message).to.eql('Bad Request')
+    expect(response.body.errors[0].path).to.eql('ids')
+  })
+  it('should GET /user/favorites/resolve', async () => {
+    const track1 = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const track2 = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const favorite = await Favorite.create({
+      userId: testUserId,
+      trackId: track2.id,
+      type: true
+    })
+
+    response = await request.get('/user/favorites/resolve')
+      .query({ ids: [track1.id, track2.id] })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
+    expect(response.body.data.length).to.eql(1)
+    expect(response.body.data[0].trackId).to.eql(track2.id)
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    track1.destroy({ force: true })
+    track2.destroy({ force: true })
+    favorite.destroy({ force: true })
   })
 })
