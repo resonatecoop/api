@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
+const ResetDB = require('../../ResetDB')
 const { request, expect, testTrackGroupId } = require('../../testConfig')
 
 describe('Api.ts/Trackgroups endpoint test', () => {
+  ResetDB()
   let response = null
 
   it('should GET /trackgroups', async () => {
@@ -19,7 +21,7 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(attributes.data.length).to.eql(3) // there are three in the base track_groups table
 
     const theData = attributes.data[0]
-    expect(theData).to.include.keys('about', 'creatorId', 'display_artist', 'id', 'slug', 'tags', 'title', 'type', 'cover_metadata', 'userGroup', 'uri', 'images')
+    expect(theData).to.include.keys('about', 'creatorId', 'display_artist', 'id', 'slug', 'tags', 'title', 'type', 'cover_metadata', 'creator', 'uri', 'images')
     expect(theData.about).to.eql('this is the best album')
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.display_artist).to.eql('Jack')
@@ -31,9 +33,9 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(theData.type).to.eql('lp')
     expect(theData.cover_metadata).to.be.null
 
-    expect(theData.userGroup).to.include.keys('id', 'displayName')
-    expect(theData.userGroup.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.userGroup.displayName).to.eql('matrix')
+    expect(theData.creator).to.include.keys('id', 'displayName')
+    expect(theData.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theData.creator.displayName).to.eql('matrix')
 
     expect(theData.uri).to.eql('http://localhost:4000/v3/trackgroups/84322e4f-0247-427f-8bed-e7617c3df5ad')
 
@@ -59,7 +61,7 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(response.status).to.eql(400)
   })
 
-  it('should GET trackgroup/s:id', async () => {
+  it('should GET trackgroups/:id', async () => {
     response = await request.get(`/trackgroups/${testTrackGroupId}`)
 
     expect(response.status).to.eql(200)
@@ -71,7 +73,7 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(attributes.data).to.be.an('object')
 
     const theData = attributes.data
-    expect(theData).to.include.keys('about', 'cover_metadata', 'creatorId', 'display_artist', 'user', 'download', 'id', 'items', 'images', 'private', 'release_date', 'slug', 'tags', 'title', 'type')
+    expect(theData).to.include.keys('about', 'cover_metadata', 'creatorId', 'display_artist', 'creator', 'download', 'id', 'items', 'images', 'private', 'release_date', 'slug', 'tags', 'title', 'type')
     expect(theData.about).to.eql('this is the best album')
 
     expect(theData.cover_metadata).to.be.an('object')
@@ -81,10 +83,10 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.display_artist).to.eql('Jack')
 
-    expect(theData.user).to.be.an('object')
-    expect(theData.user).to.include.keys('name', 'id')
-    expect(theData.user.name).to.eql('matrix')
-    expect(theData.user.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theData.creator).to.be.an('object')
+    expect(theData.creator).to.include.keys('displayName', 'id')
+    expect(theData.creator.displayName).to.eql('matrix')
+    expect(theData.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
 
     expect(theData.download).to.be.false
     expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')

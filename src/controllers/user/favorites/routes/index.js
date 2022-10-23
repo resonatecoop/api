@@ -9,13 +9,13 @@ module.exports = function () {
   }
 
   async function POST (ctx, next) {
-    const { track_id: tid } = ctx.request.body
+    const { trackId } = ctx.request.body
 
     try {
       let result = await Favorite.findOne({
         where: {
-          track_id: tid,
-          user_id: ctx.profile.legacyId
+          trackId,
+          userId: ctx.profile.id
         }
       })
 
@@ -24,8 +24,8 @@ module.exports = function () {
         await result.save()
       } else {
         result = await Favorite.create({
-          track_id: tid,
-          user_id: ctx.profile.legacyId,
+          trackId,
+          userId: ctx.profile.id,
           type: 1
         })
       }
@@ -52,11 +52,11 @@ module.exports = function () {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['track_id'],
+          required: ['trackId'],
           properties: {
-            track_id: {
-              type: 'number',
-              minimum: 1
+            trackId: {
+              type: 'string',
+              format: 'uuid'
             }
           }
         }
@@ -90,6 +90,7 @@ module.exports = function () {
     const offset = page > 1 ? (page - 1) * limit : 0
 
     try {
+      // FIXME switch to sequelize query
       const [countResult] = await sequelize.query(`
         SELECT count(favorite.id) as count
         FROM favorites as favorite

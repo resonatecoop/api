@@ -134,7 +134,7 @@ module.exports = function (trackService) {
 
   async function POST (ctx, next) {
     const body = ctx.request.body
-
+    console.log('this is the post')
     try {
       // const data = Object.assign(body, { creator_id: ctx.profile.id })
       const result = await Track.create(body)
@@ -146,14 +146,54 @@ module.exports = function (trackService) {
         status: 201
       }
     } catch (err) {
-      console.error('er', err)
+      console.error('err', err)
       ctx.throw(ctx.status, err.message)
     }
 
     await next()
   }
 
-  // TODO: Swagger dogs for POST
+  POST.apiDoc = {
+    operationId: 'createUserTrack',
+    description: 'Create a user track',
+    summary: 'Create a user track',
+    tags: ['tracks'],
+    produces: [
+      'application/json'
+    ],
+    parameters: [
+      {
+        in: 'body',
+        required: true,
+        name: 'track',
+        description: 'The track to create.',
+        schema: {
+          $ref: '#/definitions/TrackCreate'
+        }
+      }
+    ],
+    responses: {
+      400: {
+        description: 'Bad request',
+        schema: {
+          $ref: '#/responses/BadRequest'
+        }
+      },
+      404: {
+        description: 'Not found',
+        schema: {
+          $ref: '#/responses/NotFound'
+        }
+      },
+      default: {
+        description: 'error payload',
+        schema: {
+          $ref: '#/definitions/Error'
+        }
+      }
+    }
+
+  }
 
   return operations
 }

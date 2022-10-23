@@ -20,7 +20,6 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     if (await ctx.cashed?.(ms('30s'))) return
-    const { type } = ctx.request.query
 
     const where = {
       id: ctx.params.id,
@@ -32,14 +31,6 @@ module.exports = function () {
           [Op.eq]: null
         }
       }
-    }
-
-    const url = new URL(ctx.originalUrl, 'http://localhost')
-
-    if (url.pathname.split('/')[1] === 'playlists') {
-      where.type = 'playlist'
-    } else if (type) {
-      where.type = type
     }
 
     try {
@@ -67,18 +58,8 @@ module.exports = function () {
             model: UserGroup,
             required: false,
             attributes: ['id', 'displayName'],
-            as: 'userGroup'
+            as: 'creator'
           },
-          // {
-          //   model: UserMeta,
-          //   attributes: ['meta_key', 'meta_value'],
-          //   where: {
-          //     meta_key: {
-          //       [Op.in]: ['nickname', 'role']
-          //     }
-          //   },
-          //   as: 'usermeta'
-          // },
           {
             model: File,
             required: false,
@@ -136,20 +117,6 @@ module.exports = function () {
         plain: true
       })
 
-      // const { usermeta } = data
-
-      // const { nickname, role } = Object.fromEntries(Object.entries(usermeta)
-      //   .map(([key, value]) => {
-      //     const metaKey = value.meta_key
-      //     let metaValue = value.meta_value
-
-      //     if (!isNaN(Number(metaValue))) {
-      //       metaValue = Number(metaValue)
-      //     }
-
-      //     return [metaKey, metaValue]
-      //   }))
-
       let ext = '.jpg'
 
       if (ctx.accepts('image/webp')) {
@@ -167,25 +134,10 @@ module.exports = function () {
           },
           creatorId: data.creatorId,
           display_artist: data.display_artist,
-          user: {
-            name: data.userGroup.displayName,
-            id: data.userGroup.id
-          },
+          creator: data.creator,
           download: data.download,
           id: data.id,
           items: data.items.map((item) => {
-            // const { nickname } = Object.fromEntries(Object.entries(item.track.meta)
-            //   .map(([key, value]) => {
-            //     const metaKey = value.meta_key
-            //     let metaValue = value.meta_value
-
-            //     if (!isNaN(Number(metaValue))) {
-            //       metaValue = Number(metaValue)
-            //     }
-
-            //     return [metaKey, metaValue]
-            //   }))
-
             const fallback = !item.track.cover_art ? false : !item.track.cover_metadata
 
             return {
@@ -240,6 +192,7 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 

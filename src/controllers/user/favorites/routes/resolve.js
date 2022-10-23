@@ -4,24 +4,24 @@ const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    POST: [authenticate, POST]
+    GET: [authenticate, GET]
   }
 
-  async function POST (ctx, next) {
-    const body = ctx.request.body
+  async function GET (ctx, next) {
+    const query = ctx.request.query
 
     try {
       const result = await Favorite.findAll({
-        attributes: ['track_id'],
+        attributes: ['trackId'],
         where: {
           type: true,
-          user_id: ctx.profile.id,
-          track_id: {
-            [Op.in]: body.ids
+          userId: ctx.profile.id,
+          trackId: {
+            [Op.in]: query.ids
           }
         },
         group: [
-          sequelize.col('tid')
+          sequelize.col('trackId')
         ],
         raw: true
       })
@@ -30,31 +30,26 @@ module.exports = function () {
         data: result
       }
     } catch (err) {
-      console.log('err', err)
+      console.error('err', err)
       ctx.status = err.status || 500
       ctx.throw(ctx.status, err.message)
     }
   }
 
-  POST.apiDoc = {
+  GET.apiDoc = {
     operationId: 'resolveFavorites',
-    description: 'Resolve favorites',
+    description: 'Determine which tracks are favorited from supplied track IDs',
     tags: ['favorites'],
     parameters: [
       {
-        in: 'body',
-        name: 'favorites',
-        schema: {
-          type: 'object',
-          required: ['ids'],
-          properties: {
-            ids: {
-              type: 'array',
-              items: {
-                type: 'number'
-              }
-            }
-          }
+        in: 'query',
+        name: 'ids',
+        required: true,
+        description: 'IDs to check for whether they\'re favorites',
+        type: 'array',
+        items: {
+          type: 'string',
+          format: 'uuid'
         }
       }
     ],

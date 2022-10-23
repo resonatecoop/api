@@ -10,14 +10,13 @@ describe('Api.ts/track endpoint test', () => {
   let response = null
 
   it('should GET /tracks/latest', async () => {
-    //  GET /tracks/${options.order !== "random" ? "latest" : ""}
-    //    if the endpoint call has options.order NOT 'random', add 'latest' to end of endpoint
     const displayName = 'Test test'
     const track = await Track.create({
       title: displayName,
       creatorId: testArtistId,
       status: 'paid'
     })
+
     const trackgroup = await TrackGroup.create({
       title: displayName + 'Album',
       creatorId: testArtistId,
@@ -29,7 +28,7 @@ describe('Api.ts/track endpoint test', () => {
 
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
     const play = await Play.create({
@@ -85,8 +84,6 @@ describe('Api.ts/track endpoint test', () => {
   })
 
   it('should GET /tracks when options.order is \'random\'', async () => {
-    //  GET /tracks/${options.order !== "random" ? "latest" : ""}
-    //    if the endpoint call has options.order is 'random', add nothing to end of endpoint
     response = await request.get('/tracks')
 
     expect(response.status).to.eql(200)

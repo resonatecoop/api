@@ -22,7 +22,13 @@ module.exports = function () {
       const { rows: result, count } = await UserGroup.findAndCountAll({
         offset,
         limit,
-        include: [{ model: UserGroupType }]
+        include: [{
+          model: UserGroupType,
+          required: true,
+          where: {
+            name: 'label'
+          }
+        }]
       })
 
       ctx.body = {

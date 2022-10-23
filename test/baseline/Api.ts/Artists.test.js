@@ -151,7 +151,7 @@ describe('Api.ts/artists endpoint test', () => {
     const theData = attributes.data[0]
 
     expect(theData).to.include.keys('tags', 'about', 'cover', 'creatorId', 'display_artist', 'id', 'slug', 'title', 'createdAt', 'release_date', 'type',
-      'cover_metadata', 'userGroup', 'items')
+      'cover_metadata', 'creator', 'items')
     expect(theData.tags).to.be.an('array')
     expect(theData.tags.length).to.eql(0)
     expect(theData.about).to.eql('this is the best album')
@@ -166,10 +166,10 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.type).to.eql('lp')
     expect(theData.cover_metadata).to.be.null
 
-    expect(theData.userGroup).to.be.an('object')
-    expect(theData.userGroup).to.include.keys('id', 'displayName')
-    expect(theData.userGroup.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.userGroup.displayName).to.eql('matrix')
+    expect(theData.creator).to.be.an('object')
+    expect(theData.creator).to.include.keys('id', 'displayName')
+    expect(theData.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theData.creator.displayName).to.eql('matrix')
 
     expect(theData.items).to.be.an('array')
     expect(theData.items.length).to.eql(10)
@@ -225,7 +225,7 @@ describe('Api.ts/artists endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
     const play = await Play.create({

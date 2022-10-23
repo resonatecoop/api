@@ -4,7 +4,8 @@
 const { request, expect, testUserId, testArtistId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
-const { Track, Credit } = require('../../../src/db/models')
+const { Track, Credit, Play } = require('../../../src/db/models')
+const { Op } = require('sequelize')
 
 describe('User.ts/user plays endpoint test', () => {
   ResetDB()
@@ -23,7 +24,7 @@ describe('User.ts/user plays endpoint test', () => {
     expect(response.status).to.eql(401)
   })
 
-  it('should fail to post to user plays without track_id', async () => {
+  it('should fail POST /user/plays', async () => {
     response = await request.post('/user/plays')
       .set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -32,7 +33,7 @@ describe('User.ts/user plays endpoint test', () => {
     expect(response.body.errors[0].path).to.eql('track_id')
   })
 
-  it('should post to user plays to register a new play', async () => {
+  it('should POST /user/plays', async () => {
     const track = await Track.create({
       creatorId: testArtistId,
       status: 'paid'
@@ -51,53 +52,88 @@ describe('User.ts/user plays endpoint test', () => {
     track.destroy({ force: true })
     credit.destroy({ force: true })
   })
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    getting this endpoint to work and pass test will corrupt test data.
-  it.skip('should post to user plays buy', async () => {
-    response = await request.post('/user/plays/buy').set('Authorization', `Bearer ${testAccessToken}`)
+  it('should POST /user/plays/buy', async () => {
+    const track = await Track.create({
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const credit = await Credit.create({
+      userId: testUserId,
+      total: 10000
+    })
 
-    console.log('post to user plays buy RESPONSE: ', response.text)
+    response = await request.post('/user/plays/buy')
+      .send({ trackId: track.id })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
-
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(response.body.data.count).to.eql(9)
+    expect(response.body.data.cost).to.eql(1022)
+    expect(response.body.data.total).to.eql('8.9780')
+    expect(response.body.data.result.length).to.eql(9)
+    track.destroy({ force: true })
+    credit.destroy({ force: true })
+    Play.destroy({
+      where: {
+        id: {
+          [Op.in]: response.body.data.result.map(play => play.id)
+        }
+      },
+      force: true
+    })
   })
-  // FIXME: finish this test after update / delete / etc functionality is completed.
-  //    it's described as a POST but tested as a GET. Figure this out before proceeding.
-  //    getting this endpoint to work and pass test might corrupt test data.
-  it.skip('should post to user plays resolve (?)', async () => {
-    response = await request.get('/user/plays/resolve').set('Authorization', `Bearer ${testAccessToken}`)
 
-    console.log('post to user plays resolve RESPONSE: ', response.text)
+  it('should fail GET /user/plays/resolve without ids', async () => {
+    response = await request.get('/user/plays/resolve')
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(400)
+
+    expect(response.body.message).to.eql('Bad Request')
+    expect(response.body.errors[0].path).to.eql('ids')
+  })
+  it('should GET /user/plays/resolve', async () => {
+    const track = await Track.create({
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const track2 = await Track.create({
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: 'paid'
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: 'paid'
+    })
+    const play3 = await Play.create({
+      userId: testUserId,
+      trackId: track2.id,
+      type: 'paid'
+    })
+
+    response = await request.get('/user/plays/resolve')
+      .query({ ids: [track.id, track2.id] })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
+    const { data } = response.body
 
-    // const attributes = response.body
-    // expect(attributes).to.be.an('object')
-    // expect(attributes).to.include.keys("data", "count", "numberOfPages", "status")
-
-    // expect(attributes.data).to.be.an('array')
-    // expect(attributes.data.length).to.eql(3)
-
-    // const theData = attributes.data[0]
-    // expect(theData).to.include.keys("")
-    // expect(theData.xxx).to.eql()
-
-    // expect(attributes.count).to.eql(1)
-    // expect(attributes.numberOfPages).to.eql(1)
-    // expect(attributes.status).to.eql('ok')
+    expect(data.length).to.eql(2)
+    expect(data[1].count).to.eql(2)
+    expect(data[1].trackId).to.eql(track.id)
+    expect(data[0].count).to.eql(1)
+    expect(data[0].trackId).to.eql(track2.id)
+    track.destroy({ force: true })
+    track2.destroy({ force: true })
+    play.destroy({ force: true })
+    play2.destroy({ force: true })
+    play3.destroy({ force: true })
   })
 })

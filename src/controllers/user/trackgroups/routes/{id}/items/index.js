@@ -64,6 +64,7 @@ module.exports = function () {
         if (!item.index) {
           o.index = count + 1
         }
+        o.track_id = o.trackId
         return o
       })
 

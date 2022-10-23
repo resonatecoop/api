@@ -14,7 +14,6 @@ import artists from './artists/routes/index.js'
 import artistsFeatured from './artists/routes/featured.js'
 import artistsId from './artists/routes/{id}/index.js'
 import artistsUpdated from './artists/routes/updated.js'
-import labelAlbums from './labels/routes/{id}/albums.js'
 import labelArtists from './labels/routes/{id}/artists.js'
 import labelReleases from './labels/routes/{id}/releases.js'
 import labels from './labels/routes/index.js'
@@ -98,7 +97,6 @@ initialize({
 
     { path: `${root}/labels`, module: labels },
     { path: `${root}/labels/{id}`, module: labelsId },
-    { path: `${root}/labels/{id}/albums`, module: labelAlbums },
     { path: `${root}/labels/{id}/releases`, module: labelReleases },
     { path: `${root}/labels/{id}/artists`, module: labelArtists },
 

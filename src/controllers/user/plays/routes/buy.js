@@ -1,7 +1,6 @@
 const { Play, Track, Credit } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const { calculateRemainingCost, formatCredit } = require('@resonate/utils')
-const map = require('awaity/map')
 const numbro = require('numbro')
 const { authenticate } = require('../../authenticate')
 
@@ -13,12 +12,12 @@ module.exports = function () {
   }
 
   async function POST (ctx, next) {
-    const { track_id: tid } = ctx.request.body
+    const { trackId } = ctx.request.body
 
     try {
       const track = await Track.findOne({
         where: {
-          tid: tid,
+          id: trackId,
           status: {
             [Op.in]: [0, 2, 3]
           }
@@ -32,7 +31,7 @@ module.exports = function () {
 
       const wallet = await Credit.findOne({
         where: {
-          user_id: ctx.profile.userId
+          userId: ctx.profile.id
         }
       })
 
@@ -43,8 +42,8 @@ module.exports = function () {
 
       const currentCount = await Play.count({
         where: {
-          track_id: tid,
-          user_id: ctx.profile.legacyId,
+          trackId,
+          userId: ctx.profile.id,
           event: 1
         }
       })
@@ -67,18 +66,16 @@ module.exports = function () {
       let result
 
       if (cost > 0 && wallet.total >= cost) {
-        result = await map(plays, async (count) => {
+        result = await Promise.all(plays.map(async (count) => {
           // TODO save the final play count
-          const play = Play.build({
+          return Play.create({
             // count: count + 1,
-            track_id: track.id,
-            user_id: ctx.profile.legacyId,
-            createdAt: new Date().getTime() / 1000 | 0,
+            trackId: track.id,
+            userId: ctx.profile.id,
+            createdAt: new Date(),
             type: 'paid'
           })
-
-          return play.save()
-        })
+        }))
 
         wallet.total = subtract(wallet.total, cost)
 
@@ -113,11 +110,11 @@ module.exports = function () {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['track_id'],
+          required: ['trackId'],
           properties: {
-            track_id: {
-              type: 'number',
-              minimum: 1
+            trackId: {
+              type: 'string',
+              format: 'uuid'
             }
           }
         }

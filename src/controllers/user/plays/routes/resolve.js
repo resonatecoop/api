@@ -4,28 +4,29 @@ const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    POST: [authenticate, POST]
+    GET: [authenticate, GET]
   }
 
-  async function POST (ctx, next) {
-    const body = ctx.request.body
+  async function GET (ctx, next) {
+    const query = ctx.request.query
 
     try {
       const result = await Play.findAll({
         attributes: [
-          [sequelize.fn('count', sequelize.col('pid')), 'count'],
-          ['tid', 'track_id']
+          [sequelize.fn('count', sequelize.col('track_id')), 'count'],
+          'trackId'
         ],
         where: {
           event: 1,
-          uid: ctx.profile.id,
-          tid: {
-            [Op.in]: body.ids
+          userId: ctx.profile.id,
+          trackId: {
+            [Op.in]: query.ids
           }
         },
         group: [
-          sequelize.col('tid')
+          sequelize.col('trackId')
         ],
+        logging: console.log,
         raw: true
       })
 
@@ -39,9 +40,9 @@ module.exports = function () {
     }
   }
 
-  POST.apiDoc = {
+  GET.apiDoc = {
     operationId: 'resolvePlays',
-    description: 'Resolve plays',
+    description: 'Determine how many times a track has been played from supplied track IDs',
     tags: ['plays'],
     consumes: [
       'application/json'
@@ -51,10 +52,14 @@ module.exports = function () {
     ],
     parameters: [
       {
-        in: 'body',
-        name: 'plays',
-        schema: {
-          $ref: '#/definitions/Plays'
+        in: 'query',
+        name: 'ids',
+        required: true,
+        description: 'IDs to check how much they\'ve been played',
+        type: 'array',
+        items: {
+          type: 'string',
+          format: 'uuid'
         }
       }
     ],
