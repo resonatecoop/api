@@ -41,6 +41,29 @@ services:
       - ${MEDIA_LOCATION:-./data/media/}audio:/data/media/audio
       - ${MEDIA_LOCATION:-./data/media/}images:/data/media/images
 
+  background:
+    networks:
+      - api-network
+      - redis-network
+    env_file:
+      - .env
+    build: background
+    # command: /bin/sh -c "yarn && yarn migrate && yarn start:dev"
+    container_name: resonate-background
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - redis
+      - pgsql
+      - api
+    restart: always
+    volumes:
+      - ~/.ssh:/root/.ssh
+      - ./:/var/www/api
+      - ${MEDIA_LOCATION:-./data/media/}incoming:/data/media/incoming
+      - ${MEDIA_LOCATION:-./data/media/}audio:/data/media/audio
+      - ${MEDIA_LOCATION:-./data/media/}images:/data/media/images
+
   pgsql:
     image: postgres:14-alpine
     env_file:

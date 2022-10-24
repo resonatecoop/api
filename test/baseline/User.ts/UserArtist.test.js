@@ -25,7 +25,7 @@ describe('User.ts/user artist endpoint test', () => {
     expect(response.status).to.eql(401)
   })
 
-  it('should get user artists', async () => {
+  it.only('should get user artists', async () => {
     response = await request.get('/user/artists').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -36,6 +36,7 @@ describe('User.ts/user artist endpoint test', () => {
 
     expect(attributes.data).to.be.an('array')
     expect(attributes.data.length).to.eql(1)
+    expect(attributes.data[0]).to.include.keys('trackgroups')
 
     expect(attributes.count).to.eql(1)
     expect(attributes.pages).to.eql(1)

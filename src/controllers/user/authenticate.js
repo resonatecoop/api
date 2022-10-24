@@ -61,6 +61,7 @@ module.exports.authenticate = async (ctx, next) => {
     ctx.throw(401, 'Missing required access token')
   }
 
+  console.log('log', ctx.profile)
   try {
     const user = await findSession(ctx)
 
