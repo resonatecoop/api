@@ -239,17 +239,27 @@ module.exports = (provider) => {
       }
     })
 
-    if (!user) {
-      throw new Error('User not found')
-    }
-
     if (
+      !user ||
       !User.checkPassword({
         hash: user.password,
         password: ctx.request.body.password
       })
     ) {
-      throw new Error('User not found')
+      this.flash = { error: ['User not found'] }
+      const requestUrl = ctx.request.url.split('/')
+      const { length } = requestUrl
+      const uid = requestUrl[length - 2]
+
+      return ctx.redirect(`/interaction/${uid}`, {
+        uid,
+        client: undefined,
+        messages: this.flash,
+        params: {},
+        title: 'User not found',
+        session: {},
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
     }
 
     const result = {
