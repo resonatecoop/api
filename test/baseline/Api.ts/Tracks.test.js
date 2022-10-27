@@ -63,7 +63,7 @@ describe('Api.ts/track endpoint test', () => {
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('Paid')
-    expect(theData.url).to.eql(`https://beta.stream.resonate.localhost/api/v3/user/stream/${track.id}`)
+    expect(theData.url).to.include(`user/stream/${track.id}`)
 
     expect(theData.images).to.include.keys('small', 'medium')
     expect(theData.images.small).to.include.keys('width', 'height')
@@ -110,7 +110,7 @@ describe('Api.ts/track endpoint test', () => {
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('Paid')
-    expect(theData.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/fcf41302-e549-4ab9-9937-f0bfead5a44f')
+    expect(theData.url).to.include('user/stream/fcf41302-e549-4ab9-9937-f0bfead5a44f')
 
     expect(theData.images).to.be.an('object')
     expect(theData.images).to.include.keys('small', 'medium')
@@ -148,7 +148,7 @@ describe('Api.ts/track endpoint test', () => {
     expect(theData.cover_metadata).to.be.an('object')
 
     expect(theData.status).to.eql('Paid')
-    expect(theData.url).to.eql('https://api.resonate.is/v1/stream/b6d160d1-be16-48a4-8c4f-0c0574c4c6aa')
+    expect(theData.url).to.include('stream/b6d160d1-be16-48a4-8c4f-0c0574c4c6aa')
 
     expect(theData.images).to.include.keys('small', 'medium', 'large')
     expect(theData.images.small).to.include.keys('width', 'height')

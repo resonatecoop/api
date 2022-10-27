@@ -3,9 +3,10 @@ const { File, Track, Play, Credit } = require('../../../../db/models')
 const { calculateCost } = require('@resonate/utils')
 const send = require('koa-send')
 const path = require('path')
+const { apiRoot } = require('../../../../constants')
+const { authenticate } = require('../../authenticate')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
-const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
@@ -40,9 +41,11 @@ module.exports = function () {
       })
 
       if (!wallet) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'Not found')
+        const notLoggedInUrl = `${apiRoot}/stream/${ctx.params.id}`
+        ctx.redirect(notLoggedInUrl)
+        return next()
       }
+
       const currentCount = await Play.count({
         where: {
           track_id: track.id,
@@ -59,12 +62,9 @@ module.exports = function () {
 
       if (wallet.total < cost) {
         // 302
-        ctx.redirect(`/api/v3/stream/${ctx.params.id}`)
+        ctx.redirect(`${apiRoot}/stream/${ctx.params.id}`)
       } else {
         const ext = '.m4a'
-        // const filename = process.env.NODE_ENV === 'development'
-        //   ? 'blank-audio'
-        //   : track.url
         const filename = track.url
 
         ctx.set({

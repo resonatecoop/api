@@ -3,6 +3,7 @@ const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 const { validate } = require('../../../../../schemas/tracks')
 const { authenticate } = require('../../../authenticate')
+const { apiRoot } = require('../../../../../constants')
 
 module.exports = function () {
   const operations = {
@@ -186,7 +187,7 @@ module.exports = function () {
             // width, height ?
           },
           status: result.status === 2 ? 'Free' : 'Paid',
-          url: `https://api.resonate.is/v1/stream/${result.id}`,
+          url: `${process.env.APP_HOST}${apiRoot}/stream/${result.id}`,
           images: variants.reduce((o, key) => {
             const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
 

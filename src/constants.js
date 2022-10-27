@@ -66,3 +66,5 @@ module.exports.STAFF_ROLES_LIST = [
 //   TRACKGROUP_TYPES,
 //   TRACK_STATUS_LIST
 // }
+
+module.exports.apiRoot = '/api/v3'

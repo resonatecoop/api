@@ -28,15 +28,20 @@ router.get('/:id', async (ctx, next) => {
 
     const { url: filename } = track
 
-    const alias = `/audio/trim-${filename}.m4a`
+    let alias = `/audio/trim-${filename}.m4a`
+
+    if (track.get('status') === 'free') {
+      alias = `/audio/${filename}.m4a`
+    }
 
     ctx.set({
       Pragma: 'no-cache',
       'Content-Type': 'audio/mp4',
       // 'Content-Length': filesize, TODO if we have a file metadata
-      'Content-Disposition': `inline; filename=${filename}`,
+      // 'Content-Disposition': `inline; filename=${filename}`,
       'X-Accel-Redirect': alias
     })
+    ctx.attachment(filename)
 
     ctx.body = null
   } catch (err) {

@@ -1,3 +1,4 @@
+const { apiRoot } = require('../../../../../constants')
 const { Resonate: sequelize, Track } = require('../../../../../db/models')
 const coverSrc = require('../../../../../util/cover-src')
 
@@ -71,7 +72,7 @@ module.exports = function () {
             },
             artist: item.artist,
             status: item.status === 2 ? 'Free' : 'Paid',
-            url: `https://api.resonate.is/v1/stream/${item.id}`,
+            url: `${process.env.APP_HOST}${apiRoot}/stream/${item.id}`,
             images: variants.reduce((o, key) => {
               const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
 

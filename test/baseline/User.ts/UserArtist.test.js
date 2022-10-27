@@ -25,7 +25,7 @@ describe('User.ts/user artist endpoint test', () => {
     expect(response.status).to.eql(401)
   })
 
-  it.only('should get user artists', async () => {
+  it('should GET user/artists', async () => {
     response = await request.get('/user/artists').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)

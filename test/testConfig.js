@@ -1,8 +1,11 @@
 
-const baseURL = `${process.env.APP_HOST}/api/v3`
-const request = require('supertest')(baseURL)
-
+const { apiRoot } = require('../src/constants')
 const expect = require('chai').expect
+
+// We're referencing the URL _inside_ of docker.
+const baseURL = `http://api:4000${apiRoot}`
+
+const request = require('supertest')(baseURL)
 
 const TestRedisAdapter = require('../src/auth/redis-adapter')
 

@@ -67,10 +67,9 @@ import userTracks from './user/tracks/routes/index.js'
 import usersId from './users/routes/{id}/index.js'
 import usersIdPlaylists from './users/routes/{id}/playlists.js'
 
+import { apiRoot as root } from '../constants.js'
+
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
-
-const root = '/api/v3'
-
 export const apiRouter = new Router()
 const openApiRouter = new Router()
 

@@ -1,5 +1,6 @@
 const { User } = require('../../db/models')
 const RedisAdapter = require('../../auth/redis-adapter')
+const { apiRoot } = require('../../constants')
 
 const allowlist = [
   '/collection/apiDocs',
@@ -54,31 +55,37 @@ module.exports.loadProfileIntoContext = async (ctx, next) => {
 
 module.exports.authenticate = async (ctx, next) => {
   await setAccessTokenOnContext(ctx)
-
   if (allowlist.includes(ctx.path)) return
-  if (!ctx.accessToken) {
-    ctx.status = 401
-    ctx.throw(401, 'Missing required access token')
-  }
 
-  console.log('log', ctx.profile)
-  try {
-    const user = await findSession(ctx)
-
-    if (user) {
-      ctx.profile = user
-    } else {
+  if (!ctx.accessToken && ctx.request.url.includes('user/stream')) {
+    ctx.redirect(`${process.env.APP_HOST}${apiRoot}/stream/${ctx.params.id}`)
+  } else {
+    if (!ctx.accessToken) {
       ctx.status = 401
-      ctx.throw(ctx.status, 'User not found')
+      ctx.throw(401, 'Missing required access token')
     }
-  } catch (err) {
-    console.error(err)
-    let message = err.message
-    if (err.response) {
+
+    try {
+      const user = await findSession(ctx)
+      if (user) {
+        ctx.profile = user
+      } else {
+        if (ctx.request.url.includes('user/stream')) {
+          ctx.redirect(`${process.env.APP_HOST}${apiRoot}/stream/${ctx.params.id}`)
+        } else {
+          ctx.status = 401
+          ctx.throw(ctx.status, 'User not found')
+        }
+      }
+    } catch (err) {
+      console.error(err)
+      let message = err.message
+      if (err.response) {
       // handle token expiration
-      ctx.status = 401
-      message = err.response.body.error
+        ctx.status = 401
+        message = err.response.body.error
+      }
+      ctx.throw(ctx.status, message)
     }
-    ctx.throw(ctx.status, message)
   }
 }

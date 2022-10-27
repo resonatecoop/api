@@ -28,7 +28,7 @@ Seed the data
 yarn docker:seed:all
 ```
 
-Now go to http://localhost:4000 and you should see the swagger docs!
+Now go to http://localhost/docs and you should see the swagger docs!
 
 ## Tests
 
