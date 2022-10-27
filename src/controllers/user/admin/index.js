@@ -7,7 +7,7 @@ const trackgroups = require('./trackgroups')
 const earnings = require('./earnings')
 const tracks = require('./tracks')
 const plays = require('./plays')
-const users = require('./users')
+// const users = require('./users')
 const profile = require('./profile')
 
 const admin = new Koa()
@@ -18,7 +18,7 @@ admin.use(mount('/plays', plays))
 admin.use(mount('/trackgroups', trackgroups))
 admin.use(mount('/profile', profile))
 admin.use(mount('/tracks', tracks))
-admin.use(mount('/users', users))
+// admin.use(mount('/users', users))
 
 admin.use(mount('/files', files))
 

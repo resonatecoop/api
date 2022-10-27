@@ -11,6 +11,7 @@ describe('Api.ts/artists endpoint test', () => {
 
   let response = null
 
+  // FIXME: this test is fragile
   it('should GET /artists', async () => {
     response = await request.get('/artists')
 

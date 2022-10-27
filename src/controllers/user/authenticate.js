@@ -1,6 +1,7 @@
-const { User } = require('../../db/models')
+const { User, Role } = require('../../db/models')
 const RedisAdapter = require('../../auth/redis-adapter')
 const { apiRoot } = require('../../constants')
+const { Op } = require('sequelize')
 
 const allowlist = [
   '/collection/apiDocs',
@@ -86,6 +87,25 @@ module.exports.authenticate = async (ctx, next) => {
         message = err.response.body.error
       }
       ctx.throw(ctx.status, message)
+    }
+  }
+}
+
+module.exports.hasAccess = (role) => {
+  return async (ctx, next) => {
+    const requiredRoles = await Role.findAll({
+      where: {
+        name: {
+          [Op.or]: [role, 'superadmin']
+        }
+      }
+    })
+
+    const roleIds = requiredRoles.map(r => r.id)
+
+    if (!roleIds.includes(ctx.profile.roleId)) {
+      ctx.status = 401
+      ctx.throw(ctx.status, 'Access denied')
     }
   }
 }
