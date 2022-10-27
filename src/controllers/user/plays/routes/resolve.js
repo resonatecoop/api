@@ -26,7 +26,7 @@ module.exports = function () {
         group: [
           sequelize.col('trackId')
         ],
-        logging: console.log,
+        order: [['count', 'DESC']],
         raw: true
       })
 

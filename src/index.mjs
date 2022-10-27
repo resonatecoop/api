@@ -32,6 +32,7 @@ import corsConfig from './config/cors.js'
 import user from './controllers/user/index.js'
 import { provider, routes as authRoutes } from './auth/index.js'
 import { apiRouter } from './controllers/index.mjs'
+import { apiRoot } from './constants.js'
 import stream from './controllers/stream/index.js'
 import Router from '@koa/router'
 dotenv.config()
@@ -86,8 +87,8 @@ app.use(apiRouter.routes())
 
 app.use(authRoutes(provider).routes(), authRoutes(provider).allowedMethods({ throw: true }))
 app.use(mount('/', provider.app))
-app.use(mount('/api/v3/stream', stream)) // TODO: put this in the API
-app.use(mount('/api/v3/user', user)) // TODO: put this in the API
+app.use(mount(`${apiRoot}/stream`, stream)) // TODO: put this in the API
+app.use(mount(`${apiRoot}/user`, user)) // TODO: put this in the API
 
 // FIXME: koa-static is currently insecure and out of date.
 // https://github.com/koajs/static/issues/202

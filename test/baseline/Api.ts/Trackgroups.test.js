@@ -37,7 +37,7 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(theData.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.creator.displayName).to.eql('matrix')
 
-    expect(theData.uri).to.eql('http://localhost:4000/v3/trackgroups/84322e4f-0247-427f-8bed-e7617c3df5ad')
+    expect(theData.uri).to.include('trackgroups/84322e4f-0247-427f-8bed-e7617c3df5ad')
 
     expect(theData.images).to.include.keys('small', 'medium', 'large')
     expect(theData.images.small).to.include.keys('width', 'height')

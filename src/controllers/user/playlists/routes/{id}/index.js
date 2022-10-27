@@ -313,7 +313,7 @@ module.exports = function () {
                     }
                   )
                 }, {}),
-                url: `${process.env.STREAM_APP_HOST}/api/v3/user/stream/${item.track.id}`
+                url: `${process.env.APP_HOST}/api/v3/user/stream/${item.track.id}`
               }
             }
           }),
