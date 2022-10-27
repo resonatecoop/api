@@ -2,13 +2,6 @@ const Koa = require('koa')
 const mount = require('koa-mount')
 
 /**
- * Oauth grant config
- */
-
-const grant = require('grant-koa')
-const grantConfig = require('../../config/grant')
-
-/**
  * User routing
  */
 
@@ -22,11 +15,12 @@ const { authenticate } = require('./authenticate')
 
 const user = new Koa()
 
-user.use(mount('/connect', grant(grantConfig)))
+// user.use(mount('/connect', grant(grantConfig)))
 
 user.use(authenticate)
 
 user.use(async (ctx, next) => {
+  console.log('accessing')
   if (!ctx.accessToken && ctx.request.url.startsWith('/stream')) {
     // 302
     ctx.redirect(`/api${process.env.API_BASE_PATH}${ctx.request.url}`)

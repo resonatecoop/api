@@ -66,6 +66,8 @@ import userTrackgroups from './user/trackgroups/routes/index.js'
 import userTracks from './user/tracks/routes/index.js'
 import usersId from './users/routes/{id}/index.js'
 import usersIdPlaylists from './users/routes/{id}/playlists.js'
+import adminUsers from './user/admin/users/index.js'
+import adminUsersId from './user/admin/users/{id}.js'
 
 import { apiRoot as root } from '../constants.js'
 
@@ -156,6 +158,9 @@ initialize({
     { path: `${root}/user/tracks`, module: userTracks },
     { path: `${root}/user/tracks/{id}`, module: userTrack },
     { path: `${root}/user/tracks/{id}/file`, module: userTrackFile },
+
+    { path: `${root}/user/admin/users`, module: adminUsers },
+    { path: `${root}/user/admin/users/{id}`, module: adminUsersId },
 
     {
       path: `${root}/apiDocs`, module: apiDocs
