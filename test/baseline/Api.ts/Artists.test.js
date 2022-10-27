@@ -11,7 +11,7 @@ describe('Api.ts/artists endpoint test', () => {
 
   let response = null
 
-  it.only('should GET /artists', async () => {
+  it('should GET /artists', async () => {
     response = await request.get('/artists')
 
     expect(response.status).to.eql(200)
