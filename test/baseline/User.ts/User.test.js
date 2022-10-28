@@ -91,7 +91,7 @@ describe('User.ts/user endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  it('should fail to post to trackgroups if title not provided', async () => {
+  it('should fail POST /user/trackgroups if title not provided', async () => {
     response = await request.post('/user/trackgroups')
       .set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -99,7 +99,7 @@ describe('User.ts/user endpoint test', () => {
     expect(response.body.message).to.include('Title is a required field')
   })
 
-  it('should fail to post to trackgroups if cover is not provided', async () => {
+  it('should fail POST /user/trackgroups if cover is not provided', async () => {
     response = await request.post('/user/trackgroups')
       .set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -107,7 +107,7 @@ describe('User.ts/user endpoint test', () => {
     expect(response.body.message).to.include('TrackGroup.cover cannot be null')
   })
 
-  it('should POST user/trackgroups', async () => {
+  it('should POST /user/trackgroups', async () => {
     const title = faker.lorem.sentence(4)
     const cover = faker.datatype.uuid()
 

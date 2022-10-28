@@ -83,7 +83,8 @@ module.exports = function () {
             include: [{
               model: Track,
               as: 'track'
-            }]
+            }],
+            order: ['index']
           }
         ],
         order: [

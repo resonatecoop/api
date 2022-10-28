@@ -32,8 +32,7 @@ describe('Admin.ts/users endpoint test', () => {
       expect(response.status).to.eql(401)
     })
   })
-
-  describe('Admin User', () => {
+  describe('Admin Users', () => {
     MockAccessToken(testAdminUserId)
 
     it('should GET /user/admin/users', async () => {

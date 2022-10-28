@@ -4,11 +4,11 @@ const { User, Role } = require('../../../../db/models')
 // const { Op } = require('sequelize')
 const profileImage = require('../../../../util/profile-image')
 const gravatar = require('gravatar')
-const { authenticate } = require('../../authenticate')
+const { authenticate, hasAccess } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET: [authenticate, GET],
+    GET: [authenticate, hasAccess('admin'), GET],
     parameters: [
       {
         name: 'id',
@@ -60,7 +60,7 @@ module.exports = function () {
   GET.apiDoc = {
     operationId: 'getUsersThroughAdminById',
     description: 'Returns a single user',
-    tags: ['tracks'],
+    tags: ['admin'],
     parameters: [
       {
         name: 'id',
