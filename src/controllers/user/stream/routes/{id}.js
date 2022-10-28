@@ -5,6 +5,7 @@ const send = require('koa-send')
 const path = require('path')
 const { apiRoot } = require('../../../../constants')
 const { authenticate } = require('../../authenticate')
+const fs = require('fs')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
@@ -67,14 +68,23 @@ module.exports = function () {
         const ext = '.m4a'
         const filename = track.url
 
-        ctx.set({
-          'Content-Type': 'audio/mp4',
-          // 'Content-Length': filesize, TODO if we have a file metadata
-          'Content-Disposition': `inline; filename=${filename}${ext}`,
-          'X-Accel-Redirect': `/audio/${filename}${ext}` // internal redirect
-        })
+        if (process.env.NODE_ENV !== 'production') {
+          try {
+            ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', `${filename}${ext}`))
+          } catch (e) {
+            console.log('error', e)
+            ctx.throw(404, 'Not found')
+          }
+        } else {
+          ctx.set({
+            'Content-Type': 'audio/mp4',
+            // 'Content-Length': filesize, TODO if we have a file metadata
+            'Content-Disposition': `inline; filename=${filename}${ext}`,
+            'X-Accel-Redirect': `/audio/${filename}${ext}` // internal redirect
+          })
 
-        await send(ctx, `/${filename}${ext}`, { root: path.join(BASE_DATA_DIR, '/data/media/audio') })
+          await send(ctx, `/${filename}${ext}`, { root: path.join(BASE_DATA_DIR, '/data/media/audio') })
+        }
       }
     } catch (err) {
       console.log('err', err)

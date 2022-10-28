@@ -25,6 +25,7 @@ import errorConfig from './config/error.js'
 import compressConfig from './config/compression.js'
 import sessionConfig from './config/session.js'
 import corsConfig from './config/cors.js'
+import fs from 'fs'
 
 /**
  * Koa apps
@@ -111,6 +112,19 @@ if (process.env.NODE_ENV !== 'production') {
       console.error('e', e)
     }
     await next()
+  })
+
+  staticRouter.get('/audio/:filename', async (ctx, next) => {
+    try {
+      const filename = ctx.request.params.filename
+      // This is a hack for now
+      ctx.body = fs.createReadStream(path.join(BASE_DATA_DIR, '/data/media/audio', filename))
+      next()
+    } catch (e) {
+      console.error('e', e)
+      ctx.throw(500, e)
+    }
+    // await next()
   })
   app.use(staticRouter.routes())
 }
