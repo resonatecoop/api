@@ -74,6 +74,8 @@ import adminTrackgroupSettings from './user/admin/trackgroups/{id}/settings.js'
 import adminTrackgroupItems from './user/admin/trackgroups/{id}/items/index.js'
 import adminTrackgroupItemsAdd from './user/admin/trackgroups/{id}/items/add.js'
 import adminTrackgroupItemsRemove from './user/admin/trackgroups/{id}/items/remove.js'
+import adminTracks from './user/admin/tracks/index.js'
+import adminTracksId from './user/admin/tracks/{id}.js'
 
 import { apiRoot as root } from '../constants.js'
 
@@ -172,6 +174,9 @@ initialize({
     { path: `${root}/user/admin/trackgroups/{id}/items`, module: adminTrackgroupItems },
     { path: `${root}/user/admin/trackgroups/{id}/items/add`, module: adminTrackgroupItemsAdd },
     { path: `${root}/user/admin/trackgroups/{id}/items/remove`, module: adminTrackgroupItemsRemove },
+
+    { path: `${root}/user/admin/tracks`, module: adminTracks },
+    { path: `${root}/user/admin/tracks/{id}`, module: adminTracksId },
 
     {
       path: `${root}/apiDocs`, module: apiDocs
