@@ -26,6 +26,17 @@ describe('User.ts/user endpoint test', () => {
     expect(response.status).to.eql(401)
   })
 
+  it('should handle new user registration', async () => {
+    response = await request.post('/register')
+      .send({
+        email: faker.email,
+        password: faker.password
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+  })
+
   it('should get user profiles', async () => {
     response = await request.get('/user/profile/').set('Authorization', `Bearer ${testAccessToken}`)
 
