@@ -3,9 +3,11 @@ const { File, Track, Play, Credit } = require('../../../../db/models')
 const { calculateCost } = require('@resonate/utils')
 const send = require('koa-send')
 const path = require('path')
+const { apiRoot } = require('../../../../constants')
+const { authenticate } = require('../../authenticate')
+const fs = require('fs')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
-const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
@@ -40,9 +42,11 @@ module.exports = function () {
       })
 
       if (!wallet) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'Not found')
+        const notLoggedInUrl = `${apiRoot}/stream/${ctx.params.id}`
+        ctx.redirect(notLoggedInUrl)
+        return next()
       }
+
       const currentCount = await Play.count({
         where: {
           track_id: track.id,
@@ -59,22 +63,28 @@ module.exports = function () {
 
       if (wallet.total < cost) {
         // 302
-        ctx.redirect(`/api/v3/stream/${ctx.params.id}`)
+        ctx.redirect(`${apiRoot}/stream/${ctx.params.id}`)
       } else {
         const ext = '.m4a'
-        // const filename = process.env.NODE_ENV === 'development'
-        //   ? 'blank-audio'
-        //   : track.url
         const filename = track.url
 
-        ctx.set({
-          'Content-Type': 'audio/mp4',
-          // 'Content-Length': filesize, TODO if we have a file metadata
-          'Content-Disposition': `inline; filename=${filename}${ext}`,
-          'X-Accel-Redirect': `/audio/${filename}${ext}` // internal redirect
-        })
+        if (process.env.NODE_ENV !== 'production') {
+          try {
+            ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', `${filename}${ext}`))
+          } catch (e) {
+            console.log('error', e)
+            ctx.throw(404, 'Not found')
+          }
+        } else {
+          ctx.set({
+            'Content-Type': 'audio/mp4',
+            // 'Content-Length': filesize, TODO if we have a file metadata
+            'Content-Disposition': `inline; filename=${filename}${ext}`,
+            'X-Accel-Redirect': `/audio/${filename}${ext}` // internal redirect
+          })
 
-        await send(ctx, `/${filename}${ext}`, { root: path.join(BASE_DATA_DIR, '/data/media/audio') })
+          await send(ctx, `/${filename}${ext}`, { root: path.join(BASE_DATA_DIR, '/data/media/audio') })
+        }
       }
     } catch (err) {
       console.log('err', err)

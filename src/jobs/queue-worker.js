@@ -37,6 +37,7 @@ const workerOptions = {
 
 yargs // eslint-disable-line
   .command('run', 'starts file processing queue', (argv) => {
+    console.log('STARTING WORKER QUEUE')
     audioQueue()
     audioDurationQueue()
     imageQueue()

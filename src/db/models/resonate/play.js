@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     type: {
       type: DataTypes.INTEGER,
       set (type) {
-        console.log('saving', type, types.indexOf(type))
         this.setDataValue('type', types.indexOf(type))
       },
       get () {

@@ -134,7 +134,6 @@ module.exports = function (trackService) {
 
   async function POST (ctx, next) {
     const body = ctx.request.body
-    console.log('this is the post')
     try {
       // const data = Object.assign(body, { creator_id: ctx.profile.id })
       const result = await Track.create(body)

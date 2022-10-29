@@ -2,6 +2,7 @@ const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../..
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../../util/cover-src')
 const { authenticate } = require('../../../authenticate')
+const { apiRoot } = require('../../../../../constants')
 
 module.exports = function () {
   const operations = {
@@ -383,7 +384,7 @@ module.exports = function () {
                     }
                   )
                 }, {}),
-                url: `${process.env.STREAM_APP_HOST}/api/v3/user/stream/${item.track.id}`
+                url: `${process.env.APP_HOST}${apiRoot}/user/stream/${item.track.id}`
               }
             }
           }),

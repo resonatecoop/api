@@ -25,6 +25,7 @@ import errorConfig from './config/error.js'
 import compressConfig from './config/compression.js'
 import sessionConfig from './config/session.js'
 import corsConfig from './config/cors.js'
+import fs from 'fs'
 
 /**
  * Koa apps
@@ -32,6 +33,7 @@ import corsConfig from './config/cors.js'
 import user from './controllers/user/index.js'
 import { provider, routes as authRoutes } from './auth/index.js'
 import { apiRouter } from './controllers/index.mjs'
+import { apiRoot } from './constants.js'
 import stream from './controllers/stream/index.js'
 import Router from '@koa/router'
 dotenv.config()
@@ -86,8 +88,8 @@ app.use(apiRouter.routes())
 
 app.use(authRoutes(provider).routes(), authRoutes(provider).allowedMethods({ throw: true }))
 app.use(mount('/', provider.app))
-app.use(mount('/api/v3/stream', stream)) // TODO: put this in the API
-app.use(mount('/api/v3/user', user)) // TODO: put this in the API
+app.use(mount(`${apiRoot}/stream`, stream)) // TODO: put this in the API
+app.use(mount(`${apiRoot}/user`, user)) // TODO: put this in the API
 
 // FIXME: koa-static is currently insecure and out of date.
 // https://github.com/koajs/static/issues/202
@@ -110,6 +112,19 @@ if (process.env.NODE_ENV !== 'production') {
       console.error('e', e)
     }
     await next()
+  })
+
+  staticRouter.get('/audio/:filename', async (ctx, next) => {
+    try {
+      const filename = ctx.request.params.filename
+      // This is a hack for now
+      ctx.body = fs.createReadStream(path.join(BASE_DATA_DIR, '/data/media/audio', filename))
+      next()
+    } catch (e) {
+      console.error('e', e)
+      ctx.throw(500, e)
+    }
+    // await next()
   })
   app.use(staticRouter.routes())
 }

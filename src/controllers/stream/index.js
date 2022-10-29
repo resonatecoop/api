@@ -1,5 +1,8 @@
 const Koa = require('koa')
 const Router = require('@koa/router')
+const path = require('path')
+const fs = require('fs')
+
 const { File, Track } = require('../../db/models')
 
 const stream = new Koa()
@@ -28,17 +31,31 @@ router.get('/:id', async (ctx, next) => {
 
     const { url: filename } = track
 
-    const alias = `/audio/trim-${filename}.m4a`
+    let alias = `/audio/trim-${filename}.m4a`
 
-    ctx.set({
-      Pragma: 'no-cache',
-      'Content-Type': 'audio/mp4',
-      // 'Content-Length': filesize, TODO if we have a file metadata
-      'Content-Disposition': `inline; filename=${filename}`,
-      'X-Accel-Redirect': alias
-    })
+    if (track.get('status') === 'free') {
+      alias = `/audio/${filename}.m4a`
+    }
 
-    ctx.body = null
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', alias))
+      } catch (e) {
+        console.log('error', e)
+        ctx.throw(404, 'Not found')
+      }
+    } else {
+      ctx.set({
+        Pragma: 'no-cache',
+        'Content-Type': 'audio/mp4',
+        // 'Content-Length': filesize, TODO if we have a file metadata
+        // 'Content-Disposition': `inline; filename=${filename}`,
+        'X-Accel-Redirect': alias
+      })
+      ctx.attachment(filename)
+
+      ctx.body = null
+    }
   } catch (err) {
     ctx.throw(ctx.status, err.message)
   }

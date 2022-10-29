@@ -3,6 +3,7 @@ const { Op } = require('sequelize')
 const slug = require('slug')
 const coverSrc = require('../../../../util/cover-src')
 const ms = require('ms')
+const { apiRoot } = require('../../../../constants')
 
 module.exports = function () {
   const operations = {
@@ -181,7 +182,7 @@ module.exports = function () {
                 creator_id: item.track.creator_id,
                 artist: item.track.artist || nickname,
                 cover: cover,
-                url: `${process.env.STREAM_APP_HOST}/api/v3/user/stream/${item.track.id}`
+                url: `${process.env.APP_HOST}${apiRoot}/user/stream/${item.track.id}`
               }
             }
           })

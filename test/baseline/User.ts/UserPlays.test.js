@@ -126,10 +126,10 @@ describe('User.ts/user plays endpoint test', () => {
     const { data } = response.body
 
     expect(data.length).to.eql(2)
-    expect(data[1].count).to.eql(2)
-    expect(data[1].trackId).to.eql(track.id)
-    expect(data[0].count).to.eql(1)
-    expect(data[0].trackId).to.eql(track2.id)
+    expect(data[0].count).to.eql(2)
+    expect(data[0].trackId).to.eql(track.id)
+    expect(data[1].count).to.eql(1)
+    expect(data[1].trackId).to.eql(track2.id)
     track.destroy({ force: true })
     track2.destroy({ force: true })
     play.destroy({ force: true })

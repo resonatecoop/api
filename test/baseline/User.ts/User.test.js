@@ -240,7 +240,7 @@ describe('User.ts/user endpoint test', () => {
     expect(theImages.large.width).to.eql(1500)
     expect(theImages.large.height).to.eql(1500)
 
-    expect(theTrack.url).to.eql('https://beta.stream.resonate.localhost/api/v3/user/stream/44a28752-1101-4e0d-8c40-2c36dc82d035')
+    expect(theTrack.url).to.include('user/stream/44a28752-1101-4e0d-8c40-2c36dc82d035')
 
     // images for the trackgroups
     theImages = theData.images

@@ -42,7 +42,7 @@ const trackService = (ctx) => {
           },
           artist: item.artist ? he.decode(item.artist) : null,
           status: item.status === 2 ? 'Free' : 'Paid',
-          url: `${process.env.STREAM_APP_HOST}/api/v3/user/stream/${item.id}`,
+          url: `${process.env.APP_HOST}/api/v3/user/stream/${item.id}`,
           images: variants.reduce((o, key) => {
             const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
 
