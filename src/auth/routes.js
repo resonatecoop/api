@@ -198,6 +198,7 @@ module.exports = (provider) => {
           uid,
           details: prompt.details,
           params,
+          messages: this.flash,
           title: 'Sign-in',
           session: session ? debug(session) : undefined,
           dbg: {
@@ -246,16 +247,17 @@ module.exports = (provider) => {
         password: ctx.request.body.password
       })
     ) {
+      const { uid } = await provider.interactionDetails(
+        ctx.req,
+        ctx.res
+      )
       this.flash = { error: ['User not found'] }
-      const requestUrl = ctx.request.url.split('/')
-      const { length } = requestUrl
-      const uid = requestUrl[length - 2]
 
       return ctx.redirect(`/interaction/${uid}`, {
         uid,
         client: undefined,
         messages: this.flash,
-        params: {},
+        params: { error: 'User not found' },
         title: 'User not found',
         session: {},
         dbg: { params: debug({}), prompt: debug({}) }
