@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testAccessToken, testUserId } = require('../../testConfig')
+const baseURL = `${process.env.APP_HOST}`
+const request = require('supertest')(baseURL)
+const { expect } = require('../../testConfig')
 
-const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
 
 const { faker } = require('@faker-js/faker')
 
 describe('Auth endpoint test', () => {
   ResetDB()
-  MockAccessToken(testUserId)
   let response = null
 
   it('should handle new user registration', async () => {
@@ -19,7 +19,7 @@ describe('Auth endpoint test', () => {
         email: faker.internet.email(),
         password: faker.internet.password()
       })
-      .set('Authorization', `Bearer ${testAccessToken}`)
+      .type('form')
 
     expect(response.status).to.eql(200)
   })
