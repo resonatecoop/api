@@ -11,6 +11,7 @@ describe('Api.ts/artists endpoint test', () => {
 
   let response = null
 
+  // FIXME: this test is fragile
   it('should GET /artists', async () => {
     response = await request.get('/artists')
 
@@ -136,6 +137,7 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.User.displayName).to.eql('artist')
   })
 
+  // FIXME: this test is fragile
   it('should GET /artists/:id/releases', async () => {
     response = await request.get(`/artists/${testArtistId}/releases`)
 
@@ -174,6 +176,9 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.items).to.be.an('array')
     expect(theData.items.length).to.eql(10)
 
+    // NOTE: leaving this in place to track down when this fragile test
+    // breaks, presumably something to do with ordering of the results
+    console.log(attributes.data)
     const theItem = theData.items[0]
     expect(theItem).to.include.keys('id', 'index', 'track_id', 'track')
     expect(theItem.id).to.eql('753eccd9-01b2-4bfb-8acc-8d0e44b998cc')

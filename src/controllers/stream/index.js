@@ -37,6 +37,16 @@ router.get('/:id', async (ctx, next) => {
       alias = `/audio/${filename}.m4a`
     }
 
+    // FIXME: this has to happen because of how nginx
+    // is set up on local. We can't forward to port :80
+    // because we can't guarantee that there won't be anything
+    // running on port 80 on the user's machine. But
+    // when you use nginx to transparently (x-accel-redirect)
+    // to an other endpoint from within the node app,
+    // the koa context thinks it's operating within
+    // localhost (no port), which is a problem for node-oidc-provider
+    // and the automatic URLs it builds. There's probably a
+    // cleaner way to fix this.
     if (process.env.NODE_ENV !== 'production') {
       try {
         ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', alias))

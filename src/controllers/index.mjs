@@ -66,6 +66,16 @@ import userTrackgroups from './user/trackgroups/routes/index.js'
 import userTracks from './user/tracks/routes/index.js'
 import usersId from './users/routes/{id}/index.js'
 import usersIdPlaylists from './users/routes/{id}/playlists.js'
+import adminUsers from './user/admin/users/index.js'
+import adminUsersId from './user/admin/users/{id}.js'
+import adminTrackgroups from './user/admin/trackgroups/index.js'
+import adminTrackgroupId from './user/admin/trackgroups/{id}/index.js'
+import adminTrackgroupSettings from './user/admin/trackgroups/{id}/settings.js'
+import adminTrackgroupItems from './user/admin/trackgroups/{id}/items/index.js'
+import adminTrackgroupItemsAdd from './user/admin/trackgroups/{id}/items/add.js'
+import adminTrackgroupItemsRemove from './user/admin/trackgroups/{id}/items/remove.js'
+import adminTracks from './user/admin/tracks/index.js'
+import adminTracksId from './user/admin/tracks/{id}.js'
 
 import { apiRoot as root } from '../constants.js'
 
@@ -83,7 +93,6 @@ initialize({
     { path: `${root}/tracks/latest`, module: tracksRoutesLatest },
     { path: `${root}/tracks/{id}`, module: tracksId },
 
-    // FIXME: This one is broken cause it relies on elastic search.
     { path: `${root}/tag/{tag}`, module: tagRoutesTag },
 
     { path: `${root}/artists/featured`, module: artistsFeatured },
@@ -99,7 +108,6 @@ initialize({
     { path: `${root}/labels/{id}/releases`, module: labelReleases },
     { path: `${root}/labels/{id}/artists`, module: labelArtists },
 
-    // FIXME: This one is broken cause it relies on elastic search.
     { path: `${root}/search`, module: search },
 
     // FIXME: Not entirely clear on what the point of this route is
@@ -156,6 +164,19 @@ initialize({
     { path: `${root}/user/tracks`, module: userTracks },
     { path: `${root}/user/tracks/{id}`, module: userTrack },
     { path: `${root}/user/tracks/{id}/file`, module: userTrackFile },
+
+    { path: `${root}/user/admin/users`, module: adminUsers },
+    { path: `${root}/user/admin/users/{id}`, module: adminUsersId },
+
+    { path: `${root}/user/admin/trackgroups`, module: adminTrackgroups },
+    { path: `${root}/user/admin/trackgroups/{id}`, module: adminTrackgroupId },
+    { path: `${root}/user/admin/trackgroups/{id}/settings`, module: adminTrackgroupSettings },
+    { path: `${root}/user/admin/trackgroups/{id}/items`, module: adminTrackgroupItems },
+    { path: `${root}/user/admin/trackgroups/{id}/items/add`, module: adminTrackgroupItemsAdd },
+    { path: `${root}/user/admin/trackgroups/{id}/items/remove`, module: adminTrackgroupItemsRemove },
+
+    { path: `${root}/user/admin/tracks`, module: adminTracks },
+    { path: `${root}/user/admin/tracks/{id}`, module: adminTracksId },
 
     {
       path: `${root}/apiDocs`, module: apiDocs

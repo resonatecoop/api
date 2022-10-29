@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         'lp', // long player
         'ep', // extended play
         'single',
-        'playlist',
+        // 'playlist',
         'compilation',
         'collection',
         'podcast'
