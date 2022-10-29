@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testAccessToken, testArtistUserId } = require('../../testConfig')
+const { request, expect, testAccessToken, testUserId } = require('../../testConfig')
 
 const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
@@ -10,7 +10,7 @@ const { faker } = require('@faker-js/faker')
 
 describe('Auth endpoint test', () => {
   ResetDB()
-  MockAccessToken(testArtistUserId)
+  MockAccessToken(testUserId)
   let response = null
 
   it('should handle new user registration', async () => {
@@ -20,8 +20,7 @@ describe('Auth endpoint test', () => {
         password: faker.internet.password()
       })
       .set('Authorization', `Bearer ${testAccessToken}`)
-    console.log('AUTH TEST RESPONSE LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    console.log(response)
+
     expect(response.status).to.eql(200)
   })
 })
