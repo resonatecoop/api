@@ -113,11 +113,8 @@ module.exports = (provider) => {
       return ctx.redirect('/register')
     }
 
-    const isExisting = await User.findOne({
-      where: {
-        email: user.email.toLowerCase()
-      }
-    })
+    const email = user.email.toLowerCase()
+    const isExisting = await User.findOne({ where: { email } })
 
     if (isExisting) {
       this.flash = { error: ['User with this email already exists!'] }
@@ -125,7 +122,11 @@ module.exports = (provider) => {
     }
 
     const role = await Role.findOne({ where: { name: 'user' } })
-    const newUser = await User.create({ ...user, roleId: role.id })
+    const newUser = await User.create({
+      email,
+      password: user.password,
+      roleId: role.id
+    })
 
     try {
       sendMail({
