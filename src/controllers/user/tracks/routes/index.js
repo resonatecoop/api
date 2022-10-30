@@ -1,4 +1,4 @@
-const { Resonate: Sequelize, UserMeta, Track, File } = require('../../../../db/models')
+const { Resonate: Sequelize, UserMeta, Track, File, UserGroup } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 const { authenticate } = require('../../authenticate')
@@ -135,6 +135,20 @@ module.exports = function (trackService) {
   async function POST (ctx, next) {
     const body = ctx.request.body
     try {
+      const userGroups = await UserGroup.findAll({
+        attributes: ['id'],
+        where: {
+          ownerId: ctx.profile.id
+        }
+      })
+
+      console.log('userGroups', userGroups)
+
+      const ids = userGroups.map(ug => ug.id)
+      if (!ids.includes(body.creatorId)) {
+        ctx.status = 401
+        ctx.throw(401, 'You can\'t make a track for this user')
+      }
       // const data = Object.assign(body, { creator_id: ctx.profile.id })
       const result = await Track.create(body)
       ctx.status = 201

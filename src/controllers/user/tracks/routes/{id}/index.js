@@ -1,5 +1,4 @@
-const { UserMeta, Track, File } = require('../../../../../db/models')
-const { Op } = require('sequelize')
+const { User, Track, File, UserGroup } = require('../../../../../db/models')
 const coverSrc = require('../../../../../util/cover-src')
 const { validate } = require('../../../../../schemas/tracks')
 const { authenticate } = require('../../../authenticate')
@@ -110,11 +109,11 @@ module.exports = function () {
   // TODO: Add Swagger Docs
 
   async function GET (ctx, next) {
+    console.log('user')
     try {
       const result = await Track.findOne({
         where: {
-          id: ctx.params.id,
-          creator_id: ctx.profile.id
+          id: ctx.params.id
         },
         attributes: [
           'id',
@@ -128,6 +127,20 @@ module.exports = function () {
         ],
         include: [
           {
+            model: UserGroup,
+            as: 'creator',
+            required: true,
+            attributes: ['id', 'ownerId', 'typeId', 'displayName'],
+            include: [{
+              model: User,
+              attributes: ['id'],
+              required: true,
+              where: {
+                id: ctx.profile.id
+              }
+            }]
+          },
+          {
             model: File,
             attributes: ['id', 'size', 'owner_id'],
             as: 'cover'
@@ -136,33 +149,16 @@ module.exports = function () {
             model: File,
             attributes: ['id', 'size', 'owner_id'],
             as: 'audiofile'
-          },
-          {
-            model: UserMeta,
-            attributes: ['meta_key', 'meta_value'],
-            required: false,
-            where: { meta_key: { [Op.in]: ['nickname'] } },
-            as: 'meta'
           }
         ]
       })
+
+      console.log('found result', result)
 
       if (!result) {
         ctx.status = 404
         ctx.throw(ctx.status, 'No track found')
       }
-
-      const { nickname } = Object.fromEntries(Object.entries(result.meta)
-        .map(([key, value]) => {
-          const metaKey = value.meta_key
-          let metaValue = value.meta_value
-
-          if (!isNaN(Number(metaValue))) {
-            metaValue = Number(metaValue)
-          }
-
-          return [metaKey, metaValue]
-        }))
 
       let ext = '.jpg'
 
@@ -180,7 +176,6 @@ module.exports = function () {
           duration: result.duration,
           album: result.album,
           year: result.year,
-          artist: nickname,
           cover: coverSrc(result.cover_art, '600', ext, !result.dataValues.cover),
           cover_metadata: {
             id: result.cover_art

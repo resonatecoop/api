@@ -126,7 +126,9 @@ on your server. However! There are intricacies around SSL and NGINX that [are do
 
 ### Deploying to dev.resonate.coop
 
-Check out the GitHub [deploy-stage](.github/workflows/deploy-stage.yml) for how we do it.
+Check out the GitHub [deploy-stage](.github/workflows/deploy-stage.yml) for how we do it.https://dev.resonate.coop/docs
+
+### Deploying to prod
 
 ## Authentication
 

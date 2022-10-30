@@ -89,13 +89,13 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(data[1].date).to.eql(longAgoDate.toISOString().split('T')[0])
     expect(data[1].count).to.eql(1)
 
-    track.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    play3.destroy({ force: true })
-    play4.destroy({ force: true })
-    trackgroup.destroy({ force: true })
-    tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await play3.destroy({ force: true })
+    await play4.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
   })
 
   // FIXME: Skipping because it's not used for now
@@ -171,11 +171,11 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(data[0].id).to.eql(track2.id)
     expect(data[1].id).to.eql(track.id)
 
-    track.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    trackgroup.destroy({ force: true })
-    tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
   })
 
   it('should GET /user/favorites', async () => {
@@ -221,8 +221,8 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(data.userId).to.eql(testUserId)
     expect(data.type).to.eql(true)
 
-    track.destroy({ force: true })
-    Favorite.destroy({
+    await track.destroy({ force: true })
+    await Favorite.destroy({
       where: {
         id: data.id
       },
@@ -262,8 +262,8 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(response.body.data.length).to.eql(1)
     expect(response.body.data[0].trackId).to.eql(track2.id)
 
-    track1.destroy({ force: true })
-    track2.destroy({ force: true })
-    favorite.destroy({ force: true })
+    await track1.destroy({ force: true })
+    await track2.destroy({ force: true })
+    await favorite.destroy({ force: true })
   })
 })

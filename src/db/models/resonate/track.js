@@ -109,7 +109,6 @@ module.exports = (sequelize, DataTypes) => {
     Track.hasMany(models.TrackGroupItem, { targetKey: 'trackId', as: 'trackOn' })
     Track.hasMany(models.Play, { targetKey: 'trackId', as: 'plays' })
     // Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
-    // Track.hasMany(models.UserMeta, { as: 'meta', foreignKey: 'user_id', sourceKey: 'creator_id' })
     Track.hasOne(models.UserGroup, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })
     Track.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'track_cover_art', foreignKey: 'id' })
     Track.belongsTo(models.File, { as: 'audiofile', foreignKey: 'track_url' })

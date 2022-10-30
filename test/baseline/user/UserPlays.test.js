@@ -49,8 +49,8 @@ describe('User.ts/user plays endpoint test', () => {
 
     expect(response.status).to.eql(200)
 
-    track.destroy({ force: true })
-    credit.destroy({ force: true })
+    await track.destroy({ force: true })
+    await credit.destroy({ force: true })
   })
   it('should POST /user/plays/buy', async () => {
     const track = await Track.create({
@@ -71,9 +71,9 @@ describe('User.ts/user plays endpoint test', () => {
     expect(response.body.data.cost).to.eql(1022)
     expect(response.body.data.total).to.eql('8.9780')
     expect(response.body.data.result.length).to.eql(9)
-    track.destroy({ force: true })
-    credit.destroy({ force: true })
-    Play.destroy({
+    await track.destroy({ force: true })
+    await credit.destroy({ force: true })
+    await Play.destroy({
       where: {
         id: {
           [Op.in]: response.body.data.result.map(play => play.id)
@@ -130,10 +130,10 @@ describe('User.ts/user plays endpoint test', () => {
     expect(data[0].trackId).to.eql(track.id)
     expect(data[1].count).to.eql(1)
     expect(data[1].trackId).to.eql(track2.id)
-    track.destroy({ force: true })
-    track2.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    play3.destroy({ force: true })
+    await track.destroy({ force: true })
+    await track2.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await play3.destroy({ force: true })
   })
 })

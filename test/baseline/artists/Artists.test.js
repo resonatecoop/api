@@ -22,6 +22,7 @@ describe('Api.ts/artists endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'pages', 'status')
     expect(attributes.data).to.be.an('array')
     expect(attributes.data.length).to.eql(1)
+    console.log(attributes.data[0].items)
 
     const theData = attributes.data[0]
     //  FIXME: there is 'addressId' and 'AddressId'
@@ -178,7 +179,7 @@ describe('Api.ts/artists endpoint test', () => {
 
     // NOTE: leaving this in place to track down when this fragile test
     // breaks, presumably something to do with ordering of the results
-    console.log(attributes.data)
+    console.log(attributes.data[0].items)
     const theItem = theData.items[0]
     expect(theItem).to.include.keys('id', 'index', 'track_id', 'track')
     expect(theItem.id).to.eql('753eccd9-01b2-4bfb-8acc-8d0e44b998cc')

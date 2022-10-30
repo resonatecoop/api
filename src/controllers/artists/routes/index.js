@@ -32,6 +32,7 @@ module.exports = function () {
               required: true,
               attributes: ['id', 'index', 'track_id'],
               as: 'items',
+              order: [['index', 'DESC']],
               include: [{
                 model: Track,
                 as: 'track'
