@@ -37,6 +37,20 @@ describe('User.ts/user tracks endpoint test', () => {
     await track.destroy({ force: true })
   })
 
+  it('should GET /user/tracks', async () => {
+    const track = await Track.create({
+      title: faker.name.fullName(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    response = await request.get('/user/tracks')
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+    expect(response.body.data[0].title).to.eql(track.title)
+    await track.destroy({ force: true })
+  })
+
   it('should fail POST /user/tracks without creatorId', async () => {
     response = await request.post('/user/tracks')
       .set('Authorization', `Bearer ${testAccessToken}`)

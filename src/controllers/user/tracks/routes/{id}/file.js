@@ -31,6 +31,7 @@ module.exports = function () {
     description: 'Add a file to a track',
     summary: '',
     tags: ['tracks'],
+    // FIXME: re-enable this
     // parameters: [
     //   {
     //     name: 'id',

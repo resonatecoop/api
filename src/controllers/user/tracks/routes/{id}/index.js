@@ -109,7 +109,6 @@ module.exports = function () {
   // TODO: Add Swagger Docs
 
   async function GET (ctx, next) {
-    console.log('user')
     try {
       const result = await Track.findOne({
         where: {
@@ -152,8 +151,6 @@ module.exports = function () {
           }
         ]
       })
-
-      console.log('found result', result)
 
       if (!result) {
         ctx.status = 404
