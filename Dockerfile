@@ -1,6 +1,6 @@
-FROM jrottenberg/ffmpeg:5.0-alpine as ffmpeg
+FROM jrottenberg/ffmpeg:4.4-ubuntu as ffmpeg
 
-FROM node:16-alpine
+FROM node:16-buster-slim
 
 ENV NODE_APP_DIR=/var/www/api/src
 WORKDIR /var/www/api
