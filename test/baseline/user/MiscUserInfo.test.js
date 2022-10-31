@@ -50,7 +50,7 @@ describe('User.ts/misc user info endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
 
@@ -107,22 +107,6 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(response.status).to.eql(200)
   })
 
-  it('should GET /user/collection', async () => {
-    response = await request.get('/user/collection/').set('Authorization', `Bearer ${testAccessToken}`)
-
-    expect(response.status).to.eql(200)
-
-    const attributes = response.body
-    expect(attributes).to.be.an('object')
-    expect(attributes).to.include.keys('data', 'count', 'pages')
-
-    expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(0)
-
-    expect(attributes.count).to.eql(0)
-    expect(attributes.pages).to.eql(0)
-  })
-
   it('should GET /user/plays/history', async () => {
     const displayName = 'Test test'
     const track = await Track.create({
@@ -147,7 +131,7 @@ describe('User.ts/misc user info endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
 
@@ -178,6 +162,57 @@ describe('User.ts/misc user info endpoint test', () => {
     await tgi.destroy({ force: true })
   })
 
+  it('should GET /user/collection', async () => {
+    // This checks what songs a user has paid the full price for.
+    // This will have to be changed once we don't track purchase
+    // buy number of plays
+    // https://github.com/resonatecoop/api/issues/132
+    const displayName = 'Test test'
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+
+    const trackgroup = await TrackGroup.create({
+      title: displayName + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+
+    const plays = await Promise.all(Array(10)
+      .fill()
+      .map(async (v, i) => {
+        return Play.create({
+          userId: testUserId,
+          trackId: track.id,
+          type: 'paid',
+          createdAt: faker.date.past()
+        })
+      }))
+
+    response = await request.get('/user/collection')
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+    expect(response.body.data.length).to.eql(1)
+    expect(response.body.count).to.eql(1)
+    expect(response.body.data[0].title).to.eql(track.title)
+
+    await Promise.all(plays.map(p => p.destroy({ force: true })))
+    await tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+  })
+
   it('should GET /user/favorites', async () => {
     const track = await Track.create({
       title: faker.animal.cat(),
@@ -202,7 +237,7 @@ describe('User.ts/misc user info endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
     response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)

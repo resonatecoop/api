@@ -28,7 +28,6 @@ module.exports = function () {
       const result = await sequelize.query(`
         SELECT track.track_name, track.track_album, track.tid, track.track_duration, track.track_cover_art as cover_art, track.status, track.uid, um.meta_value as artist, cover.id as cover
         FROM tracks as track
-        INNER JOIN rsntr_usermeta AS um ON (track.uid = um.user_id AND um.meta_key = 'nickname')
         LEFT JOIN files as cover ON(cover.id = track.track_url)
         WHERE uid = :creatorId
         AND track.status IN (0, 2, 3)

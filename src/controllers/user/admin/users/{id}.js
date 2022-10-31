@@ -90,5 +90,7 @@ module.exports = function () {
     }
   }
 
+  // TODO: PUT operation to update users
+
   return operations
 }
