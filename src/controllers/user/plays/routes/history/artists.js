@@ -1,4 +1,4 @@
-const { Track, Resonate: sequelize } = require('../../../../../db/models')
+const { UserGroup, Resonate: sequelize } = require('../../../../../db/models')
 const { authenticate } = require('../../../authenticate')
 
 module.exports = function () {
@@ -7,29 +7,26 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    const {
-      limit = 10
-    } = ctx.request.query
+    // const {
+    //   limit = 10
+    // } = ctx.request.query
 
     try {
       const result = await sequelize.query(`
-        SELECT track.uid, um.meta_value
-        FROM plays as play
-        INNER JOIN tracks as track ON(track.tid = play.tid)
-        INNER JOIN rsntr_usermeta as um ON(um.user_id = track.uid AND meta_key = 'nickname')
-        WHERE play.uid = :listenerId
-        AND play.event = 1
-        GROUP BY track.uid, um.meta_value
-        ORDER BY MAX(play.date) DESC
-        LIMIT :limit
+        SELECT ug.id as "creatorId", ug.display_name as "displayName", count(*)
+        FROM user_groups ug 
+        LEFT JOIN tracks ON tracks.creator_id = ug.id 
+        LEFT JOIN plays ON plays.track_id = tracks.id
+        WHERE plays.user_id = :userId
+        GROUP BY ug.id
       `, {
         type: sequelize.QueryTypes.SELECT,
-        replacements: {
-          listenerId: ctx.profile.id,
-          limit: limit
-        },
         mapToModel: true,
-        model: Track
+        replacements: {
+          userId: ctx.profile.id
+        },
+        model: UserGroup,
+        raw: true
       })
 
       ctx.body = {

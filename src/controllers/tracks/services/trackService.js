@@ -8,25 +8,9 @@ const trackService = (ctx) => {
       const variants = [120, 600]
 
       return rows.map((item) => {
-        if (item.meta && !item.artist) {
-          const { nickname } = Object.fromEntries(Object.entries(item.meta)
-            .map(([key, value]) => {
-              const metaKey = value.meta_key
-              let metaValue = value.meta_value
-
-              if (!isNaN(Number(metaValue))) {
-                metaValue = Number(metaValue)
-              }
-
-              return [metaKey, metaValue]
-            }))
-
-          item.artist = nickname
-        }
-
         return {
           id: item.id,
-          creator_id: item.creator_id,
+          creatorId: item.creatorId ?? item.creator_id,
           title: item.title,
           duration: item.duration,
           trackgroup: {

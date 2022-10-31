@@ -215,44 +215,10 @@ module.exports = function () {
         where.type = type
       }
 
-      // if (ctx.profile.role === 'label-owner') {
-      //   const subQuery = sequelize.dialect.queryGenerator.selectQuery('rsntr_usermeta', {
-      //     attributes: [[sequelize.fn('DISTINCT', sequelize.col('user_id')), 'user_id']],
-      //     where: {
-      //       [Op.or]: [
-      //         {
-      //           [Op.and]: [
-      //             {
-      //               user_id: ctx.profile.id
-      //             }
-      //           ]
-      //         },
-      //         {
-      //           [Op.and]: [
-      //             {
-      //               meta_value: ctx.profile.id
-      //             },
-      //             {
-      //               meta_key: {
-      //                 [Op.in]: ['mylabel']
-      //               }
-      //             }
-      //           ]
-      //         }
-      //       ]
-      //     }
-      //   }).slice(0, -1)
-
-      //   where.creator_id = {
-      //     [Op.in]: sequelize.literal('(' + subQuery + ')')
-      //   }
-      // }
-
       const result = await TrackGroup.findOne({
         attributes: [
           'about',
           'cover',
-          // 'artistId',
           'creatorId',
           'display_artist',
           'download',

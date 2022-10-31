@@ -1,4 +1,4 @@
-// const { UserMeta, User, Role, OauthUser /* Resonate: sequelize */ } = require('../../../../db/models')
+// const { User, Role, OauthUser /* Resonate: sequelize */ } = require('../../../../db/models')
 // const { Op } = require('sequelize')
 
 // const stripe = require('stripe')(process.env.STRIPE_KEY)

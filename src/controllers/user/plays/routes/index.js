@@ -9,7 +9,6 @@ const subtract = (a, b) => numbro(a).subtract(b).value()
 
 module.exports = function () {
   const operations = {
-    // GET,
     POST: [authenticate, POST]
   }
 

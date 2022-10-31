@@ -21,5 +21,10 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'favorites'
   })
 
+  Favorite.associate = function (models) {
+    Favorite.belongsTo(models.Track, { as: 'track', foreignKey: 'trackId' })
+    Favorite.belongsTo(models.User, { as: 'user', foreignKey: 'userId' })
+  }
+
   return Favorite
 }

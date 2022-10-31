@@ -179,9 +179,33 @@ describe('User.ts/misc user info endpoint test', () => {
   })
 
   it('should GET /user/favorites', async () => {
-    response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
 
-    expect(response.status).to.eql(200)
+    const favorite = await Favorite.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: true
+    })
+
+    const trackgroup = await TrackGroup.create({
+      title: track.title + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      release_date: faker.date.past(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      trackId: track.id,
+      index: 1
+    })
+    response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
 
@@ -190,10 +214,18 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'pages')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(0)
+    expect(attributes.data.length).to.eql(1)
 
-    expect(attributes.count).to.eql(0)
-    expect(attributes.pages).to.eql(0)
+    expect(attributes.count).to.eql(1)
+    expect(attributes.pages).to.eql(1)
+    expect(attributes.data[0].title).to.eql(track.title)
+    expect(attributes.data[0].id).to.eql(track.id)
+    expect(attributes.data[0].creatorId).to.eql(testArtistId)
+
+    await track.destroy({ force: true })
+    await favorite.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
   })
 
   it('should not POST /user/favorites without trackId', async () => {
@@ -204,6 +236,7 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(response.body.message).to.eql('Bad Request')
     expect(response.body.errors[0].path).to.eql('trackId')
   })
+
   it('should POST /user/favorites', async () => {
     const track = await Track.create({
       title: faker.animal.cat(),

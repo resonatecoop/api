@@ -1,6 +1,7 @@
-const { Track, Favorite, Resonate: sequelize } = require('../../../../db/models')
+const { Track, TrackGroup, TrackGroupItem, Favorite } = require('../../../../db/models')
 const trackService = require('../../../tracks/services/trackService')
 const { authenticate } = require('../../authenticate')
+const { Op } = require('sequelize')
 
 module.exports = function () {
   const operations = {
@@ -90,56 +91,44 @@ module.exports = function () {
     const offset = page > 1 ? (page - 1) * limit : 0
 
     try {
-      // FIXME switch to sequelize query
-      const [countResult] = await sequelize.query(`
-        SELECT count(favorite.id) as count
-        FROM favorites as favorite
-        INNER JOIN tracks as track ON (track.id = favorite.track_id)
-        WHERE favorite.user_id = :listenerId
-        AND favorite.type IS TRUE
-        AND track.status IN(0, 2, 3)
-      `, {
-        type: sequelize.QueryTypes.SELECT,
-        replacements: {
-          listenerId: ctx.profile.id
-        }
-      })
-
-      const { count } = countResult
-
-      const result = await sequelize.query(`
-        SELECT track.id as id, track.creator_id as creator_id, track.status, track.track_name, track.track_url, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_album, track.track_duration, meta.meta_value as artist
-        FROM track_groups as trackgroup
-        INNER JOIN track_group_items as item ON(item.track_group_id = trackgroup.id)
-        INNER JOIN tracks as track ON(item.track_id = track.id AND track.status IN(0, 2, 3))
-        INNER JOIN favorites AS favorite ON (favorite.track_id = track.id AND favorite.user_id = :listenerId AND favorite.type IS TRUE)
-        INNER JOIN rsntr_usermeta as meta ON(meta.user_id = track.creator_id AND meta.meta_key = 'nickname')
-        LEFT JOIN files as file ON(file.id = track.track_url)
-        WHERE (trackgroup.type IS NULL OR trackgroup.type NOT IN ('playlist', 'compilation'))
-        AND trackgroup.private = false
-        AND trackgroup.enabled = true
-        AND (trackgroup.release_date <= NOW() OR trackgroup.release_date IS NULL)
-        GROUP BY track.id, file.id, trackgroup.cover, meta.meta_value, favorite.id
-        ORDER BY favorite.id DESC
-        LIMIT :limit
-        OFFSET :offset
-      `, {
-        type: sequelize.QueryTypes.SELECT,
-        replacements: {
-          listenerId: ctx.profile.id,
-          limit: limit,
-          offset: offset
+      const { count, rows: result } = await Favorite.findAndCountAll({
+        where: {
+          type: true,
+          userId: ctx.profile.id
         },
-        mapToModel: true,
-        model: Track
+        offset,
+        limit,
+        include: [{
+          as: 'track',
+          model: Track,
+          required: true,
+          where: {
+            status: {
+              [Op.in]: [0, 2, 3]
+            }
+          },
+          include: [{
+            as: 'trackOn',
+            model: TrackGroupItem,
+            include: {
+              as: 'trackGroup',
+              model: TrackGroup,
+              where: {
+                private: false,
+                enabled: true
+              }
+            }
+          }]
+        }]
       })
 
       ctx.body = {
-        data: trackService(ctx).list(result),
+        data: trackService(ctx).list(result.map(r => r.track)),
         count,
         pages: Math.ceil(count / limit)
       }
     } catch (err) {
+      console.error(err)
       ctx.status = err.status
       ctx.throw(ctx.status, err.message)
     }
