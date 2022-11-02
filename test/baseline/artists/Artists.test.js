@@ -2,8 +2,8 @@
 /* eslint-env mocha */
 
 const ResetDB = require('../../ResetDB')
-const { request, expect, testUserId, testArtistId } = require('../../testConfig')
-const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
+const { request, expect, testUserId, testArtistId, testArtistUserId } = require('../../testConfig')
+const { Track, UserGroupType, UserGroup, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 
 describe('Api.ts/artists endpoint test', () => {
@@ -279,5 +279,40 @@ describe('Api.ts/artists endpoint test', () => {
     play2.destroy({ force: true })
     trackgroup.destroy({ force: true })
     tgi.destroy({ force: true })
+  })
+
+  it.only('should GET artists/featured', async () => {
+    const type = await UserGroupType.findOne({ where: { name: 'artist' } })
+
+    const newArtist = await UserGroup.create({
+      displayName: faker.animal.cow(),
+      ownerId: testArtistUserId,
+      typeId: type.id
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      featured: false,
+      private: false
+    })
+    const trackgroup2 = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      featured: true,
+      private: false
+    })
+    response = await request.get('/artists/featured')
+    console.log('artists', response.body)
+    expect(response.body.data[0].title).to.eql(newArtist.title)
+
+    trackgroup.destroy({ force: true })
+    trackgroup2.destroy({ force: true })
+    newArtist.destroy({ force: true })
   })
 })
