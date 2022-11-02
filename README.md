@@ -124,9 +124,19 @@ docker-compose up
 
 on your server. However! There are intricacies around SSL and NGINX that [are documented in the nginx folder](nginx/README.md).
 
-### Deploying to dev.resonate.coop
+### Deploying to *.resonate.coop
+
+#### Stage 
+
+Stage is at https://dev.resonate.coop/docs. It's hosted on our Hetzner servers.
 
 Check out the GitHub [deploy-stage](.github/workflows/deploy-stage.yml) for how we do it.
+
+#### Prod
+
+Prod is at https://prod.resonate.coop/docs. It's hosted on our Hetzner servers. 
+
+Right now we manually deploy prod. Check out [the nginx readme](nginx/README.md#production) for production deployment notes. 
 
 ## Authentication
 

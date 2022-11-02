@@ -5,6 +5,8 @@ import koaBody from 'koa-body'
 import bytes from 'bytes'
 import path from 'path'
 
+import corsConfig from '../config/cors.js'
+
 import apiDoc from './api-doc.js'
 import apiDocs from './apiDocs.js'
 import artistReleases from './artists/routes/{id}/releases.js'
@@ -201,5 +203,5 @@ apiRouter.use(koaBody({
   }
 }))
 
-apiRouter.use(cors())
+apiRouter.use(cors(corsConfig))
 apiRouter.use('', openApiRouter.routes(), openApiRouter.allowedMethods({ throw: true }))

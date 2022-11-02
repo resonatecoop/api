@@ -11,11 +11,10 @@ services:
     image: redis
     container_name: resonate-redis
     restart: always
-
     expose:
-      - 6379
+      - "${REDIS_PORT}"
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${REDIS_HOST_PORT:-6379}:${REDIS_PORT:-6379}"
 
   api:
     networks:
@@ -27,12 +26,12 @@ services:
     command: /bin/sh -c "yarn && yarn migrate && yarn start:dev"
     container_name: resonate-api
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
     depends_on:
       - redis
       - pgsql
     ports:
-      - "4000:4000"
+      - "${APP_HOST_PORT:-4000}:4000"
     restart: always
     volumes:
       - ~/.ssh:/root/.ssh
@@ -51,7 +50,7 @@ services:
     # command: /bin/sh -c "yarn && yarn migrate && yarn start:dev"
     container_name: resonate-background
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
     depends_on:
       - redis
       - pgsql
