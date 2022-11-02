@@ -146,7 +146,7 @@ const migrateTracks = async (client) => {
       console.log('generated new user groups')
       usersGroupedByLegacyId = await groupUsersByLegacyId()
       console.log('bulk generating tracks')
-      Track.bulkCreate(results.map(r => ({
+      await Track.bulkCreate(results.map(r => ({
         creatorId: usersGroupedByLegacyId[r.uid]?.user_groups?.[0]?.id,
         legacyId: r.tid,
         title: r.track_name,
@@ -347,11 +347,14 @@ const migratePlaylistItems = async (client, id) => {
     AND tg.type = 'playlist'
     `, async function (error, results, fields) {
       if (error) reject(error)
+      // console.log('results', results)
       try {
-        await PlaylistItem.bulkCreate(results
-          // TODO: Some tracks' legacy artists don't exist in the user-api database because
-          // they didn't have an e-mail associated with them.
+        const totalResults = results
+        // TODO: Some tracks' legacy artists don't exist in the user-api database because
+        // they didn't have an e-mail associated with them.
           .filter(r => tracksGroupedByLegacyId[r.track_id])
+
+        await PlaylistItem.bulkCreate(totalResults
           .map(r => {
             return {
               id: r.id,
@@ -478,6 +481,10 @@ const migrateLinks = async (client) => {
 }
 
 const migrateLabels = async (client) => {
+  await UserGroupMember.destroy({
+    truncate: true,
+    force: true
+  })
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
   const types = await UserGroupType.findAll()
   const typeMap = keyBy(types, 'name')
