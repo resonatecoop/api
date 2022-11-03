@@ -47,8 +47,6 @@ const app = new Koa({
   proxy: true
 })
 
-console.log('process.env', process.env)
-
 app
   .use(cors(corsConfig))
   .use(error(errorConfig()))

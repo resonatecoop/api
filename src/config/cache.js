@@ -18,10 +18,11 @@ const cleanKey = (key) => {
 }
 
 const memoryCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
-const redis = new Redis(Object.assign(REDIS_CONFIG, {
+const redis = new Redis({
+  ...REDIS_CONFIG,
   keyPrefix: Date.now().toString(),
   lazyConnect: process.env.NODE_ENV !== 'production' // avoid loading redis in development, especially if connection is remote
-}))
+})
 
 redis.on('connect', () => console.log('redis connected'))
 
