@@ -9,7 +9,7 @@
   "scripts": {
     "start:dev": "./node_modules/nodemon/bin/nodemon.js --trace-warnings ./server.mjs --config nodemon.json",
     "start": "node src/index.mjs",
-    "migrate": "NODE_ENV=development sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
+    "migrate": "sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:workers": "docker exec -it resonate-api node src/jobs/queue-worker.js run",
     "docker:migrate": "docker exec -it resonate-api npx sequelize db:migrate --config src/config/databases.js --migrations-path src/db/migrations",
     "docker:migrate:undo:all": "docker exec -it resonate-api npx sequelize db:migrate:undo:all --config src/config/databases.js --migrations-path src/db/migrations",
@@ -82,7 +82,11 @@
     "lodash": "^4.17.21",
     "ms": "^2.1.3",
     "music-metadata": "^7.11.4",
+    "mysql": "^2.18.1",
+    "mysql-promise": "^5.0.0",
+    "mysql-ssh": "^1.0.6",
     "mysql2": "^2.3.3",
+    "nodemon": "^2.0.2",
     "node-cache": "^5.1.2",
     "node-fetch": "^2.6.1",
     "node-split": "^1.0.1",
@@ -96,15 +100,19 @@
     "query-string": "^7.0.0",
     "round-to": "^4.1.0",
     "sequelize": "^6.13.0",
+    "sequelize-cli": "^6.2.0",
     "sharp": "0.30.5",
     "shasum": "^1.0.2",
     "slug": "^4.0.1",
+    "ssh2": "^1.11.0",
     "stripe": "^10.7.0",
     "superagent": "^5.1.0",
     "swagger-client": "^3.13.6",
+    "tunnel-ssh": "^4.1.6",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
-    "yargs": "^15.1.0"
+    "yargs": "^15.1.0",
+    "umzug": "2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -121,18 +129,10 @@
     "dependency-check": "^4.1.0",
     "husky": "^8.0.1",
     "mocha": "^10.0.0",
-    "mysql": "^2.18.1",
-    "mysql-promise": "^5.0.0",
-    "mysql-ssh": "^1.0.6",
-    "nodemon": "^2.0.2",
     "npm-run-all": "^4.1.5",
-    "sequelize-cli": "^6.2.0",
     "server-destroy": "^1.0.1",
-    "ssh2": "^1.11.0",
     "standard": "^16.0.4",
-    "supertest": "^4.0.2",
-    "tunnel-ssh": "^4.1.6",
-    "umzug": "2.3.0"
+    "supertest": "^4.0.2"
   },
   "standard": {
     "ignore": [
