@@ -12,7 +12,7 @@ services:
     container_name: resonate-redis
     restart: always
     expose:
-      - "${REDIS_PORT}"
+      - 6379
     ports:
       - "${REDIS_HOST_PORT:-6379}:${REDIS_PORT:-6379}"
 

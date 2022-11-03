@@ -3,7 +3,7 @@ const NodeCache = require('node-cache')
 const ms = require('ms')
 const safeStringify = require('fast-safe-stringify')
 
-const redisConfig = require('./redis')
+const { REDIS_CONFIG } = require('./redis')
 
 const CACHE_MAX_AGE = process.env.NODE_ENV === 'production' ? ms('3h') : 0
 const CACHE_MAX_AGE_SEC = CACHE_MAX_AGE / 1000
@@ -18,7 +18,7 @@ const cleanKey = (key) => {
 }
 
 const memoryCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
-const redis = new Redis(Object.assign(redisConfig, {
+const redis = new Redis(Object.assign(REDIS_CONFIG, {
   keyPrefix: Date.now().toString(),
   lazyConnect: process.env.NODE_ENV !== 'production' // avoid loading redis in development, especially if connection is remote
 }))

@@ -26,6 +26,7 @@ import compressConfig from './config/compression.js'
 import sessionConfig from './config/session.js'
 import corsConfig from './config/cors.js'
 import fs from 'fs'
+import Router from '@koa/router'
 
 /**
  * Koa apps
@@ -35,7 +36,7 @@ import { provider, routes as authRoutes } from './auth/index.js'
 import { apiRouter } from './controllers/index.mjs'
 import { apiRoot } from './constants.js'
 import stream from './controllers/stream/index.js'
-import Router from '@koa/router'
+import { REDIS_CONFIG } from './config/redis.js'
 dotenv.config()
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
@@ -46,16 +47,14 @@ const app = new Koa({
   proxy: true
 })
 
+console.log('process.env', process.env)
+
 app
   .use(cors(corsConfig))
   .use(error(errorConfig()))
   .use(logger())
   .use(ratelimit({
-    db: new Redis({
-      port: process.env.REDIS_PORT || 6379,
-      host: process.env.REDIS_HOST || '127.0.0.1',
-      password: process.env.REDIS_PASSWORD
-    }),
+    db: new Redis(REDIS_CONFIG),
     duration: 60000,
     errorMessage: 'API is rate limited',
     id: (ctx) => ctx.ip,
