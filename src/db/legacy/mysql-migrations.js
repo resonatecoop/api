@@ -52,6 +52,10 @@ const migratePlays = async (client) => {
 
 // eslint-disable-next-line
 const migrateFiles = async (client) => {
+  await File.destroy({
+    truncate: true,
+    force: true
+  })
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
 
   return new Promise((resolve, reject) => {

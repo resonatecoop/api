@@ -90,6 +90,10 @@ const migrateUserGroups = async (client) => {
 }
 
 const migrateCredits = async (client) => {
+  await Credit.destroy({
+    truncate: true,
+    force: true
+  })
   const results = await client.query('SELECT * FROM credits')
 
   try {
@@ -106,6 +110,10 @@ const migrateCredits = async (client) => {
 }
 
 const migrateUserMemberships = async (client) => {
+  await UserMembership.destroy({
+    truncate: true,
+    force: true
+  })
   const classes = await MembershipClass.findAll()
   const classesMap = keyBy(classes, 'name')
   const remoteClasses = await client.query('SELECT * FROM membership_classes')
@@ -136,6 +144,10 @@ const migrateUserMemberships = async (client) => {
 }
 
 const migrateShareTransactions = async (client) => {
+  await ShareTransaction.destroy({
+    truncate: true,
+    force: true
+  })
   const results = await client.query('SELECT * FROM share_transactions')
 
   await Promise.all(results.rows.map(async result => {
