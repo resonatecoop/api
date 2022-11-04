@@ -1,13 +1,11 @@
 
 const { File, Track, Play, Credit } = require('../../../../db/models')
 const { calculateCost } = require('@resonate/utils')
-const send = require('koa-send')
 const path = require('path')
+const send = require('koa-send')
 const { apiRoot } = require('../../../../constants')
 const { authenticate } = require('../../authenticate')
 const fs = require('fs')
-
-const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
 module.exports = function () {
   const operations = {
@@ -43,6 +41,7 @@ module.exports = function () {
 
       if (!wallet) {
         const notLoggedInUrl = `${apiRoot}/stream/${ctx.params.id}`
+
         ctx.redirect(notLoggedInUrl)
         return next()
       }
@@ -67,6 +66,7 @@ module.exports = function () {
       } else {
         const ext = '.m4a'
         const filename = track.url
+        const alias = `/audio/${filename}${ext}`
 
         // FIXME: this has to happen because of how nginx
         // is set up on local. We can't forward to port :80
@@ -80,20 +80,23 @@ module.exports = function () {
         // cleaner way to fix this.
         if (process.env.NODE_ENV !== 'production') {
           try {
-            ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', `${filename}${ext}`))
+            ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', alias))
           } catch (e) {
             console.log('error', e)
             ctx.throw(404, 'Not found')
           }
         } else {
-          ctx.set({
-            'Content-Type': 'audio/mp4',
-            // 'Content-Length': filesize, TODO if we have a file metadata
-            'Content-Disposition': `inline; filename=${filename}${ext}`,
-            'X-Accel-Redirect': `/audio/${filename}${ext}` // internal redirect
-          })
-
-          await send(ctx, `/${filename}${ext}`, { root: path.join(BASE_DATA_DIR, '/data/media/audio') })
+          // FIXME: is there a way to make it so that nginx serves
+          // this file?
+          // ctx.set({
+          //   'Content-Type': 'audio/mp4',
+          //   // 'Content-Length': filesize, TODO if we have a file metadata
+          //   // 'Content-Disposition': `inline; filename=${filename}${ext}`,
+          //   'X-Accel-Redirect': alias // internal redirect
+          // })
+          // ctx.attachment(filename)
+          // ctx.body = null
+          await send(ctx, `/${filename}${ext}`, { root: path.join('/data/media/audio') })
         }
       }
     } catch (err) {
