@@ -83,11 +83,12 @@ module.exports = function () {
             include: [{
               model: Track,
               as: 'track'
-            }],
-            order: ['index']
+            }]
+
           }
         ],
         order: [
+          [{ model: TrackGroupItem, as: 'items' }, 'index', 'ASC'],
           ['release_date', 'DESC'],
           ['createdAt', 'DESC'],
           ['title', 'ASC']

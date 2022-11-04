@@ -130,7 +130,9 @@ on your server. However! There are intricacies around SSL and NGINX that [are do
 
 Stage is at https://dev.resonate.coop/docs. It's hosted on our Hetzner servers.
 
-Check out the GitHub [deploy-stage](.github/workflows/deploy-stage.yml) for how we do it.
+Check out the GitHub [deploy-stage](.github/workflows/deploy-stage.yml) for how we do it.https://dev.resonate.coop/docs
+
+### Deploying to prod
 
 #### Prod
 

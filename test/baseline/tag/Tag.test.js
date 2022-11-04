@@ -54,6 +54,7 @@ describe('Api.ts/tag endpoint test', () => {
     tgi2.destroy({ force: true })
   })
 
+  // FIXME: Fragile test
   it('should GET tag/:tag find trackgroups', async () => {
     const genre = faker.music.genre().toLowerCase()
     const tg = await TrackGroup.create({
@@ -77,6 +78,7 @@ describe('Api.ts/tag endpoint test', () => {
     expect(response.status).to.eql(200)
 
     const { data } = response.body
+    console.log('response', response.body)
     expect(data.trackgroups.length).to.eql(1)
     expect(data.trackgroups[0].title).to.eql(tg.title)
 

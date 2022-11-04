@@ -76,6 +76,8 @@ module.exports = function () {
         // to an other endpoint from within the node app,
         // the koa context thinks it's operating within
         // localhost (no port), which is a problem for node-oidc-provider
+        // and the automatic URLs it builds. There's probably a
+        // cleaner way to fix this.
         if (process.env.NODE_ENV !== 'production') {
           try {
             ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', `${filename}${ext}`))

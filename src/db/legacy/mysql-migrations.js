@@ -52,6 +52,10 @@ const migratePlays = async (client) => {
 
 // eslint-disable-next-line
 const migrateFiles = async (client) => {
+  await File.destroy({
+    truncate: true,
+    force: true
+  })
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
 
   return new Promise((resolve, reject) => {
@@ -480,6 +484,7 @@ const migrateLinks = async (client) => {
   })
 }
 
+// eslint-disable-next-line
 const migrateLabels = async (client) => {
   await UserGroupMember.destroy({
     truncate: true,
@@ -527,6 +532,67 @@ const migrateLabels = async (client) => {
   })
 }
 
+// eslint-disable-next-line
+const migrateBands = async (client) => {
+  const types = await UserGroupType.findAll()
+  const typeMap = keyBy(types, 'name')
+
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_usermeta WHERE meta_key IN ('mybands')
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        // First we need to create labels for everyone who claims to be a label
+        const bandIds = uniq(results
+          .filter(r => r !== '')
+          .reduce((array, r) => {
+            const value = r.meta_value.match(/"(\d*)"/g)
+            const newValue = value?.map(v => +(v.replace(/"/g, '')))
+            const newArray = array.concat(...newValue ?? [])
+            return newArray
+          }, [])
+          .filter(r => !isNaN(r)))
+        console.log('bandIds', bandIds.length)
+
+        await sequelize.query(`
+          update user_groups
+          set type_id = ${typeMap.band.id}
+          where user_groups.owner_id in (select id from users where legacy_id in (${bandIds.join(',')}))
+        `)
+        // Then we need to insert those connections into UserGroupMember
+        const bandRelations = results
+          .filter(r => {
+            return usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id &&
+              r.meta_value !== ''
+          })
+          .reduce((array, r) => {
+            const value = r.meta_value.match(/"(\d*)"/g)
+            const newValue = value?.map(v => +(v.replace(/"/g, ''))) ?? []
+            const newArray = array.concat(...newValue.map(v => ({ bandId: v, userId: r.user_id })))
+
+            return newArray.filter(relation => usersGroupedByLegacyId[relation.bandId]?.user_groups?.[0]?.id)
+          }, [])
+          .map(r => {
+            return {
+              memberId: usersGroupedByLegacyId[r.userId].user_groups?.[0].id,
+              belongsToId: usersGroupedByLegacyId[r.bandId].user_groups?.[0].id
+            }
+          })
+        console.log('bandRelations', bandRelations.length)
+        await UserGroupMember.bulkCreate(bandRelations)
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      console.log('added bands')
+      resolve()
+    })
+  })
+}
+
 module.exports = async (client) => {
   await migrateTracks(client)
   await migratePlaylists(client)
@@ -539,4 +605,5 @@ module.exports = async (client) => {
   await migrateImages(client)
   await migrateLinks(client)
   await migrateLabels(client)
+  await migrateBands(client)
 }

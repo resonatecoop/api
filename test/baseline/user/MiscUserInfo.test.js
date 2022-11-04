@@ -50,7 +50,7 @@ describe('User.ts/misc user info endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
 
@@ -89,13 +89,13 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(data[1].date).to.eql(longAgoDate.toISOString().split('T')[0])
     expect(data[1].count).to.eql(1)
 
-    track.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    play3.destroy({ force: true })
-    play4.destroy({ force: true })
-    trackgroup.destroy({ force: true })
-    tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await play3.destroy({ force: true })
+    await play4.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
   })
 
   // FIXME: Skipping because it's not used for now
@@ -105,22 +105,6 @@ describe('User.ts/misc user info endpoint test', () => {
     console.log('user plays history artists RESPONSE: ', response.text)
 
     expect(response.status).to.eql(200)
-  })
-
-  it('should GET /user/collection', async () => {
-    response = await request.get('/user/collection/').set('Authorization', `Bearer ${testAccessToken}`)
-
-    expect(response.status).to.eql(200)
-
-    const attributes = response.body
-    expect(attributes).to.be.an('object')
-    expect(attributes).to.include.keys('data', 'count', 'pages')
-
-    expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(0)
-
-    expect(attributes.count).to.eql(0)
-    expect(attributes.pages).to.eql(0)
   })
 
   it('should GET /user/plays/history', async () => {
@@ -147,7 +131,7 @@ describe('User.ts/misc user info endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      trackId: track.id,
+      track_id: track.id,
       index: 1
     })
 
@@ -171,17 +155,92 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(data[0].id).to.eql(track2.id)
     expect(data[1].id).to.eql(track.id)
 
-    track.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    trackgroup.destroy({ force: true })
-    tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
+  })
+
+  it('should GET /user/collection', async () => {
+    // This checks what songs a user has paid the full price for.
+    // This will have to be changed once we don't track purchase
+    // buy number of plays
+    // https://github.com/resonatecoop/api/issues/132
+    const displayName = 'Test test'
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+
+    const trackgroup = await TrackGroup.create({
+      title: displayName + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+
+    const plays = await Promise.all(Array(10)
+      .fill()
+      .map(async (v, i) => {
+        return Play.create({
+          userId: testUserId,
+          trackId: track.id,
+          type: 'paid',
+          createdAt: faker.date.past()
+        })
+      }))
+
+    response = await request.get('/user/collection')
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+    expect(response.body.data.length).to.eql(1)
+    expect(response.body.count).to.eql(1)
+    expect(response.body.data[0].title).to.eql(track.title)
+
+    await Promise.all(plays.map(p => p.destroy({ force: true })))
+    await tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
   })
 
   it('should GET /user/favorites', async () => {
-    response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
 
-    expect(response.status).to.eql(200)
+    const favorite = await Favorite.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: true
+    })
+
+    const trackgroup = await TrackGroup.create({
+      title: track.title + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      release_date: faker.date.past(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+    response = await request.get('/user/favorites').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
 
@@ -190,10 +249,18 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'pages')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(0)
+    expect(attributes.data.length).to.eql(1)
 
-    expect(attributes.count).to.eql(0)
-    expect(attributes.pages).to.eql(0)
+    expect(attributes.count).to.eql(1)
+    expect(attributes.pages).to.eql(1)
+    expect(attributes.data[0].title).to.eql(track.title)
+    expect(attributes.data[0].id).to.eql(track.id)
+    expect(attributes.data[0].creatorId).to.eql(testArtistId)
+
+    await track.destroy({ force: true })
+    await favorite.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
   })
 
   it('should not POST /user/favorites without trackId', async () => {
@@ -204,6 +271,7 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(response.body.message).to.eql('Bad Request')
     expect(response.body.errors[0].path).to.eql('trackId')
   })
+
   it('should POST /user/favorites', async () => {
     const track = await Track.create({
       title: faker.animal.cat(),
@@ -221,8 +289,8 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(data.userId).to.eql(testUserId)
     expect(data.type).to.eql(true)
 
-    track.destroy({ force: true })
-    Favorite.destroy({
+    await track.destroy({ force: true })
+    await Favorite.destroy({
       where: {
         id: data.id
       },
@@ -262,8 +330,8 @@ describe('User.ts/misc user info endpoint test', () => {
     expect(response.body.data.length).to.eql(1)
     expect(response.body.data[0].trackId).to.eql(track2.id)
 
-    track1.destroy({ force: true })
-    track2.destroy({ force: true })
-    favorite.destroy({ force: true })
+    await track1.destroy({ force: true })
+    await track2.destroy({ force: true })
+    await favorite.destroy({ force: true })
   })
 })

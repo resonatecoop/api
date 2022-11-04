@@ -2,8 +2,8 @@
 /* eslint-env mocha */
 
 const ResetDB = require('../../ResetDB')
-const { request, expect, testUserId, testArtistId } = require('../../testConfig')
-const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
+const { request, expect, testUserId, testArtistId, testArtistUserId } = require('../../testConfig')
+const { Track, UserGroupType, UserGroup, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 
 describe('Api.ts/artists endpoint test', () => {
@@ -102,8 +102,8 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theTrack.track_url).to.be.null
     expect(theTrack.track_cover_art).to.be.null
 
-    expect(attributes.count).to.eql(30)
-    expect(attributes.pages).to.eql(2)
+    expect(attributes.count).to.eql(3)
+    expect(attributes.pages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
 
@@ -137,7 +137,6 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.User.displayName).to.eql('artist')
   })
 
-  // FIXME: this test is fragile
   it('should GET /artists/:id/releases', async () => {
     response = await request.get(`/artists/${testArtistId}/releases`)
 
@@ -176,9 +175,6 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.items).to.be.an('array')
     expect(theData.items.length).to.eql(10)
 
-    // NOTE: leaving this in place to track down when this fragile test
-    // breaks, presumably something to do with ordering of the results
-    console.log(attributes.data)
     const theItem = theData.items[0]
     expect(theItem).to.include.keys('id', 'index', 'track_id', 'track')
     expect(theItem.id).to.eql('753eccd9-01b2-4bfb-8acc-8d0e44b998cc')
@@ -277,10 +273,79 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theItem.images.medium.width).to.eql(600)
     expect(theItem.images.medium.height).to.eql(600)
 
-    track.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    trackgroup.destroy({ force: true })
-    tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
+  })
+
+  it('should GET artists/featured', async () => {
+    const type = await UserGroupType.findOne({ where: { name: 'artist' } })
+
+    const newArtist = await UserGroup.create({
+      displayName: faker.animal.cow(),
+      ownerId: testArtistUserId,
+      typeId: type.id
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      featured: false,
+      private: false
+    })
+    const trackgroup2 = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      featured: true,
+      private: false
+    })
+    response = await request.get('/artists/featured')
+
+    expect(response.body.data[0].displayName).to.eql(newArtist.displayName)
+
+    await trackgroup.destroy({ force: true })
+    await trackgroup2.destroy({ force: true })
+    await newArtist.destroy({ force: true })
+  })
+
+  it('should GET artists/featured', async () => {
+    const type = await UserGroupType.findOne({ where: { name: 'artist' } })
+
+    const newArtist = await UserGroup.create({
+      displayName: faker.animal.cow(),
+      ownerId: testArtistUserId,
+      typeId: type.id
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      release_date: faker.date.past(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const trackgroup2 = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      release_date: faker.date.recent(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    response = await request.get('/artists/updated')
+    expect(response.body.data[0].displayName).to.eql(newArtist.displayName)
+
+    await trackgroup.destroy({ force: true })
+    await trackgroup2.destroy({ force: true })
+    await newArtist.destroy({ force: true })
   })
 })

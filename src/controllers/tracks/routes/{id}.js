@@ -49,13 +49,6 @@ module.exports = function () {
             attributes: ['id'],
             as: 'audiofile'
           }
-          // {
-          //   model: UserMeta,
-          //   attributes: ['meta_key', 'meta_value'],
-          //   required: false,
-          //   where: { meta_key: { [Op.in]: ['nickname'] } },
-          //   as: 'meta'
-          // }
         ]
       })
 

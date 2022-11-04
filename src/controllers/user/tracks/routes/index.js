@@ -1,5 +1,4 @@
-const { Resonate: Sequelize, UserMeta, Track, File } = require('../../../../db/models')
-const { Op } = require('sequelize')
+const { Resonate: Sequelize, User, Track, File, UserGroup } = require('../../../../db/models')
 const ms = require('ms')
 const { authenticate } = require('../../authenticate')
 
@@ -17,9 +16,6 @@ module.exports = function (trackService) {
     const query = {
       limit,
       offset: page > 1 ? page * limit : 0,
-      where: {
-        creator_id: ctx.profile.id
-      },
       attributes: [
         'id',
         'creator_id',
@@ -43,15 +39,20 @@ module.exports = function (trackService) {
           as: 'audiofile'
         },
         {
-          model: UserMeta,
-          attributes: ['meta_key', 'meta_value'],
-          required: false,
-          where: { meta_key: { [Op.in]: ['nickname'] } },
-          as: 'meta'
+          model: UserGroup,
+          as: 'creator',
+          required: true,
+          include: [{
+            model: User,
+            required: true,
+            where: {
+              id: ctx.profile.id
+            }
+          }]
         }
       ],
       order: [
-        ['id', 'DESC']
+        ['createdAt', 'DESC']
       ]
     }
 
@@ -135,7 +136,18 @@ module.exports = function (trackService) {
   async function POST (ctx, next) {
     const body = ctx.request.body
     try {
-      // const data = Object.assign(body, { creator_id: ctx.profile.id })
+      const userGroups = await UserGroup.findAll({
+        attributes: ['id'],
+        where: {
+          ownerId: ctx.profile.id
+        }
+      })
+
+      const ids = userGroups.map(ug => ug.id)
+      if (!ids.includes(body.creatorId)) {
+        ctx.status = 401
+        ctx.throw(401, 'You can\'t make a track for this user')
+      }
       const result = await Track.create(body)
       ctx.status = 201
       ctx.body = {
