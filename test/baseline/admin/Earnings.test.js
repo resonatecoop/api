@@ -7,7 +7,7 @@ const { UserGroup, User, Track, Play, UserGroupType } = require('../../../src/db
 const ResetDB = require('../../ResetDB')
 const { faker } = require('@faker-js/faker')
 
-describe.only('user/admin/earnings endpoint test', () => {
+describe('user/admin/earnings endpoint test', () => {
   let response = null
   ResetDB()
 

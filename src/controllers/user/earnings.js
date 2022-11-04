@@ -7,15 +7,10 @@ const Roles = require('koa-roles')
 const Router = require('@koa/router')
 const koaBody = require('koa-body')
 const Queue = require('bull')
-const { findOneArtistEarnings, findOneArtistEarningsByDate } = require('../scripts/reports/earnings')
+const { findOneArtistEarnings } = require('../scripts/reports/earnings')
 const createReportJob = require('../jobs/create-report')
 const winston = require('winston')
-const decodeUriComponent = require('decode-uri-component')
-const numbro = require('numbro')
 const { REDIS_CONFIG } = require('../../config/redis')
-
-const sum = (a, b) => numbro(a).add(b).value()
-const divide = (a, b) => numbro(a).divide(b).value()
 
 const logger = winston.createLogger({
   level: 'info',
@@ -137,117 +132,13 @@ router.post('/', user.can('access earnings'), async (ctx, next) => {
         message: 'You should receive an email with the reports shortly'
       }
     } else {
-      const isLabel = ctx.profile.role === 'label-owner'
-      const report = format
-        ? await findOneArtistEarningsByDate(periodStart, periodEnd, ctx.profile.id, format, isLabel)
-        : await findOneArtistEarnings(periodStart, periodEnd, ctx.profile.id, isLabel)
+      const { report, sums } = await findOneArtistEarnings(periodStart, periodEnd, ctx.profile.id)
 
-      const data = report.flat(1)
-
-      const result = []
-
-      let sums = {
-        artist_total: 0,
-        artist_total_eur: 0,
-        resonate_total: 0,
-        resonate_total_eur: 0
-      }
-
-      if (data.length) {
-        data.reduce((res, value, index, array) => {
-          let ref
-
-          if (value.d) {
-            ref = value.d
-          } else {
-            ref = value.track_id
-          }
-
-          if (value.d && !res[value.d]) {
-            res[value.d] = {
-              avg: 0,
-              plays: 0,
-              date: value.d,
-              resonate_total: 0,
-              resonate_total_eur: 0,
-              artist_total: 0,
-              artist_total_eur: 0,
-              earned: 0
-            }
-
-            result.push(res[value.d])
-          }
-
-          if (!value.d && !res[value.track_id]) {
-            res[value.track_id] = {
-              track_id: value.track_id,
-              avg: 0,
-              plays: 0,
-              resonate_total: 0,
-              resonate_total_eur: 0,
-              artist_total: 0,
-              artist_total_eur: 0,
-              earned: 0
-            }
-
-            if (value.artist_id) {
-              res[value.track_id].artist_id = value.artist_id
-            }
-
-            if (value.label) {
-              res[value.track_id].label = value.label
-            }
-
-            if (value.artist) {
-              res[value.track_id].artist = value.artist
-            }
-
-            if (value.track_album) {
-              res[value.track_id].track_album = decodeUriComponent(value.track_album)
-            }
-
-            if (value.track_title) {
-              res[value.track_id].track_title = decodeUriComponent(value.track_title)
-            }
-
-            result.push(res[value.track_id])
-          }
-
-          // sum plays
-          res[ref].plays = sum(res[ref].plays, value.plays)
-
-          // sum resonate share
-          res[ref].resonate_total = sum(res[ref].resonate_total, value.resonate_total)
-          res[ref].resonate_total_eur = sum(res[ref].resonate_total_eur, value.resonate_total_eur)
-
-          // sum artist share
-          res[ref].artist_total = sum(res[ref].artist_total, value.artist_total)
-          res[ref].artist_total_eur = sum(res[ref].artist_total_eur, value.artist_total_eur)
-
-          // sum total value earned
-          res[ref].earned = sum(res[ref].earned, value.earned)
-
-          // set avg earned per play
-          res[ref].avg = divide(res[ref].earned, res[ref].plays)
-
-          return res
-        }, {})
-
-        result.sort((a, b) => b.plays - a.plays) // sort by plays descending
-
-        sums = result.reduce((a, b) => ({
-          artist_total: sum(a.artist_total, b.artist_total),
-          artist_total_eur: sum(a.artist_total_eur, b.artist_total_eur),
-          resonate_total: sum(a.resonate_total, b.resonate_total),
-          resonate_total_eur: sum(a.resonate_total_eur, b.resonate_total_eur)
-        }))
-      }
-
-      logger.info(`got a total of ${result.length} tracks`)
+      logger.info(`got a total of ${report.length} tracks`)
 
       ctx.body = {
         status: 'ok',
-        data: result,
+        data: report,
         stats: {
           sums: sums
         }
