@@ -1,284 +1,171 @@
-const Koa = require('koa')
-const AJV = require('ajv')
-const ajvKeywords = require('ajv-keywords')
-const ajvFormats = require('ajv-formats')
 
-const Roles = require('koa-roles')
-const Router = require('@koa/router')
-const koaBody = require('koa-body')
-const winston = require('winston')
-const { User, UserMeta } = require('../../../db/models')
+const { User, UserGroup, UserGroupType, Track, Play } = require('../../../db/models')
 const { Op } = require('sequelize')
-const { findOneArtistEarnings, findOneArtistEarningsByDate } = require('../../../scripts/reports/earnings')
-const decodeUriComponent = require('decode-uri-component')
-const numbro = require('numbro')
+const { authenticate, hasAccess } = require('../authenticate')
+const { groupBy } = require('lodash')
 
-const sum = (a, b) => numbro(a).add(b).value()
-const divide = (a, b) => numbro(a).divide(b).value()
+module.exports = () => {
+  const operations = {
+    POST: [authenticate, hasAccess('admin'), POST]
+  }
 
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  defaultMeta: { service: 'reporter' },
-  transports: [
-    new winston.transports.Console({
-      level: 'debug',
-      format: winston.format.simple()
-    }),
-    new winston.transports.File({
-      filename: 'error.log',
-      level: 'error'
-    })
-  ]
-})
+  async function POST (ctx, next) {
+    const body = ctx.request.body
 
-const earnings = new Koa()
-const user = new Roles()
-const router = new Router()
+    try {
+      const { from: periodStart, to: periodEnd } = body.date
+      const { creatorId } = body
 
-const ajv = new AJV({
-  allErrors: true,
-  removeAdditional: true
-})
+      const user = await User.findOne({
+        attributes: [
+          'id',
+          'email'
+        ],
+        where: {
+          id: creatorId
+        },
+        include: [
+          {
+            model: UserGroup,
+            as: 'user_groups',
+            attributes: ['displayName'],
+            required: true,
+            include: [{
+              model: UserGroupType
+            }, {
+              model: Track,
+              attributes: ['id', 'title'],
+              as: 'tracks',
+              include: [{
+                model: Play,
+                as: 'plays',
+                where: {
+                  type: 1,
+                  createdAt: {
+                    [Op.between]: [periodStart, periodEnd]
+                  }
+                }
+              }]
+            }]
+          }
+        ]
+      })
 
-ajvKeywords(ajv)
-ajvFormats(ajv)
+      // For each user group of this user
+      const report = []
+      const sums = user.user_groups.map(group => {
+        const groupSums = {
+          id: group.id,
+          displayName: group.displayName,
+          totalCredits: 0,
+          artistTotalCredits: 0,
+          artistTotalEuros: 0,
+          resonateTotalCredits: 0,
+          resonateTotalEuros: 0
+        }
+        group.tracks.forEach(t => {
+          const track = {
+            id: t.id,
+            title: t.title,
+            userGroup: group.displayName,
+            paidPlays: 0,
+            playsAfterBought: 0,
+            creditsSpent: 0,
+            eurosSpent: 0
+          }
 
-const DateRange = {
-  type: 'object',
-  properties: {
-    from: {
-      type: 'string',
-      format: 'date'
-    },
-    to: {
-      type: 'string',
-      format: 'date'
+          const playsGroupedByListener = groupBy(t.plays, 'userId')
+          Object.keys(playsGroupedByListener).forEach(listener => {
+            const plays = playsGroupedByListener[listener]
+            let toAdd = 0
+            if (plays.length > 9) {
+              toAdd = 9
+              track.playsAfterBought += plays.length - toAdd
+            } else {
+              toAdd = plays.length
+            }
+            track.paidPlays += toAdd
+
+            // Do the math to convert that number of plays to credits
+            let creditsForUser = 0
+            for (let i = 1; i <= toAdd; i++) {
+              creditsForUser += Math.pow(2, i)
+            }
+            track.creditsSpent += creditsForUser
+          })
+          // Do the math to convert that number of credits to euros
+          track.eurosSpent += track.creditsSpent / 1000 * 1.25
+
+          groupSums.totalCredits += track.creditsSpent
+          report.push(track)
+        })
+
+        // FIXME this probably needs to be done better considering
+        // how shitty javascript is at rounding
+        // NOTE: this will have to implement the "penny paid per play"
+        // as voted on in the 2021 AGM
+        groupSums.artistTotalCredits = (groupSums.totalCredits * 0.7).toFixed(2)
+        groupSums.resonateTotalCredits = (groupSums.totalCredits * 0.3).toFixed(2)
+        groupSums.artistTotalEuros = (groupSums.artistTotalCredits / 1000 * 1.25).toFixed(2)
+        groupSums.resonateTotalEuros = (groupSums.resonateTotalCredits / 1000 * 1.25).toFixed(2)
+        return groupSums
+      })
+
+      ctx.body = {
+        status: 'ok',
+        data: report,
+        stats: sums
+      }
+    } catch (err) {
+      console.error(err)
+      ctx.throw(ctx.status, err.message)
     }
-  }
-}
 
-const validate = ajv.compile({
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    date: DateRange,
-    creator_id: {
-      type: 'number',
-      minimum: 0
-    },
-    period: {
-      type: 'string',
-      enum: ['yearly', 'daily', 'monthly']
-    }
-  }
-})
-
-user.use((ctx, action) => {
-  return ctx.profile || action === 'access earnings'
-})
-
-user.use((ctx, action) => {
-  const allowed = ['admin', 'superadmin']
-
-  if (allowed.includes(ctx.profile.role)) {
-    return true
-  }
-})
-
-router.post('/', user.can('access earnings'), async (ctx, next) => {
-  const body = ctx.request.body
-  const isValid = validate(body)
-
-  if (!isValid) {
-    const { message, dataPath } = validate.errors[0]
-    ctx.status = 400
-    ctx.throw(400, `${dataPath}: ${message}`)
+    await next()
   }
 
-  try {
-    const { from: periodStart, to: periodEnd } = body.date
-    const { period, creator_id: creatorId } = body
-
-    const format = {
-      yearly: '%Y',
-      monthly: '%Y-%m',
-      daily: '%Y-%m-%d'
-    }[period]
-
-    const user = await User.findOne({
-      attributes: [
-        'id',
-        'login',
-        'email',
-        'registered'
-      ],
-      where: {
-        id: creatorId
-      },
-      include: [
-        {
-          model: UserMeta,
-          as: 'meta',
-          required: true,
-          attributes: ['meta_key', 'meta_value'],
-          where: {
-            meta_key: {
-              [Op.in]: ['role']
+  POST.apiDoc = {
+    operationId: 'generateEarningsReport',
+    description: 'Generate an earnings report for an artist',
+    tags: ['admin'],
+    parameters: [
+      {
+        in: 'body',
+        name: 'date',
+        schema: {
+          type: 'object',
+          properties: {
+            from: {
+              type: 'string',
+              format: 'date'
+            },
+            to: {
+              type: 'string',
+              format: 'date'
             }
           }
         }
-      ]
-    })
-
-    const { role } = Object.fromEntries(Object.entries(user.meta)
-      .map(([key, value]) => {
-        const metaKey = value.meta_key
-        let metaValue = value.meta_value
-
-        if (!isNaN(Number(metaValue))) {
-          metaValue = Number(metaValue)
-        }
-
-        return [metaKey, metaValue]
-      }))
-
-    const isLabel = role === 'label-owner'
-    const report = format
-      ? await findOneArtistEarningsByDate(periodStart, periodEnd, creatorId, format, isLabel)
-      : await findOneArtistEarnings(periodStart, periodEnd, creatorId, isLabel)
-
-    const data = report.flat(1)
-
-    const result = []
-
-    let sums = {
-      artist_total: 0,
-      artist_total_eur: 0,
-      resonate_total: 0,
-      resonate_total_eur: 0
-    }
-
-    if (data.length) {
-      data.reduce((res, value, index, array) => {
-        let ref
-
-        if (value.d) {
-          ref = value.d
-        } else {
-          ref = value.track_id
-        }
-
-        if (value.d && !res[value.d]) {
-          res[value.d] = {
-            avg: 0,
-            plays: 0,
-            date: value.d,
-            resonate_total: 0,
-            resonate_total_eur: 0,
-            artist_total: 0,
-            artist_total_eur: 0,
-            earned: 0
-          }
-
-          result.push(res[value.d])
-        }
-
-        if (!value.d && !res[value.track_id]) {
-          res[value.track_id] = {
-            track_id: value.track_id,
-            avg: 0,
-            plays: 0,
-            resonate_total: 0,
-            resonate_total_eur: 0,
-            artist_total: 0,
-            artist_total_eur: 0,
-            earned: 0
-          }
-
-          if (value.artist_id) {
-            res[value.track_id].artist_id = value.artist_id
-          }
-
-          if (value.label) {
-            res[value.track_id].label = value.label
-          }
-
-          if (value.artist) {
-            res[value.track_id].artist = value.artist
-          }
-
-          if (value.track_album) {
-            res[value.track_id].track_album = decodeUriComponent(value.track_album)
-          }
-
-          if (value.track_title) {
-            res[value.track_id].track_title = decodeUriComponent(value.track_title)
-          }
-
-          result.push(res[value.track_id])
-        }
-
-        // sum plays
-        res[ref].plays = sum(res[ref].plays, value.plays)
-
-        // sum resonate share
-        res[ref].resonate_total = sum(res[ref].resonate_total, value.resonate_total)
-        res[ref].resonate_total_eur = sum(res[ref].resonate_total_eur, value.resonate_total_eur)
-
-        // sum artist share
-        res[ref].artist_total = sum(res[ref].artist_total, value.artist_total)
-        res[ref].artist_total_eur = sum(res[ref].artist_total_eur, value.artist_total_eur)
-
-        // sum total value earned
-        res[ref].earned = sum(res[ref].earned, value.earned)
-
-        // set avg earned per play
-        res[ref].avg = divide(res[ref].earned, res[ref].plays)
-
-        return res
-      }, {})
-
-      result.sort((a, b) => b.plays - a.plays) // sort by plays descending
-
-      sums = result.reduce((a, b) => {
-        return {
-          earned: sum(a.earned, b.earned),
-          artist_total: sum(a.artist_total, b.artist_total),
-          artist_total_eur: sum(a.artist_total_eur, b.artist_total_eur),
-          resonate_total: sum(a.resonate_total, b.resonate_total),
-          resonate_total_eur: sum(a.resonate_total_eur, b.resonate_total_eur)
-        }
       }, {
-        earned: 0,
-        artist_total: 0,
-        artist_total_eur: 0,
-        resonate_total: 0,
-        resonate_total_eur: 0
-      })
-    }
-
-    logger.info(`got a total of ${result.length} tracks`)
-
-    ctx.body = {
-      status: 'ok',
-      data: result,
-      stats: {
-        sums: sums
+        in: 'body',
+        name: 'creatorId',
+        schema: {
+          type: 'number',
+          minimum: 0
+        }
+      }
+    ],
+    responses: {
+      200: {
+        description: 'The requested featured artists results.',
+        schema: {
+          type: 'object'
+        }
+      },
+      404: {
+        description: 'No results were found.'
       }
     }
-  } catch (err) {
-    ctx.throw(ctx.status, err.message)
   }
 
-  await next()
-})
-
-earnings
-  .use(koaBody())
-  .use(router.routes())
-  .use(router.allowedMethods({
-    throw: true
-  }))
-
-module.exports = earnings
+  return operations
+}

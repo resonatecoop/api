@@ -22,7 +22,6 @@ describe('Api.ts/artists endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'pages', 'status')
     expect(attributes.data).to.be.an('array')
     expect(attributes.data.length).to.eql(1)
-    console.log(attributes.data[0].items)
 
     const theData = attributes.data[0]
     //  FIXME: there is 'addressId' and 'AddressId'
@@ -103,8 +102,8 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theTrack.track_url).to.be.null
     expect(theTrack.track_cover_art).to.be.null
 
-    expect(attributes.count).to.eql(30)
-    expect(attributes.pages).to.eql(2)
+    expect(attributes.count).to.eql(3)
+    expect(attributes.pages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
 
@@ -274,14 +273,14 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theItem.images.medium.width).to.eql(600)
     expect(theItem.images.medium.height).to.eql(600)
 
-    track.destroy({ force: true })
-    play.destroy({ force: true })
-    play2.destroy({ force: true })
-    trackgroup.destroy({ force: true })
-    tgi.destroy({ force: true })
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
   })
 
-  it.only('should GET artists/featured', async () => {
+  it('should GET artists/featured', async () => {
     const type = await UserGroupType.findOne({ where: { name: 'artist' } })
 
     const newArtist = await UserGroup.create({
@@ -308,11 +307,45 @@ describe('Api.ts/artists endpoint test', () => {
       private: false
     })
     response = await request.get('/artists/featured')
-    console.log('artists', response.body)
-    expect(response.body.data[0].title).to.eql(newArtist.title)
 
-    trackgroup.destroy({ force: true })
-    trackgroup2.destroy({ force: true })
-    newArtist.destroy({ force: true })
+    expect(response.body.data[0].displayName).to.eql(newArtist.displayName)
+
+    await trackgroup.destroy({ force: true })
+    await trackgroup2.destroy({ force: true })
+    await newArtist.destroy({ force: true })
+  })
+
+  it('should GET artists/featured', async () => {
+    const type = await UserGroupType.findOne({ where: { name: 'artist' } })
+
+    const newArtist = await UserGroup.create({
+      displayName: faker.animal.cow(),
+      ownerId: testArtistUserId,
+      typeId: type.id
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      release_date: faker.date.past(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const trackgroup2 = await TrackGroup.create({
+      title: faker.animal.fish(),
+      creatorId: newArtist.id,
+      cover: faker.datatype.uuid(),
+      release_date: faker.date.recent(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    response = await request.get('/artists/updated')
+    expect(response.body.data[0].displayName).to.eql(newArtist.displayName)
+
+    await trackgroup.destroy({ force: true })
+    await trackgroup2.destroy({ force: true })
+    await newArtist.destroy({ force: true })
   })
 })

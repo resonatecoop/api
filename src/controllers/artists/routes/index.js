@@ -21,7 +21,6 @@ module.exports = function () {
       const { rows: result, count } = await UserGroup.findAndCountAll({
         limit,
         order: [
-          [{ model: TrackGroupItem, as: 'items' }, 'index', 'ASC'],
           ['displayName', 'asc']
         ],
         offset: page > 1 ? (page - 1) * limit : 0,
@@ -35,6 +34,8 @@ module.exports = function () {
               required: true,
               attributes: ['id', 'index', 'track_id'],
               as: 'items',
+              separate: true,
+              order: [['index', 'ASC']],
               include: [{
                 model: Track,
                 as: 'track'
@@ -57,6 +58,7 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
 

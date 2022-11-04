@@ -13,7 +13,7 @@ import artistTracks from './artists/routes/{id}/tracks/index.js'
 import artists from './artists/routes/index.js'
 import artistsFeatured from './artists/routes/featured.js'
 import artistsId from './artists/routes/{id}/index.js'
-import artistsUpdated from './artists/routes/updated.js'
+import artistsUpdated from './artists/routes/updated.mjs'
 import labelArtists from './labels/routes/{id}/artists.js'
 import labelReleases from './labels/routes/{id}/releases.js'
 import labels from './labels/routes/index.js'
@@ -44,7 +44,7 @@ import userPlaylistsRemoveItems from './user/playlists/routes/{id}/items/remove.
 import userPlays from './user/plays/routes/index.js'
 import userPlaysBuy from './user/plays/routes/buy.js'
 import userPlaysHistory from './user/plays/routes/history/tracks.js'
-import userPlaysHistoryArtists from './user/plays/routes/history/artists.js'
+import userPlaysHistoryArtists from './user/plays/routes/history/artists.mjs'
 import userPlaysResolve from './user/plays/routes/resolve.js'
 import userPlaysSpendings from './user/plays/routes/spendings.js'
 import userPlaysStats from './user/plays/routes/stats.js'
@@ -76,6 +76,7 @@ import adminTrackgroupItemsAdd from './user/admin/trackgroups/{id}/items/add.js'
 import adminTrackgroupItemsRemove from './user/admin/trackgroups/{id}/items/remove.js'
 import adminTracks from './user/admin/tracks/index.js'
 import adminTracksId from './user/admin/tracks/{id}.js'
+import adminEarnings from './user/admin/earnings.js'
 
 import { apiRoot as root } from '../constants.js'
 
@@ -177,6 +178,8 @@ initialize({
 
     { path: `${root}/user/admin/tracks`, module: adminTracks },
     { path: `${root}/user/admin/tracks/{id}`, module: adminTracksId },
+
+    { path: `${root}/user/admin/earnings`, module: adminEarnings },
 
     {
       path: `${root}/apiDocs`, module: apiDocs

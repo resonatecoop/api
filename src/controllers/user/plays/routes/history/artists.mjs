@@ -1,15 +1,16 @@
-const { UserGroup, Resonate: sequelize } = require('../../../../../db/models')
-const { authenticate } = require('../../../authenticate')
+import models from '../../../../../db/models/index.js'
+import { authenticate } from '../../../authenticate.js'
+const { UserGroup, Resonate: sequelize } = models
 
-module.exports = function () {
+export default function () {
   const operations = {
     GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {
-    // const {
-    //   limit = 10
-    // } = ctx.request.query
+    const {
+      limit = 10
+    } = ctx.request.query
 
     try {
       const result = await sequelize.query(`
@@ -19,11 +20,13 @@ module.exports = function () {
         LEFT JOIN plays ON plays.track_id = tracks.id
         WHERE plays.user_id = :userId
         GROUP BY ug.id
+        LIMIT :limit
       `, {
         type: sequelize.QueryTypes.SELECT,
         mapToModel: true,
         replacements: {
-          userId: ctx.profile.id
+          userId: ctx.profile.id,
+          limit
         },
         model: UserGroup,
         raw: true

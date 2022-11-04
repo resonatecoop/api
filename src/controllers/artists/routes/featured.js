@@ -12,7 +12,8 @@ module.exports = function () {
 
     try {
       // FIXME: it probably makes sense to have artists actually be
-      // featured rather than just their track groups? Dunno.
+      // featured on the model directly rather than just whether their
+      // track groups are? Dunno.
 
       const result = await UserGroup.findAll({
         include: [{
