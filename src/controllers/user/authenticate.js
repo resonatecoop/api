@@ -57,7 +57,6 @@ module.exports.loadProfileIntoContext = async (ctx, next) => {
 module.exports.authenticate = async (ctx, next) => {
   await setAccessTokenOnContext(ctx)
   if (allowlist.includes(ctx.path)) return
-
   if (!ctx.accessToken && ctx.request.url.includes('user/stream')) {
     ctx.redirect(`${process.env.APP_HOST}${apiRoot}/stream/${ctx.params.id}`)
   } else {
@@ -68,6 +67,7 @@ module.exports.authenticate = async (ctx, next) => {
 
     try {
       const user = await findSession(ctx)
+
       if (user) {
         ctx.profile = user
       } else {
