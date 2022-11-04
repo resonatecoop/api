@@ -1,11 +1,8 @@
 import Router from '@koa/router'
 import { initialize } from 'koa-openapi'
-import cors from '@koa/cors'
 import koaBody from 'koa-body'
 import bytes from 'bytes'
 import path from 'path'
-
-import corsConfig from '../config/cors.js'
 
 import apiDoc from './api-doc.js'
 import apiDocs from './apiDocs.js'
@@ -198,7 +195,7 @@ apiRouter.use(koaBody({
     maxFileSize: bytes('2 GB')
   },
   onError: (err, ctx) => {
-    console.log(err)
+    console.error(err)
     if (/maxFileSize/.test(err.message)) {
       ctx.status = 400
       ctx.throw(400, err.message)
@@ -206,5 +203,4 @@ apiRouter.use(koaBody({
   }
 }))
 
-apiRouter.use(cors(corsConfig))
 apiRouter.use('', openApiRouter.routes(), openApiRouter.allowedMethods({ throw: true }))
