@@ -68,7 +68,9 @@ module.exports = function () {
           },
           {
             model: PlaylistItem,
+            separate: true,
             attributes: ['id', 'index'],
+            order: [['index', 'ASC']],
             as: 'items',
             include: [{
               model: Track,

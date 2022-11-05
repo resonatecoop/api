@@ -103,7 +103,6 @@ describe('Api.ts/labels endpoint test', async () => {
     })
 
     response = await request.get(`/labels/${label.id}/releases`)
-
     expect(response.status).to.eql(200)
 
     const attributes = response.body

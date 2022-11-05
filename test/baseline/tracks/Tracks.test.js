@@ -9,7 +9,7 @@ describe('Api.ts/track endpoint test', () => {
   ResetDB()
   let response = null
 
-  it('should GET /tracks/latest', async () => {
+  it('should GET /tracks?order=latest', async () => {
     const displayName = 'Test test'
     const track = await Track.create({
       title: displayName,
@@ -40,7 +40,7 @@ describe('Api.ts/track endpoint test', () => {
       trackId: track.id
     })
 
-    response = await request.get('/tracks/latest')
+    response = await request.get('/tracks?order=latest')
 
     expect(response.status).to.eql(200)
 
@@ -49,7 +49,7 @@ describe('Api.ts/track endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'numberOfPages')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(31)
+    expect(attributes.data.length).to.eql(32)
 
     const theData = attributes.data[0]
 
@@ -73,7 +73,7 @@ describe('Api.ts/track endpoint test', () => {
     expect(theData.images.medium.width).to.eql(600)
     expect(theData.images.medium.height).to.eql(600)
 
-    expect(attributes.count).to.eql(31)
+    expect(attributes.count).to.eql(32)
     expect(attributes.numberOfPages).to.eql(1)
 
     track.destroy({ force: true })

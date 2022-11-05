@@ -1,9 +1,7 @@
 const { UserGroup, UserGroupMember, TrackGroup, TrackGroupItem, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
-const slug = require('slug')
-const coverSrc = require('../../../../util/cover-src')
 const ms = require('ms')
-const { apiRoot } = require('../../../../constants')
+const trackgroupService = require('../../../trackgroups/services/trackgroupService')
 
 module.exports = function () {
   const operations = {
@@ -74,11 +72,36 @@ module.exports = function () {
                 belongsToId: ctx.params.id
               }
             }]
+          },
+          {
+            model: TrackGroupItem,
+            order: [['index', 'ASC']],
+            as: 'items',
+            attributes: ['index'],
+            include: [{
+              model: Track,
+              as: 'track',
+              // FIXME: this should be a defaultScope
+              where: {
+                status: {
+                  [Op.in]: [0, 2, 3]
+                }
+              },
+              attributes: ['id', 'creatorId', 'cover_art', 'title', 'duration', 'status'],
+              include: [
+                {
+                  model: File,
+                  attributes: ['id', 'size', 'owner_id'],
+                  as: 'audiofile'
+                }
+              ]
+            }]
           }
         ],
         order: [
           ['createdAt', 'DESC']
-        ]
+        ],
+        subQuery: false
       }
 
       if (order === 'oldest') {
@@ -95,122 +118,10 @@ module.exports = function () {
         query.where.type = type
       }
 
-      const { count, rows: result } = await TrackGroup.findAndCountAll(query)
-
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600, 1500]
+      const { count, rows } = await TrackGroup.findAndCountAll(query)
 
       ctx.body = {
-        data: await Promise.all(result.map(async (item) => {
-          const o = Object.assign({}, item.dataValues)
-
-          const slugTitle = item.get('slug')
-
-          if (!slugTitle) {
-            item.slug = slug(o.title)
-            item.save()
-          }
-
-          const result = await TrackGroupItem.findAll({
-            where: {
-              trackgroupId: item.id
-            },
-            order: [
-              ['index', 'asc']
-            ],
-            include: [{
-              model: Track,
-              attributes: ['id', 'creatorId', 'cover_art', 'title', 'duration', 'status'],
-              as: 'track',
-              where: {
-                status: {
-                  [Op.in]: [0, 2, 3]
-                }
-              },
-              include: [
-                {
-                  model: File,
-                  required: false,
-                  attributes: ['id', 'owner_id'],
-                  as: 'cover_metadata',
-                  where: {
-                    mime: {
-                      [Op.in]: ['image/jpeg', 'image/png']
-                    }
-                  }
-                },
-                {
-                  model: File,
-                  attributes: ['id', 'size', 'owner_id'],
-                  as: 'audiofile'
-                }
-              ]
-            }
-            ]
-          })
-
-          o.items = result.map((item) => {
-            const { nickname } = Object.fromEntries(Object.entries(item.track.meta)
-              .map(([key, value]) => {
-                const metaKey = value.meta_key
-                let metaValue = value.meta_value
-
-                if (!isNaN(Number(metaValue))) {
-                  metaValue = Number(metaValue)
-                }
-
-                return [metaKey, metaValue]
-              }))
-
-            const cover = item.track.cover_art
-              ? coverSrc(item.track.cover_art, '120', ext, !item.track.cover_metadata)
-              : coverSrc(item.cover, '120', ext, !item.cover_metadata) // fallback to trackgroup cover
-
-            return {
-              index: item.index,
-              track: {
-                id: item.track.id,
-                title: item.track.title,
-                status: item.track.status,
-                album: item.track.album,
-                duration: item.track.duration,
-                creator_id: item.track.creator_id,
-                artist: item.track.artist || nickname,
-                cover: cover,
-                url: `${process.env.APP_HOST}${apiRoot}/user/stream/${item.track.id}`
-              }
-            }
-          })
-
-          o.slug = item.slug
-
-          o.uri = `${process.env.APP_HOST}/v3/trackgroups/${item.id}`
-
-          o.tags = item.get('tags')
-
-          o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)
-
-          o.images = variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(item.cover, key, ext, !item.dataValues.cover_metadata)
-                }
-              }
-            )
-          }, {})
-
-          return o
-        })),
+        data: trackgroupService(ctx).list(rows),
         count,
         pages: Math.ceil(count / limit),
         status: 'ok'

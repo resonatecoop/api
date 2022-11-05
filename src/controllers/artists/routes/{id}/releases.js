@@ -1,8 +1,6 @@
 const { UserGroup, Track, TrackGroup, TrackGroupItem, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
-// const slug = require('slug')
-// const coverSrc = require('../../../../util/cover-src')
-// const map = require('awaity/map')
+const trackgroupService = require('../../../trackgroups/services/trackgroupService')
 const ms = require('ms')
 
 module.exports = function () {
@@ -109,15 +107,10 @@ module.exports = function () {
         query.where.type = type
       }
 
-      const { rows: result, count } = await TrackGroup.findAndCountAll(query)
-
-      if (!result.length) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'No results')
-      }
+      const { rows, count } = await TrackGroup.findAndCountAll(query)
 
       ctx.body = {
-        data: result,
+        data: trackgroupService(ctx).list(rows),
         count: count,
         numberOfPages: Math.ceil(count / limit),
         status: 'ok'

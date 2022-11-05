@@ -15,6 +15,7 @@ describe('Api.ts/artists endpoint test', () => {
   it('should GET /artists', async () => {
     response = await request.get('/artists')
 
+    console.log('response', response.body)
     expect(response.status).to.eql(200)
 
     const attributes = response.body
@@ -151,12 +152,12 @@ describe('Api.ts/artists endpoint test', () => {
 
     const theData = attributes.data[0]
 
-    expect(theData).to.include.keys('tags', 'about', 'cover', 'creatorId', 'display_artist', 'id', 'slug', 'title', 'createdAt', 'release_date', 'type',
-      'cover_metadata', 'creator', 'items')
+    expect(theData).to.include.keys('tags', 'about', 'creatorId', 'display_artist', 'id', 'slug', 'title', 'createdAt', 'release_date', 'type',
+      'cover_metadata', 'creator', 'items', 'images', 'uri')
     expect(theData.tags).to.be.an('array')
     expect(theData.tags.length).to.eql(0)
     expect(theData.about).to.eql('this is the best album')
-    expect(theData.cover).to.be.null
+    expect(theData.cover_metadata).to.be.null
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.display_artist).to.eql('Jack')
     expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')

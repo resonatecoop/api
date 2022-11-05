@@ -1,5 +1,6 @@
 const coverSrc = require('../../../util/cover-src')
 const he = require('he')
+const { apiRoot } = require('../../../constants')
 
 const trackService = (ctx) => {
   return {
@@ -31,7 +32,7 @@ const trackService = (ctx) => {
           },
           artist: item.artist ? he.decode(item.artist) : null,
           status: item.status === 2 ? 'Free' : 'Paid',
-          url: `${process.env.APP_HOST}/api/v3/user/stream/${item.id}`,
+          url: `${process.env.APP_HOST}${apiRoot}user/stream/${item.id}`,
           images: variants.reduce((o, key) => {
             const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
 
