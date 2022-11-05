@@ -68,7 +68,7 @@ module.exports = function (trackService) {
     }
 
     if (order === 'random') {
-      query.order = Sequelize.literal('rand()')
+      query.order = Sequelize.literal('random()')
     } else if (order === 'oldest') {
       query.order = [
         ['id', 'ASC']
@@ -86,7 +86,7 @@ module.exports = function (trackService) {
       }
     } catch (err) {
       console.error('err', err)
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()

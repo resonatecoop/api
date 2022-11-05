@@ -119,8 +119,8 @@ module.exports = function () {
                 required: ['track_id'],
                 properties: {
                   track_id: {
-                    type: 'number',
-                    minimum: 1
+                    type: 'string',
+                    format: 'uuid'
                   },
                   title: {
                     type: 'string'

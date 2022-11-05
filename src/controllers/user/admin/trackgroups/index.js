@@ -2,7 +2,7 @@
 const { TrackGroup, File } = require('../../../../db/models')
 const { authenticate, hasAccess } = require('../../authenticate')
 const { Op } = require('sequelize')
-const coverSrc = require('../../../../util/cover-src')
+const trackgroupService = require('../../../trackgroups/services/trackgroupService')
 
 module.exports = function () {
   const operations = {
@@ -73,46 +73,14 @@ module.exports = function () {
         ]
       })
 
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600]
-
       ctx.body = {
-        data: result.map((item) => {
-          const o = Object.assign({}, item.dataValues)
-
-          o.performers = item.get('performers')
-          o.composers = item.get('composers')
-          o.tags = item.get('tags')
-
-          o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)
-
-          o.images = variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(item.cover, key, ext, !item.dataValues.cover_metadata)
-                }
-              }
-            )
-          }, {})
-
-          return o
-        }),
+        data: trackgroupService(ctx).list(result),
         count: count,
         numberOfPages: Math.ceil(count / limit),
         status: 'ok'
       }
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()

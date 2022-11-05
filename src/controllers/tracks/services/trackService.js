@@ -4,7 +4,12 @@ const he = require('he')
 const trackService = (ctx) => {
   return {
     list (rows) {
-      const ext = '.jpg'
+      let ext = '.jpg'
+
+      if (ctx.accepts('image/webp')) {
+        ext = '.webp'
+      }
+
       const variants = [120, 600]
 
       return rows.map((item) => {

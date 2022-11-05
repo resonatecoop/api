@@ -1,5 +1,7 @@
 const { Track, TrackGroup, TrackGroupItem } = require('../../../db/models')
 const { Op } = require('sequelize')
+const trackgroupService = require('../../trackgroups/services/trackgroupService')
+const trackService = require('../../tracks/services/trackService')
 
 module.exports = function () {
   const operations = {
@@ -62,8 +64,8 @@ module.exports = function () {
 
       ctx.body = {
         data: {
-          tracks: tracks.map(l => l.toJSON()),
-          trackgroups: trackgroups.map(l => l.toJSON())
+          tracks: trackService(ctx).list(tracks),
+          trackgroups: trackgroupService(ctx).list(trackgroups)
         }
       }
     } catch (err) {
