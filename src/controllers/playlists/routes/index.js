@@ -1,7 +1,7 @@
 const { User, Resonate: Sequelize, Playlist, File } = require('../../../db/models')
 const { Op } = require('sequelize')
-const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
+const playlistService = require('../services/playlistService')
 
 module.exports = function () {
   const operations = {
@@ -72,40 +72,10 @@ module.exports = function () {
         query.where.featured = true
       }
 
-      const { rows: result, count } = await Playlist.findAndCountAll(query)
-
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600, 1500]
+      const { rows, count } = await Playlist.findAndCountAll(query)
 
       ctx.body = {
-        data: result.map((item) => {
-          const o = Object.assign({}, item.dataValues)
-
-          o.tags = item.get('tags')
-
-          o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)
-
-          o.images = variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(item.cover, key, ext, !item.dataValues.cover_metadata)
-                }
-              }
-            )
-          }, {})
-
-          return o
-        }),
+        data: playlistService(ctx).list(rows),
         count: count,
         numberOfPages: Math.ceil(count / limit),
         status: 'ok'

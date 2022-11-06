@@ -1,4 +1,4 @@
-const { Resonate: Sequelize, UserGroup, Track, File, TrackGroup, TrackGroupItem } = require('../../../db/models')
+const { Resonate: Sequelize, UserGroup, Track, File, Play, TrackGroup, TrackGroupItem } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 
@@ -16,12 +16,6 @@ module.exports = function (trackService) {
       limit,
       offset: page > 1 ? page * limit : 0,
       where: {
-        [Op.not]: {
-          [Op.or]: [
-            { track_album: { [Op.eq]: null } },
-            { track_album: { [Op.eq]: '' } }
-          ]
-        },
         status: {
           [Op.in]: [0, 2, 3]
         }
@@ -35,7 +29,8 @@ module.exports = function (trackService) {
         'album',
         'duration',
         'year',
-        'status'
+        'status',
+        'createdAt'
       ],
       include: [
         {
@@ -45,6 +40,7 @@ module.exports = function (trackService) {
         },
         {
           model: TrackGroupItem,
+          attributes: ['index'],
           as: 'trackOn',
           include: [{
             model: TrackGroup,
@@ -59,25 +55,41 @@ module.exports = function (trackService) {
         },
         {
           model: UserGroup,
+          attributes: ['displayName', 'id'],
           as: 'creator'
         }
       ],
+      subQuery: false,
       order: [
-        ['id', 'DESC']
+        ['created_at', 'DESC']
       ]
     }
 
     if (order === 'random') {
-      query.order = Sequelize.literal('rand()')
+      query.order = Sequelize.literal('random()')
     } else if (order === 'oldest') {
       query.order = [
-        ['id', 'ASC']
+        ['createdAt', 'ASC']
       ]
+    } else if (order === 'latest') {
+      query.order = [['createdAt', 'DESC']]
+    } else if (order === 'plays') {
+      query.include.push({
+        model: Play,
+        required: true,
+        where: {
+          createdAt: {
+            [Op.not]: null
+          }
+        },
+        attributes: ['createdAt'],
+        as: 'plays'
+      })
+      query.order = [[{ model: Play, as: 'plays' }, 'createdAt', 'DESC']]
     }
 
     try {
       const { rows, count } = await Track.findAndCountAll(query)
-
       ctx.body = {
         data: trackService(ctx).list(rows),
         count: count,
@@ -86,7 +98,7 @@ module.exports = function (trackService) {
       }
     } catch (err) {
       console.error('err', err)
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()
@@ -133,7 +145,7 @@ module.exports = function (trackService) {
         in: 'query',
         name: 'order',
         type: 'string',
-        enum: ['random', 'oldest', 'newest']
+        enum: ['random', 'latest', 'plays', 'newest']
       },
       {
         type: 'integer',

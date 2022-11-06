@@ -9,7 +9,7 @@ describe('Api.ts/track endpoint test', () => {
   ResetDB()
   let response = null
 
-  it('should GET /tracks/latest', async () => {
+  it('should GET /tracks?order=latest', async () => {
     const displayName = 'Test test'
     const track = await Track.create({
       title: displayName,
@@ -40,7 +40,7 @@ describe('Api.ts/track endpoint test', () => {
       trackId: track.id
     })
 
-    response = await request.get('/tracks/latest')
+    response = await request.get('/tracks?order=latest')
 
     expect(response.status).to.eql(200)
 
@@ -49,7 +49,7 @@ describe('Api.ts/track endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'numberOfPages')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(31)
+    expect(attributes.data.length).to.eql(32)
 
     const theData = attributes.data[0]
 
@@ -73,7 +73,7 @@ describe('Api.ts/track endpoint test', () => {
     expect(theData.images.medium.width).to.eql(600)
     expect(theData.images.medium.height).to.eql(600)
 
-    expect(attributes.count).to.eql(31)
+    expect(attributes.count).to.eql(32)
     expect(attributes.numberOfPages).to.eql(1)
 
     track.destroy({ force: true })
@@ -84,7 +84,7 @@ describe('Api.ts/track endpoint test', () => {
   })
 
   it('should GET /tracks when options.order is \'random\'', async () => {
-    response = await request.get('/tracks')
+    response = await request.get('/tracks?order=random')
 
     expect(response.status).to.eql(200)
 
@@ -99,18 +99,13 @@ describe('Api.ts/track endpoint test', () => {
     expect(theData).to.be.an('object')
     expect(theData).to.include.keys('id', 'title', 'trackgroup', 'year', 'cover_metadata', 'artist', 'status', 'url', 'images')
 
-    expect(theData.id).to.eql('fcf41302-e549-4ab9-9937-f0bfead5a44f')
-    expect(theData.title).to.eql('Virtual clear-thinking standardization')
-    expect(theData.trackgroup.title).to.eql('Best album ever 3')
-    expect(theData.year).to.be.null
-
+    // We can't really know what item is first
     expect(theData.cover_metadata).to.be.an('object')
     expect(theData.cover_metadata).to.include.keys('id')
     expect(theData.cover_metadata.id).to.be.null
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('Paid')
-    expect(theData.url).to.include('user/stream/fcf41302-e549-4ab9-9937-f0bfead5a44f')
 
     expect(theData.images).to.be.an('object')
     expect(theData.images).to.include.keys('small', 'medium')

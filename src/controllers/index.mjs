@@ -27,7 +27,6 @@ import trackgroups from './trackgroups/routes/index.js'
 import trackgroupsId from './trackgroups/routes/{id}.js'
 import tracksId from './tracks/routes/{id}.js'
 import tracksRoutes from './tracks/routes/index.js'
-import tracksRoutesLatest from './tracks/routes/latest.js'
 import userArtists from './user/artists/routes/index.js'
 import userArtistsId from './user/artists/routes/{id}/index.js'
 import userCollection from './user/collection/routes/index.js'
@@ -90,7 +89,6 @@ initialize({
   apiDoc: apiDoc,
   paths: [
     { path: `${root}/tracks`, module: tracksRoutes },
-    { path: `${root}/tracks/latest`, module: tracksRoutesLatest },
     { path: `${root}/tracks/{id}`, module: tracksId },
 
     { path: `${root}/tag/{tag}`, module: tagRoutesTag },

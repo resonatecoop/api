@@ -85,6 +85,21 @@ const apiDoc = {
       required: ['creatorId'],
       properties: TrackProperties
     },
+    Playlist: {
+      type: 'object',
+      properties: {
+        about: {
+          type: 'string'
+        },
+        cover: {
+          type: 'string',
+          format: 'uuid'
+        },
+        private: {
+          type: 'boolean'
+        }
+      }
+    },
     Track: {
       type: 'object',
       properties: {

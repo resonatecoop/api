@@ -21,10 +21,9 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(attributes.data.length).to.eql(3) // there are three in the base track_groups table
 
     const theData = attributes.data[0]
-    expect(theData).to.include.keys('about', 'creatorId', 'display_artist', 'id', 'slug', 'tags', 'title', 'type', 'cover_metadata', 'creator', 'uri', 'images')
+    expect(theData).to.include.keys('about', 'creatorId', 'id', 'slug', 'tags', 'title', 'type', 'cover_metadata', 'creator', 'uri', 'images')
     expect(theData.about).to.eql('this is the best album')
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.display_artist).to.eql('Jack')
     expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')
     expect(theData.slug).to.eql('best-album-ever')
     expect(theData.tags).to.be.an('array')

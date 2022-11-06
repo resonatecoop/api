@@ -78,7 +78,6 @@ describe('User.ts/misc user info endpoint test', () => {
       createdAt: dateForDoubleCount
     })
     response = await request.get(`/user/plays/stats?from=${from}&to=${to}`).set('Authorization', `Bearer ${testAccessToken}`)
-
     expect(response.status).to.eql(200)
 
     const { data } = response.body

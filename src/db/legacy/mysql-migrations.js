@@ -30,7 +30,6 @@ const migratePlays = async (client) => {
   await new Promise((resolve, reject) => {
     client.query('SELECT * FROM plays', async (error, results) => {
       if (error) reject(error)
-
       try {
         await Play.bulkCreate(results
           .map(r => ({
@@ -38,7 +37,7 @@ const migratePlays = async (client) => {
             trackId: tracksGroupedByLegacyId[r.tid]?.id ?? null,
             userId: usersGroupedByLegacyId[r.uid]?.id ?? null,
             type: r.event ? 'paid' : 'free',
-            createdAt: r.date
+            createdAt: (new Date(r.date * 1000)).toDateString()
           })))
         console.log('done with plays')
         resolve()
@@ -47,6 +46,8 @@ const migratePlays = async (client) => {
         reject(e)
       }
     })
+  }).catch(e => {
+    console.log('e', e)
   })
 }
 
@@ -594,16 +595,17 @@ const migrateBands = async (client) => {
 }
 
 module.exports = async (client) => {
-  await migrateTracks(client)
-  await migratePlaylists(client)
-  await migratePlaylistItems(client)
-  await migrateTrackGroups(client)
-  await migrateTrackGroupItems(client)
-  await migrateFavorites(client)
-  await migrateFiles(client)
+  console.log('migrating')
+  // await migrateTracks(client)
+  // await migratePlaylists(client)
+  // await migratePlaylistItems(client)
+  // await migrateTrackGroups(client)
+  // await migrateTrackGroupItems(client)
+  // await migrateFavorites(client)
+  // await migrateFiles(client)
   await migratePlays(client)
-  await migrateImages(client)
-  await migrateLinks(client)
-  await migrateLabels(client)
-  await migrateBands(client)
+  // await migrateImages(client)
+  // await migrateLinks(client)
+  // await migrateLabels(client)
+  // await migrateBands(client)
 }

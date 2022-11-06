@@ -9,6 +9,7 @@ describe('Api.ts/tag endpoint test', () => {
   ResetDB()
   let response = null
 
+  // FIXME: this test is fragile
   it('should GET tag/:tag find tracks', async () => {
     const genre = faker.music.genre().toLowerCase()
     const track = await Track.create({
@@ -41,6 +42,7 @@ describe('Api.ts/tag endpoint test', () => {
     })
 
     response = await request.get(`/tag/${genre}`)
+    console.log('response', response.body)
     expect(response.status).to.eql(200)
 
     const { data } = response.body

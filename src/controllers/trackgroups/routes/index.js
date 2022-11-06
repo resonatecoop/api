@@ -1,8 +1,7 @@
 const { UserGroup, Resonate: Sequelize, TrackGroup, File } = require('../../../db/models')
 const { Op } = require('sequelize')
-const slug = require('slug')
-const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
+const trackgroupService = require('../services/trackgroupService')
 
 module.exports = function () {
   const operations = {
@@ -37,7 +36,6 @@ module.exports = function () {
           'about',
           'cover',
           'creatorId',
-          'display_artist',
           'id',
           'slug',
           'tags',
@@ -92,51 +90,10 @@ module.exports = function () {
         query.where.featured = true
       }
 
-      const { rows: result, count } = await TrackGroup.findAndCountAll(query)
-
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600, 1500]
+      const { rows, count } = await TrackGroup.findAndCountAll(query)
 
       ctx.body = {
-        data: result.map((item) => {
-          const o = Object.assign({}, item.dataValues)
-
-          const slugTitle = item.get('slug')
-
-          if (!slugTitle) {
-            item.slug = slug(o.title)
-            item.save()
-          }
-
-          o.slug = item.slug
-
-          o.uri = `${process.env.APP_HOST}/v3/trackgroups/${item.id}`
-
-          o.tags = item.get('tags')
-
-          o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)
-
-          o.images = variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(item.cover, key, ext, !item.dataValues.cover_metadata)
-                }
-              }
-            )
-          }, {})
-
-          return o
-        }),
+        data: trackgroupService(ctx).list(rows),
         count: count,
         numberOfPages: Math.ceil(count / limit),
         status: 'ok'

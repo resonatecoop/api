@@ -40,9 +40,9 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     it('should GET /user/admin/trackgroups', async () => {
       response = await request.get('/user/admin/trackgroups/')
         .set('Authorization', `Bearer ${testAccessToken}`)
+      console.log('response.body', response.body)
 
       expect(response.status).to.eql(200)
-
       const attributes = response.body
       expect(attributes).to.be.an('object')
       expect(attributes).to.include.keys('data', 'count', 'numberOfPages', 'status')
@@ -58,12 +58,6 @@ describe('Admin.ts/trackgroups endpoint test', () => {
       expect(theData.about).to.eql('this is the best album')
       expect(theData.private).to.be.false
       expect(theData.display_artist).to.eql('Jack')
-
-      expect(theData.composers).to.be.an('array')
-      expect(theData.composers.length).to.eql(0)
-
-      expect(theData.performers).to.be.an('array')
-      expect(theData.performers.length).to.eql(0)
 
       expect(theData.release_date).to.eql('2019-01-01')
       expect(theData.enabled).to.be.true
