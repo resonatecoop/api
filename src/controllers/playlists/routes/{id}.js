@@ -1,8 +1,8 @@
 const { User, Playlist, PlaylistItem, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
-const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
 const { loadProfileIntoContext } = require('../../user/authenticate')
+const playlistService = require('../services/playlistService')
 
 module.exports = function () {
   const operations = {
@@ -114,63 +114,8 @@ module.exports = function () {
         plain: true
       })
 
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600]
-
       ctx.body = {
-        data: {
-          ...data,
-          cover: coverSrc(data.cover, !data.cover_metadata ? '600' : '1500', ext, !data.cover_metadata),
-          cover_metadata: {
-            id: data.cover
-          },
-          items: data.items.map((item) => {
-            const fallback = !item.track.cover_art ? false : !item.track.cover_metadata
-
-            return {
-              index: item.index,
-              track: {
-                ...item.track,
-                cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
-                images: variants.reduce((o, key) => {
-                  const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-                  return Object.assign(o,
-                    {
-                      [variant]: {
-                        width: key,
-                        height: key,
-                        url: coverSrc(item.track.cover_art || data.cover, key, ext, fallback)
-                      }
-                    }
-                  )
-                }, {}),
-                url: `${process.env.APP_HOST}/api/v3/user/stream/${item.track.id}`
-              }
-            }
-          }),
-          images: variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(data.cover, key, ext, !data.cover_metadata)
-                }
-              }
-            )
-          }, {}),
-          private: data.private,
-          tags: data.tags,
-          title: data.title
-        },
+        data: playlistService(ctx).single(data),
         status: 'ok'
       }
     } catch (err) {

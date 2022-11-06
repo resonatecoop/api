@@ -32,8 +32,8 @@
     "postinstall": "husky install"
   },
   "dependencies": {
-    "@koa/cors": "^3.1.0",
-    "@koa/router": "^10.0.0",
+    "@koa/cors": "^3.4.3",
+    "@koa/router": "^11.0.0",
     "@resonate/utils": "^1.1.0",
     "ajv": "^8.5.0",
     "ajv-formats": "^1.5.1",
@@ -62,7 +62,7 @@
     "ioredis": "^4.22.0",
     "keygrip": "^1.1.0",
     "koa": "^2.13.1",
-    "koa-body": "^4.2.0",
+    "koa-body": "^5.0.0",
     "koa-cash": "^4.0.5",
     "koa-compress": "^3.1.0",
     "koa-etag": "^4.0.0",
@@ -86,12 +86,12 @@
     "mysql-promise": "^5.0.0",
     "mysql-ssh": "^1.0.6",
     "mysql2": "^2.3.3",
-    "nodemon": "^2.0.2",
     "node-cache": "^5.1.2",
     "node-fetch": "^2.6.1",
     "node-split": "^1.0.1",
     "nodemailer": "^6.1.1",
     "nodemailer-mailgun-transport": "^2.0.0",
+    "nodemon": "^2.0.2",
     "normalize-url": "^5.3.0",
     "numbro": "^2.3.2",
     "oidc-provider": "^7.11.4",
@@ -109,10 +109,10 @@
     "superagent": "^5.1.0",
     "swagger-client": "^3.13.6",
     "tunnel-ssh": "^4.1.6",
+    "umzug": "2.3.0",
     "uuid": "^8.3.2",
     "winston": "^3.2.1",
-    "yargs": "^15.1.0",
-    "umzug": "2.3.0"
+    "yargs": "^15.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
