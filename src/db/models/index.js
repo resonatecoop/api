@@ -13,7 +13,6 @@ db.Resonate = new Sequelize(config.database, config.username, config.password, {
 // FIXME: can the following be cleaned up?
 db.Favorite = require(path.join(__dirname, '/resonate', 'favorite.js'))(db.Resonate, DataTypes)
 db.File = require(path.join(__dirname, '/resonate', 'file.js'))(db.Resonate, DataTypes)
-db.GfForm = require(path.join(__dirname, '/resonate', 'gf_form.js'))(db.Resonate, DataTypes)
 db.Order = require(path.join(__dirname, '/resonate', 'order.js'))(db.Resonate, DataTypes)
 db.Play = require(path.join(__dirname, '/resonate', 'play.js'))(db.Resonate, DataTypes)
 db.Tag = require(path.join(__dirname, '/resonate', 'tag.js'))(db.Resonate, DataTypes)

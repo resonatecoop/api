@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       field: 'id'
     },
+    legacySource: {
+      type: DataTypes.STRING,
+      field: 'legacy_source'
+    },
     userId: {
       type: DataTypes.UUID,
       allowNull: false
