@@ -42,7 +42,7 @@ describe('Api.ts/tag endpoint test', () => {
     })
 
     response = await request.get(`/tag/${genre}`)
-    console.log('response', response.body)
+    console.log('response', response.body.data)
     expect(response.status).to.eql(200)
 
     const { data } = response.body
@@ -80,7 +80,7 @@ describe('Api.ts/tag endpoint test', () => {
     expect(response.status).to.eql(200)
 
     const { data } = response.body
-    console.log('response', response.body)
+    console.log('response', response.body.data)
     expect(data.trackgroups.length).to.eql(1)
     expect(data.trackgroups[0].title).to.eql(tg.title)
 

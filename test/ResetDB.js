@@ -24,7 +24,6 @@ const seeder = new Umzug(seedsConfig)
 
 const ResetDB = () => {
   before('reset the test database to test seed data', async () => {
-    console.log('<<< reseting the db... <<<')
     await seeder.down({ to: 0 })
     await seeder.up()
     console.log('>>> reset the db! >>>')

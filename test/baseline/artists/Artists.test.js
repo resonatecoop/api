@@ -156,15 +156,15 @@ describe('Api.ts/artists endpoint test', () => {
       'cover_metadata', 'creator', 'items', 'images', 'uri')
     expect(theData.tags).to.be.an('array')
     expect(theData.tags.length).to.eql(0)
-    expect(theData.about).to.eql('this is the best album')
+    expect(theData.about).to.eql('this is the best album3')
     expect(theData.cover_metadata).to.be.null
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.display_artist).to.eql('Jack')
-    expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')
-    expect(theData.slug).to.eql('best-album-ever')
-    expect(theData.title).to.eql('Best album ever')
+    expect(theData.display_artist).to.eql('@auggod')
+    expect(theData.id).to.eql('58991f22-b172-48e4-8b27-e0a4c946f9b2')
+    expect(theData.slug).to.eql('best-album-ever-3')
+    expect(theData.title).to.eql('Best album ever 3')
     expect(theData.createdAt).to.eql('2022-09-28T17:31:59.513Z')
-    expect(theData.release_date).to.eql('2019-01-01')
+    expect(theData.release_date).to.eql('2019-01-03')
     expect(theData.type).to.eql('lp')
     expect(theData.cover_metadata).to.be.null
 
@@ -178,20 +178,20 @@ describe('Api.ts/artists endpoint test', () => {
 
     const theItem = theData.items[0]
     expect(theItem).to.include.keys('id', 'index', 'track_id', 'track')
-    expect(theItem.id).to.eql('753eccd9-01b2-4bfb-8acc-8d0e44b998cc')
+    expect(theItem.id).to.eql('ab536810-deef-4645-9ec5-7c642c035d6c')
     expect(theItem.index).to.eql(0)
-    expect(theItem.track_id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
+    expect(theItem.track_id).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
 
     const theTrack = theItem.track
     expect(theTrack).to.include.keys('status', 'id', 'legacyId', 'creatorId', 'title', 'artist', 'album', 'album_artist', 'composer', 'year', 'url', 'cover_art',
       'number', 'tags', 'updatedAt', 'createdAt', 'deletedAt', 'track_url', 'track_cover_art')
     expect(theTrack.status).to.eql('free')
-    expect(theTrack.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
+    expect(theTrack.id).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
     expect(theTrack.legacyId).to.be.null
     expect(theTrack.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theTrack.title).to.eql('Ergonomic interactive concept')
-    expect(theTrack.artist).to.eql('Laurie Yost')
-    expect(theTrack.album).to.eql('firewall')
+    expect(theTrack.title).to.eql('Future-proofed methodical conglomeration')
+    expect(theTrack.artist).to.eql('Calvin Larson')
+    expect(theTrack.album).to.eql('monitor')
     expect(theTrack.album_artist).to.be.null
     expect(theTrack.composer).to.be.null
     expect(theTrack.year).to.be.null
@@ -199,8 +199,8 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theTrack.cover_art).to.be.null
     expect(theTrack.number).to.null
     expect(theTrack.tags).to.be.null
-    expect(theTrack.updatedAt).to.eql('2022-09-28T17:31:59.879Z')
-    expect(theTrack.createdAt).to.eql('2022-09-28T17:31:59.879Z')
+    expect(theTrack.updatedAt).to.eql('2022-09-28T17:31:59.554Z')
+    expect(theTrack.createdAt).to.eql('2022-09-28T17:31:59.554Z')
     expect(theTrack.deletedAt).to.be.null
     expect(theTrack.track_url).to.be.null
     expect(theTrack.track_cover_art).to.be.null

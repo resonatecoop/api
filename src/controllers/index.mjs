@@ -75,6 +75,9 @@ import adminTrackgroupItemsRemove from './user/admin/trackgroups/{id}/items/remo
 import adminTracks from './user/admin/tracks/index.js'
 import adminTracksId from './user/admin/tracks/{id}.js'
 import adminEarnings from './user/admin/earnings.js'
+import adminFiles from './user/admin/files/index.mjs'
+import adminFilesId from './user/admin/files/{id}.mjs'
+import adminPlays from './user/admin/plays.mjs'
 
 import { apiRoot as root } from '../constants.js'
 
@@ -177,6 +180,9 @@ initialize({
     { path: `${root}/user/admin/tracks/{id}`, module: adminTracksId },
 
     { path: `${root}/user/admin/earnings`, module: adminEarnings },
+    { path: `${root}/user/admin/files`, module: adminFiles },
+    { path: `${root}/user/admin/files/{id}`, module: adminFilesId },
+    { path: `${root}/user/admin/plays`, module: adminPlays },
 
     {
       path: `${root}/apiDocs`, module: apiDocs

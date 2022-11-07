@@ -29,6 +29,7 @@ module.exports = () => {
     await next()
   }
 
+  // FIXME: is this actually doing validation?
   POST.apiDoc = {
     operationId: 'generateEarningsReport',
     description: 'Generate an earnings report for an artist',
@@ -54,14 +55,14 @@ module.exports = () => {
         in: 'body',
         name: 'creatorId',
         schema: {
-          type: 'number',
-          minimum: 0
+          type: 'string',
+          format: 'uuid'
         }
       }
     ],
     responses: {
       200: {
-        description: 'The requested featured artists results.',
+        description: 'The requested earning report for an user',
         schema: {
           type: 'object'
         }
