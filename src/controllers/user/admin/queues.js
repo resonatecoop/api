@@ -7,6 +7,10 @@ const AJV = require('ajv')
 const ajvKeywords = require('ajv-keywords')
 const ajvFormats = require('ajv-formats')
 
+// FIXME: This piece of the API has been left hanging from the old
+// dashboard admin view. There's no pressure to fix it or integrate it
+// but is a nice-to-have in the future.
+
 const ms = require('ms')
 const { REDIS_CONFIG } = require('../../../config/redis')
 
