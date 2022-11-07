@@ -13,13 +13,17 @@ describe('User.ts/misc user info endpoint test', () => {
   let response = null
 
   it('should handle no authentication / accessToken', async () => {
-    response = await request.get('/user/plays/')
+    response = await request
+      .post('/user/plays/')
+      .send({ track_id: faker.datatype.uuid() })
 
     expect(response.status).to.eql(401)
   })
 
   it('should handle an invalid access token', async () => {
-    response = await request.get('/user/plays/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
+    response = await request.post('/user/plays/')
+      .send({ track_id: faker.datatype.uuid() })
+      .set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
     expect(response.status).to.eql(401)
   })
