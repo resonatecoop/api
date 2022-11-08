@@ -1,9 +1,0 @@
-extends layout.pug
-
-block content 
-  h1 Log in
-  form(action=`/login`, method="post", autocomplete="off")
-    input(type="email", name="email", placeholder="Enter your email")
-    input(type="password", name="password", placeholder="and password") 
-    button(type="submit") 
-      text Sign-in to Resonate

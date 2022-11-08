@@ -6,6 +6,7 @@ const { User, Role } = require('../db/models')
 const RedisAdapter = require('./redis-adapter')
 const send = require('koa-send')
 const path = require('path')
+const { v4: uuidv4 } = require('uuid')
 
 const isEmpty = require('lodash/isEmpty')
 const bodyParser = require('koa-body')
@@ -13,6 +14,7 @@ const Router = require('@koa/router')
 const { renderError } = require('./utils')
 const sendMail = require('../jobs/send-mail')
 const role = require('../db/models/resonate/role')
+const { Op } = require('sequelize')
 
 const keys = new Set()
 const debug = (obj) =>
@@ -67,17 +69,120 @@ module.exports = (provider) => {
     }
   })
 
+  router.get('/password-reset', async (ctx) => {
+    return ctx.render('password-reset-request', {
+      uid: undefined,
+      client: undefined,
+      messages: this.flash,
+      params: {},
+      title: 'Password reset',
+      dbg: { params: debug({}), prompt: debug({}) }
+    })
+  })
+
+  router.post('/password-reset', body, async (ctx, next) => {
+    let email = ctx.request.body.email
+    email = email.toLowerCase()
+    const isExisting = await User.findOne({ where: { email } })
+
+    if (!isExisting) {
+      this.flash = { error: ['No user with this email exists'] }
+      return ctx.redirect('/password-reset')
+    }
+    const date = new Date()
+    date.setMinutes(date.getMinutes() + 20)
+
+    isExisting.emailConfirmationToken = uuidv4()
+    isExisting.emailConfirmationExpiration = date.toISOString()
+    await isExisting.save()
+
+    try {
+      sendMail({
+        data: {
+          template: 'password-reset',
+          message: {
+            to: isExisting.email
+          },
+          locals: {
+            user: isExisting,
+            host: process.env.APP_HOST
+          }
+        }
+      })
+    } catch (e) {
+      console.error(e)
+    }
+
+    return ctx.render('password-reset-email-sent', {
+      uid: undefined,
+      client: undefined,
+      params: {},
+      title: 'Password reset email sent',
+      session: {},
+      dbg: { params: debug({}), prompt: debug({}) }
+    })
+  })
+
+  router.get('/password-reset/confirmation/:token', async (ctx) => {
+    const token = ctx.params.token
+    const email = ctx.query.email
+
+    return ctx.render('password-reset', {
+      uid: undefined,
+      client: undefined,
+      messages: this.flash,
+      params: {
+        token,
+        email
+      },
+      title: 'Password reset',
+      dbg: { params: debug({}), prompt: debug({}) }
+    })
+  })
+
+  router.post('/password-reset/confirmation', body, async (ctx) => {
+    const user = await User.findOne({
+      where: {
+        emailConfirmationToken: ctx.request.body.token,
+        email: ctx.request.body.email,
+        emailConfirmationExpiration: { [Op.gte]: (new Date()).toISOString() }
+      }
+    })
+
+    if (user) {
+      user.emailConfirmationToken = null
+      user.emailConfirmed = true
+      user.password = await User.hashPassword({ password: ctx.request.body.password })
+      await user.save()
+      return ctx.render('password-reset-success', {
+        uid: undefined,
+        client: undefined,
+        messages: this.flash,
+        params: {},
+        title: 'Password reset Success',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
+    } else {
+      this.flash = { error: ['Something went wrong'] }
+      return ctx.redirect('/register')
+    }
+  })
+
   router.get('/register/emailConfirmation/:token', async (ctx, next) => {
     const token = ctx.params.token
     const user = await User.findOne({
-      where: { emailConfirmationToken: token, email: ctx.query.email }
+      where: {
+        emailConfirmationToken: token,
+        email: ctx.query.email,
+        emailConfirmationExpiration: { [Op.gte]: (new Date()).toISOString() }
+      }
     })
 
     if (user) {
       user.emailConfirmationToken = null
       user.emailConfirmed = true
 
-      user.save()
+      await user.save()
       this.flash = { success: ['Your email has been confirmed! You can now log in using your favorite Resonate app'] }
     } else {
       this.flash = { error: ['We couldn\'t find that email or token'] }
@@ -122,10 +227,13 @@ module.exports = (provider) => {
     }
 
     const role = await Role.findOne({ where: { name: 'user' } })
+    const date = new Date()
+    date.setMinutes(date.getMinutes() + 20)
     const newUser = await User.create({
       email,
       password: user.password,
-      roleId: role.id
+      roleId: role.id,
+      emailConfirmationExpiration: date.toISOString()
     })
 
     try {
@@ -157,31 +265,6 @@ module.exports = (provider) => {
     } else {
       this.flash = { error: ['Something went wrong'] }
       return ctx.redirect('/register')
-    }
-  })
-
-  router.get('/account', async (ctx, next) => {
-    // Ideally this gets moved into a front-end app.
-    const cookie = ctx.cookies.get('_session')
-    const session = await adapter.find(cookie)
-    const user = await User.findOne({
-      where: {
-        id: session.accountId
-      },
-      raw: true
-    })
-    if (user) {
-      return ctx.render('account', {
-        title: 'Account',
-        uid: session.uid,
-        client: undefined,
-        user,
-        session: session,
-        params: {},
-        dbg: { params: debug({}), prompt: debug({}) }
-      })
-    } else {
-      next()
     }
   })
 

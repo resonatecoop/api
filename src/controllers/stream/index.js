@@ -51,7 +51,7 @@ router.get('/:id', async (ctx, next) => {
       try {
         ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', alias))
       } catch (e) {
-        console.log('error', e)
+        console.error(e)
         ctx.throw(404, 'Not found')
       }
     } else {

@@ -102,7 +102,7 @@ module.exports = function () {
         }
       }
     } catch (err) {
-      console.log('err', err)
+      console.error(err)
       ctx.throw(ctx.status, err.message)
     }
   }
