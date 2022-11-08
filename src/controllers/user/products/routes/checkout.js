@@ -1,11 +1,10 @@
 const { User } = require('../../../../db/models')
-const { authenticate } = require('../../authenticate')
 
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 module.exports = function () {
   const operations = {
-    GET: [authenticate, GET]
+    GET: [GET]
   }
 
   async function GET (ctx, next) {
