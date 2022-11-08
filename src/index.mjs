@@ -31,7 +31,6 @@ import Router from '@koa/router'
 /**
  * Koa apps
  */
-import user from './controllers/user/index.js'
 import { provider, routes as authRoutes } from './auth/index.js'
 import { apiRouter } from './controllers/index.mjs'
 import { apiRoot } from './constants.js'
@@ -86,7 +85,6 @@ app.use(apiRouter.routes())
 app.use(authRoutes(provider).routes(), authRoutes(provider).allowedMethods({ throw: true }))
 app.use(mount('/', provider.app))
 app.use(mount(`${apiRoot}/stream`, stream)) // TODO: put this in the API
-app.use(mount(`${apiRoot}/user`, user)) // TODO: put this in the API
 
 // FIXME: koa-static is currently insecure and out of date.
 // https://github.com/koajs/static/issues/202

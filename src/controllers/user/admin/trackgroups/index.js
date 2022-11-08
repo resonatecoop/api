@@ -46,6 +46,7 @@ module.exports = function () {
           'type',
           'about',
           'private',
+          'createdAt',
           'display_artist',
           'creatorId',
           'composers',
@@ -69,7 +70,8 @@ module.exports = function () {
         ],
         where,
         order: [
-          ['createdAt', 'DESC']
+          ['createdAt', 'DESC'],
+          ['release_date', 'DESC']
         ]
       })
 

@@ -42,7 +42,7 @@ describe('Api.ts/tag endpoint test', () => {
     })
 
     response = await request.get(`/tag/${genre}`)
-    console.log('response', response.body)
+    console.log('response', response.body.data)
     expect(response.status).to.eql(200)
 
     const { data } = response.body
@@ -58,12 +58,11 @@ describe('Api.ts/tag endpoint test', () => {
 
   // FIXME: Fragile test
   it('should GET tag/:tag find trackgroups', async () => {
-    const genre = faker.music.genre().toLowerCase()
     const tg = await TrackGroup.create({
       creatorId: testArtistId,
       cover: testArtistId,
       title: faker.music.songName(),
-      tags: [genre],
+      tags: ['reggea'],
       enabled: true,
       private: false
     })
@@ -71,16 +70,16 @@ describe('Api.ts/tag endpoint test', () => {
       creatorId: testArtistId,
       cover: testArtistId,
       title: faker.music.songName(),
-      tags: [faker.music.genre().toLowerCase()],
+      tags: ['rock'],
       enabled: true,
       private: false
     })
 
-    response = await request.get(`/tag/${genre}`)
+    response = await request.get('/tag/reggea')
     expect(response.status).to.eql(200)
 
     const { data } = response.body
-    console.log('response', response.body)
+    console.log('response', response.body.data)
     expect(data.trackgroups.length).to.eql(1)
     expect(data.trackgroups[0].title).to.eql(tg.title)
 

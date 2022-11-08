@@ -18,15 +18,6 @@ module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format 
 
   console.log('inside find all play counts. creatorId: ', creatorId)
 
-  // creatorId is 71175a23-9256-41c9-b8c1-cd2170aa6591
-
-  // const subQuery = sequelize.dialect.queryGenerator.selectQuery('tracks', {
-  //   attributes: ['tid'],
-  //   where: {
-  //     uid: creatorId
-  //   }
-  // }).slice(0, -1)
-
   const subQuery = sequelize.dialect.queryGenerator.selectQuery('tracks', {
     attributes: ['id'],
     where: {
@@ -34,26 +25,24 @@ module.exports.findAllPlayCounts = async (creatorId, startDate, endDate, format 
     }
   })
 
-  // const subQuery = null
-
-  console.log('after subQuery ', subQuery)
+  console.log('after subQuery ', subQuery.replace(';', ''))
 
   const event = ['free', 'paid'].indexOf(type)
 
   const queryOptions = {
     attributes: [
-      [sequelize.fn('FROM_UNIXTIME', sequelize.col('date'), format), 'd'],
-      [sequelize.fn('IF', [sequelize.fn('count', sequelize.col('pid')), 'count'] > 8, 9, sequelize.fn('count', sequelize.col('pid'))), 'count']
+      [sequelize.literal('DATE("created_at")'), 'date'],
+      [sequelize.fn('IF', [sequelize.fn('count', sequelize.col('id')), 'count'] > 8, 9, sequelize.fn('count', sequelize.col('id'))), 'count']
     ],
     where: {
       trackId: {
-        [Op.in]: sequelize.literal('(' + subQuery + ')')
+        [Op.in]: sequelize.literal('(' + subQuery.replace(';', '') + ')')
       },
       userId: {
         [Op.ne]: creatorId
       },
       event: event,
-      date: {
+      createdAt: {
         [Op.between]: [startDate, endDate]
       }
     },

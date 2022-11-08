@@ -17,12 +17,14 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     const currentDate = new Date()
+    const lastYear = new Date()
+    lastYear.setFullYear(currentDate.getFullYear() - 1)
     const {
-      from = new Date().setFullYear(currentDate.getFullYear() - 1).toISOString().split('T')[0],
+      from = lastYear.toISOString().split('T')[0],
       to = currentDate.toISOString().split('T')[0]
       // type = 'paid'
     } = ctx.request.query
-    // FIXME: add filtering by type and date
+    // FIXME: add filtering by type
     // const format = getDateFormat(ctx.request.period)
 
     try {

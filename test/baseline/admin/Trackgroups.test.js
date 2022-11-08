@@ -40,7 +40,6 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     it('should GET /user/admin/trackgroups', async () => {
       response = await request.get('/user/admin/trackgroups/')
         .set('Authorization', `Bearer ${testAccessToken}`)
-      console.log('response.body', response.body)
 
       expect(response.status).to.eql(200)
       const attributes = response.body
@@ -52,14 +51,14 @@ describe('Admin.ts/trackgroups endpoint test', () => {
 
       const theData = attributes.data[0]
       expect(theData).to.include.keys('id', 'title', 'type', 'about', 'private', 'display_artist', 'composers', 'performers', 'release_date', 'enabled', 'cover_metadata', 'tags', 'images')
-      expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')
-      expect(theData.title).to.eql('Best album ever')
+      expect(theData.id).to.eql('58991f22-b172-48e4-8b27-e0a4c946f9b2')
+      expect(theData.title).to.eql('Best album ever 3')
       expect(theData.type).to.eql('lp')
-      expect(theData.about).to.eql('this is the best album')
+      expect(theData.about).to.eql('this is the best album3')
       expect(theData.private).to.be.false
-      expect(theData.display_artist).to.eql('Jack')
+      expect(theData.display_artist).to.eql('@auggod')
 
-      expect(theData.release_date).to.eql('2019-01-01')
+      expect(theData.release_date).to.eql('2019-01-03')
       expect(theData.enabled).to.be.true
       expect(theData.cover_metadata).to.be.null
 

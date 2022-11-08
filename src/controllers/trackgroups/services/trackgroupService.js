@@ -1,3 +1,4 @@
+const { apiRoot } = require('../../../constants')
 const coverSrc = require('../../../util/cover-src')
 
 const trackgroupService = (ctx) => {
@@ -16,8 +17,8 @@ const trackgroupService = (ctx) => {
 
         o.slug = item.slug
 
-        o.uri = `${process.env.APP_HOST}/api/v3/trackgroups/${item.id}`
-
+        o.uri = `${process.env.APP_HOST}${apiRoot}/trackgroups/${item.id}`
+        o.createdAt = item.createdAt
         o.tags = item.get('tags')
 
         o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)

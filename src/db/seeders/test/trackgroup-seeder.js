@@ -11,9 +11,9 @@ module.exports = {
         INSERT INTO public.track_groups (id, cover, title, type, about, private, display_artist, creator_id, composers, performers, tags, slug, release_date, download, featured, enabled, updated_at, created_at, deleted_at) 
             VALUES ('84322e4f-0247-427f-8bed-e7617c3df5ad', NULL, 'Best album ever', 'lp', 'this is the best album', false, 'Jack', '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', NULL, NULL, NULL, 'best-album-ever', '2019-01-01', false, false, true, '2022-09-29 13:07:07.237+00', '2022-09-28 17:31:59.513+00', NULL);
         INSERT INTO public.track_groups (id, cover, title, type, about, private, display_artist, creator_id, composers, performers, tags, slug, release_date, download, featured, enabled, updated_at, created_at, deleted_at) 
-            VALUES ('8e9c188c-0f1f-4c99-ac89-0709970345bd', NULL, 'Best album ever 2', 'lp', 'this is the best album2', false, 'Jill', '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', NULL, NULL, NULL, 'best-album-ever-2', '2019-01-01', false, false, true, '2022-09-29 13:07:07.239+00', '2022-09-28 17:31:59.513+00', NULL);
+            VALUES ('8e9c188c-0f1f-4c99-ac89-0709970345bd', NULL, 'Best album ever 2', 'lp', 'this is the best album2', false, 'Jill', '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', NULL, NULL, NULL, 'best-album-ever-2', '2019-01-02', false, false, true, '2022-09-29 13:07:07.239+00', '2022-09-28 17:31:59.513+00', NULL);
         INSERT INTO public.track_groups (id, cover, title, type, about, private, display_artist, creator_id, composers, performers, tags, slug, release_date, download, featured, enabled, updated_at, created_at, deleted_at) 
-            VALUES ('58991f22-b172-48e4-8b27-e0a4c946f9b2', NULL, 'Best album ever 3', 'lp', 'this is the best album3', false, '@auggod', '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', NULL, '{auggod}', NULL, 'best-album-ever-3', '2019-01-01', false, false, true, '2022-09-29 13:07:07.239+00', '2022-09-28 17:31:59.513+00', NULL);
+            VALUES ('58991f22-b172-48e4-8b27-e0a4c946f9b2', NULL, 'Best album ever 3', 'lp', 'this is the best album3', false, '@auggod', '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', NULL, '{auggod}', NULL, 'best-album-ever-3', '2019-01-03', false, false, true, '2022-09-29 13:07:07.239+00', '2022-09-28 17:31:59.513+00', NULL);
 
         INSERT INTO public.tracks (id, legacy_id, creator_id, track_name, track_artist, track_album, track_duration, track_album_artist, track_composer, track_year, track_url, track_cover_art, track_number, tags, status, created_at, updated_at, deleted_at) 
           VALUES ('b6d160d1-be16-48a4-8c4f-0c0574c4c6aa', NULL, '49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6', 'Sharable maximized utilisation', 'Antonia Yost IV', 'hard drive', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '2022-09-28 17:31:59.549+00', '2022-09-28 17:31:59.549+00', NULL);
@@ -150,6 +150,7 @@ module.exports = {
     await queryInterface.bulkDelete('track_group_items', null, {})
     await queryInterface.bulkDelete('plays', null, {})
     await queryInterface.bulkDelete('user_groups', null, {})
-    return queryInterface.bulkDelete('credits', null, {})
+    await queryInterface.bulkDelete('credits', null, {})
+    return queryInterface.bulkDelete('files', null, {})
   }
 }

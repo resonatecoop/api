@@ -56,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'mime'
     },
+    // TODO: convert this to JSON
     metadata: {
       type: DataTypes.TEXT,
       field: 'metadata',
