@@ -104,6 +104,7 @@ module.exports = (sequelize, DataTypes) => {
     User.hasOne(models.Role, { as: 'role', sourceKey: 'roleId', foreignKey: 'id' })
     User.hasOne(models.Credit, { as: 'credit', foreignKey: 'userId' })
     User.hasMany(models.UserGroup, { as: 'user_groups', foreignKey: 'ownerId' })
+    User.hasMany(models.UserMembership, { as: 'memberships', foreignKey: 'userId' })
   }
 
   User.hashPassword = hashPassword

@@ -694,10 +694,11 @@ const migrateGFEntryMembers = async (client) => {
     `, async function (error, results, fields) {
       if (error) reject(error)
 
+      const members = results
+        .filter(r => usersGroupedByLegacyId[r.created_by] &&
+        r.payment_status === 'Paid')
       try {
-        UserMembership.bulkCreate(results
-          .filter(r => usersGroupedByLegacyId[r.created_by] &&
-            r.payment_status === 'Paid')
+        UserMembership.bulkCreate(members
           .map(r => ({
             userId: usersGroupedByLegacyId[r.created_by].id,
             membershipClassId: membershipClass.id,
@@ -712,7 +713,7 @@ const migrateGFEntryMembers = async (client) => {
         console.error('e', e)
         reject(e)
       }
-      console.log('added members')
+      console.log('added members', members.length)
       resolve()
     })
   })
