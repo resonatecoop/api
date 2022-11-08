@@ -71,7 +71,7 @@ const playlistService = (ctx) => {
   return {
     single,
     list (rows) {
-      return rows.map((item) => (single))
+      return rows.map(single)
     }
   }
 }

@@ -1,6 +1,8 @@
 
-const { User, Role } = require('../../../../db/models')
+const { Op } = require('sequelize')
+const { User, Role, UserMembership, Resonate: sequelize, UserGroup, TrackGroup, Track } = require('../../../../db/models')
 const { authenticate, hasAccess } = require('../../authenticate')
+const { createObjectCsvStringifier } = require('csv-writer')
 
 module.exports = function () {
   const operations = {
@@ -8,40 +10,123 @@ module.exports = function () {
   }
 
   async function GET (ctx, next) {
-    const { limit = 20, page = 1, q, role } = ctx.request.query
+    const {
+      format,
+      limit = !format ? 20 : undefined,
+      page = !format ? 1 : undefined,
+      q,
+      members
+    } = ctx.request.query
 
     try {
-      const parameters = {
-        limit,
-        offset: page > 1 ? (page - 1) * limit : 0,
-        role
+      const attributes = ['id', 'displayName', 'email', 'emailConfirmed', 'country', 'fullName', 'member', 'updatedAt']
+
+      const group = []
+      let having
+      const where = {
+        [Op.and]: []
       }
 
       if (q) {
-        parameters.q = '%' + q + '%'
+        where[Op.and].push({
+          [Op.or]:
+          [{ displayName: { [Op.iLike]: `%${q}%` } }, { email: { [Op.iLike]: `%${q}%` } }]
+        })
       }
 
-      const { rows: result, count } = await User.findAndCountAll({
+      if (members) {
+        // attributes.push(
+        //   sequelize.literal('COUNT("user_groups"."id") AS "user_groups.count"'),
+        //   sequelize.literal('COUNT("user_groups->tracks"."id") AS "user_groups->tracks.count"')
+        // )
+        where[Op.and].push({
+          [Op.or]:
+            [{
+              [Op.and]: [
+                sequelize.literal('"memberships"."membership_class_id" = 4'),
+                sequelize.literal('"memberships"."updated_at" > NOW() - interval \'1 year\'')
+              ]
+            },
+            {
+              member: true
+            }, {
+              [Op.and]: [
+                sequelize.literal('"user_groups->trackgroups"."enabled" = true'),
+                sequelize.literal('"user_groups->trackgroups"."private" = false'),
+                sequelize.literal('"user_groups->trackgroups"."release_date" > NOW() - interval \'2 year\'')
+              ]
+            }]
+        })
+
+        group.push(sequelize.col('"role.id"'), sequelize.col('"memberships"."id"'), sequelize.col('"user_groups"."id"'), sequelize.col('"User"."id"'))
+        having = (sequelize.literal(`(COUNT("user_groups"."id") > 0 and COUNT("user_groups->tracks"."id") > 0)
+          or ("memberships"."membership_class_id" = 4 AND "memberships"."updated_at" > NOW() - interval '1 year')
+          or ("User"."member" = true)`))
+      }
+
+      const { rows, count } = await User.findAndCountAll({
         limit,
-        attributes: ['id', 'displayName', 'email', 'emailConfirmed', 'country', 'fullName', 'member'],
+        attributes,
         order: [['displayName', 'asc']],
+        where,
         offset: page > 1 ? (page - 1) * limit : 0,
         include: [
           {
             model: Role,
             as: 'role'
-          }
-        ]
+          },
+          ...(members
+            ? [
+                {
+
+                  model: UserMembership,
+                  attributes: ['membershipClassId', 'updatedAt'],
+                  as: 'memberships'
+                }, {
+                  model: UserGroup,
+                  as: 'user_groups',
+                  attributes: ['id'],
+                  include: [{
+                    model: TrackGroup,
+                    attributes: [],
+                    as: 'trackgroups'
+                  }, {
+                    model: Track,
+                    attributes: [],
+                    as: 'tracks'
+                  }]
+                }]
+            : [])
+        ],
+        ...(having ? { having } : {}),
+        group,
+        logging: console.log,
+        subQuery: false
       })
 
-      ctx.body = {
-        count: count,
-        numberOfPages: Math.ceil(count / limit),
-        data: result,
-        status: 'ok'
+      if (format === 'application/csv') {
+        const csvGenerator = createObjectCsvStringifier({
+          header: [...attributes, 'memberships.membership_class_id', 'created_at']
+        })
+        const records = csvGenerator.stringifyRecords(rows)
+        ctx.type = 'application/csv'
+        ctx.body = records
+      } else {
+        // FIXME: why is count values messed up here?
+        let unwrappedCount = count?.[0]?.count ? count?.[0]?.count : count
+        if (members) {
+          unwrappedCount = count.length
+        }
+        ctx.body = {
+          count: unwrappedCount,
+          numberOfPages: Math.ceil(unwrappedCount / limit),
+          data: rows,
+          status: 'ok'
+        }
       }
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      console.log('err', err)
+      ctx.throw(500, err.message)
     }
 
     await next()
@@ -53,7 +138,8 @@ module.exports = function () {
     summary: 'Find users',
     tags: ['admin'],
     produces: [
-      'application/json'
+      'application/json',
+      'application/csv'
     ],
     responses: {
       400: {
@@ -96,6 +182,19 @@ module.exports = function () {
         in: 'query',
         name: 'page',
         minimum: 1
+      },
+      {
+        type: 'boolean',
+        description: 'Should filter by members or not',
+        in: 'query',
+        name: 'members'
+      },
+      {
+        type: 'string',
+        description: 'Return CSV or JSON. JSON by default',
+        in: 'query',
+        name: 'format',
+        enum: ['application/csv', 'application/json']
       }
     ]
   }

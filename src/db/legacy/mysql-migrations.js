@@ -1,6 +1,6 @@
 const { keyBy, uniq } = require('lodash')
 const { Op } = require('sequelize')
-const { User, Favorite, Play, File, UserGroup, UserGroupType, UserGroupMember, Playlist, PlaylistItem, Track, TrackGroupItem, TrackGroup, Image, UserGroupLink, Resonate: sequelize } = require('../models')
+const { User, Favorite, ShareTransaction, MembershipClass, UserMembership, Play, File, UserGroup, UserGroupType, UserGroupMember, Playlist, PlaylistItem, Track, TrackGroupItem, TrackGroup, Image, UserGroupLink, Resonate: sequelize } = require('../models')
 
 // eslint-disable-next-line
 function sleep (ms) {
@@ -594,6 +594,131 @@ const migrateBands = async (client) => {
   })
 }
 
+// eslint-disable-next-line
+const migrateMemberOrders = async (client) => {
+  await ShareTransaction.destroy({
+    truncate: true,
+    force: true,
+    where: {
+      legacyTransactionId: {
+        [Op.not]: null
+      }
+    }
+  })
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM member_orders
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        ShareTransaction.bulkCreate(results
+          .filter(r => usersGroupedByLegacyId[r.uid] && r.shares > 0 && r.status === 1)
+          .map(r => ({
+            userId: usersGroupedByLegacyId[r.uid].id,
+            quantity: r.shares,
+            legacySource: 'member_orders',
+            invoiceId: r.txid,
+            updatedAt: r.date,
+            createdAt: r.date
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      console.log('added **old** share transactions')
+      resolve()
+    })
+  })
+}
+
+// eslint-disable-next-line
+const migrateGFEntryShares = async (client) => {
+  await ShareTransaction.destroy({
+    truncate: true,
+    force: true,
+    where: {
+      legacyTransactionId: {
+        [Op.not]: null
+      }
+    }
+  })
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_gf_entry
+      WHERE form_id = 45
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      try {
+        ShareTransaction.bulkCreate(results
+          .filter(r => usersGroupedByLegacyId[r.created_by] &&
+            r.payment_status === 'Paid')
+          .map(r => ({
+            userId: usersGroupedByLegacyId[r.created_by].id,
+            quantity: r.payment_amount,
+            legacySource: 'rsntr_gf_entry-formid:45',
+            invoiceId: r.transaction_id,
+            updatedAt: r.date_created,
+            createdAt: r.date_created
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      console.log('added share transactions')
+      resolve()
+    })
+  })
+}
+
+// eslint-disable-next-line
+const migrateGFEntryMembers = async (client) => {
+  await UserMembership.destroy({
+    truncate: true,
+    force: true,
+    where: {
+      legacySource: {
+        [Op.not]: null
+      }
+    }
+  })
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+  const membershipClass = await MembershipClass.findOne({ where: { name: 'Listener' } })
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_gf_entry
+      WHERE form_id = 35
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+
+      const members = results
+        .filter(r => usersGroupedByLegacyId[r.created_by] &&
+        r.payment_status === 'Paid')
+      try {
+        UserMembership.bulkCreate(members
+          .map(r => ({
+            userId: usersGroupedByLegacyId[r.created_by].id,
+            membershipClassId: membershipClass.id,
+            legacySource: 'rsntr_gf_entry-formid:35',
+            subscriptionId: r.transaction_id,
+            updatedAt: r.date_created,
+            createdAt: r.date_created
+            //     start: '???',
+            //     end: '???'
+          })))
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      console.log('added members', members.length)
+      resolve()
+    })
+  })
+}
+
 module.exports = async (client) => {
   console.log('migrating')
   await migrateTracks(client)
@@ -608,4 +733,7 @@ module.exports = async (client) => {
   await migrateLinks(client)
   await migrateLabels(client)
   await migrateBands(client)
+  await migrateMemberOrders(client)
+  await migrateGFEntryShares(client)
+  await migrateGFEntryMembers(client)
 }

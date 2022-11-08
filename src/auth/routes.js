@@ -241,13 +241,8 @@ module.exports = (provider) => {
       }
     })
 
-    if (
-      !user ||
-      !User.checkPassword({
-        hash: user.password,
-        password: ctx.request.body.password
-      })
-    ) {
+    const passwordOkay = await User.checkPassword({ hash: user.password, password: ctx.request.body.password })
+    if (!user || !passwordOkay) {
       const { uid } = await provider.interactionDetails(
         ctx.req,
         ctx.res

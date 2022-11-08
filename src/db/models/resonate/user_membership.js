@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    legacySource: {
+      type: DataTypes.STRING,
+      field: 'legacy_source'
+    },
     start: {
       type: DataTypes.TIME
     },
