@@ -68,6 +68,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       unique: true
     },
+    emailConfirmationExpiration: {
+      type: DataTypes.DATE
+    },
     roleId: {
       type: DataTypes.INTEGER,
       allowNull: false

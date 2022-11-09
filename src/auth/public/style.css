@@ -77,7 +77,8 @@ form button {
   color: navy;
 }
 
-#footer {
+#footer,
+.disclaimer {
   text-align: center;
   font-size: .75rem;
 }
