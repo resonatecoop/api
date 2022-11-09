@@ -13,7 +13,7 @@ module.exports = function () {
   }
 
   async function POST (ctx, next) {
-    const { track_id: id } = ctx.request.body
+    const { trackId: id } = ctx.request.body
 
     try {
       const track = await Track.findOne({
@@ -99,9 +99,9 @@ module.exports = function () {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['track_id'],
+          required: ['trackId'],
           properties: {
-            track_id: {
+            trackId: {
               type: 'string',
               format: 'uuid'
             }
