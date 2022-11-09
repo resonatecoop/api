@@ -2,11 +2,10 @@
 // const { Op } = require('sequelize')
 
 // const stripe = require('stripe')(process.env.STRIPE_KEY)
-const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
   const operations = {
-    GET: [authenticate, GET]
+    GET: [GET]
   }
 
   async function GET (ctx, next) {
