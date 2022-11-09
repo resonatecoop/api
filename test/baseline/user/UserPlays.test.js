@@ -254,7 +254,7 @@ describe('User.ts/user plays endpoint test', () => {
 
     expect(response.status).to.eql(400)
     expect(response.body.message).to.eql('Bad Request')
-    expect(response.body.errors[0].path).to.eql('track_id')
+    expect(response.body.errors[0].path).to.eql('trackId')
   })
 
   it('should POST /user/plays', async () => {
@@ -268,7 +268,7 @@ describe('User.ts/user plays endpoint test', () => {
     })
 
     response = await request.post('/user/plays')
-      .send({ track_id: track.id })
+      .send({ trackId: track.id })
       .set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
