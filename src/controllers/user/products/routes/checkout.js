@@ -47,6 +47,7 @@ module.exports = function () {
           quantity
         }
       })
+        .filter(lineItem => lineItem.price !== '' && lineItem.quantity > 0)
       const stripeSession = await stripe.checkout.sessions.create({
         line_items: lineItems,
         mode: isRecurring ? 'subscription' : 'payment',
@@ -58,7 +59,7 @@ module.exports = function () {
     } catch (err) {
       console.error('err', err)
       ctx.status = err.status
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()

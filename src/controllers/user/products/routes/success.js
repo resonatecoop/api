@@ -2,6 +2,13 @@ const { Credit, User } = require('../../../../db/models')
 
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
+const values = {
+  'Stream-Credit-05': 5,
+  'Stream-Credit-10': 10,
+  'Stream-Credit-20': 20,
+  'Stream-Credit-50': 50
+}
+
 module.exports = function () {
   const operations = {
     GET: [GET]
@@ -22,7 +29,7 @@ module.exports = function () {
           const [credit] = await Credit.findOrCreate({
             where: { user_id: user.id }
           })
-          credit.update({ total: credit.total + lineItem.amount_total })
+          await credit.update({ total: credit.total + values[lineItem.description] })
           await credit.save()
         }
       }))
