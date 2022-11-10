@@ -19,13 +19,13 @@ describe('User.ts/user plays endpoint test', () => {
   it('should handle no authentication / accessToken', async () => {
     response = await request
       .post('/user/plays')
-      .send({ track_id: faker.datatype.uuid() })
+      .send({ trackId: faker.datatype.uuid() })
 
     expect(response.status).to.eql(401)
   })
   it('should handle an invalid access token', async () => {
     response = await request.post('/user/plays')
-      .send({ track_id: faker.datatype.uuid() })
+      .send({ trackId: faker.datatype.uuid() })
       .set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
     expect(response.status).to.eql(401)
