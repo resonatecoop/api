@@ -34,7 +34,7 @@ module.exports = function () {
         data: result
       }
     } catch (err) {
-      console.log('err', err)
+      console.error(err)
       ctx.status = err.status || 500
       ctx.throw(ctx.status, err.message)
     }

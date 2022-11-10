@@ -100,7 +100,6 @@ module.exports = function () {
         ],
         ...(having ? { having } : {}),
         group,
-        logging: console.log,
         subQuery: false
       })
 
@@ -125,7 +124,7 @@ module.exports = function () {
         }
       }
     } catch (err) {
-      console.log('err', err)
+      console.error(err)
       ctx.throw(500, err.message)
     }
 

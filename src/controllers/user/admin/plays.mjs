@@ -43,8 +43,7 @@ export default () => {
           where: {
             creatorId: ctx.request.query.creatorId
           }
-        }],
-        logging: console.log
+        }]
       })
 
       ctx.body = {

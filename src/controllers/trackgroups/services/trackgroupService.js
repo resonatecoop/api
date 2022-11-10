@@ -22,7 +22,6 @@ const trackgroupService = (ctx) => {
         o.tags = item.get('tags')
 
         o.cover = coverSrc(item.cover, '600', ext, !item.dataValues.cover_metadata)
-
         o.images = variants.reduce((o, key) => {
           const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
 
