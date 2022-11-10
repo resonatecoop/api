@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 const { Track, TrackGroup, Favorite, TrackGroupItem, Play } = require('../../../src/db/models')
-const { request, expect, testArtistId, testUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const { request, expect, testArtistId, testUserId, testAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 const { faker } = require('@faker-js/faker')
 const ResetDB = require('../../ResetDB')
@@ -11,22 +11,6 @@ describe('User.ts/misc user info endpoint test', () => {
   ResetDB()
 
   let response = null
-
-  it('should handle no authentication / accessToken', async () => {
-    response = await request
-      .post('/user/plays/')
-      .send({ track_id: faker.datatype.uuid() })
-
-    expect(response.status).to.eql(401)
-  })
-
-  it('should handle an invalid access token', async () => {
-    response = await request.post('/user/plays/')
-      .send({ track_id: faker.datatype.uuid() })
-      .set('Authorization', `Bearer ${testInvalidAccessToken}`)
-
-    expect(response.status).to.eql(401)
-  })
 
   it('should GET /user/collection', async () => {
     // This checks what songs a user has paid the full price for.
