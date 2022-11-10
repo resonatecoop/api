@@ -5,7 +5,7 @@ const { User, Playlist } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 const ResetDB = require('../../ResetDB')
 
-describe('users endpoint tests', () => {
+describe('/users endpoint tests', () => {
   ResetDB()
   let response = null
 

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     playlistId: {
       type: DataTypes.UUID,
+      allowNull: false,
       validate: {
         isUUID: 4
       },
@@ -26,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     trackId: {
       type: DataTypes.UUID,
+      allowNull: false,
       field: 'track_id'
     },
     updatedAt: {

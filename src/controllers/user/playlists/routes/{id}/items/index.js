@@ -22,7 +22,7 @@ module.exports = function () {
       let result = await Playlist.findOne({
         attributes: ['creator_id'],
         where: {
-          creator_id: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         },
         include: [{

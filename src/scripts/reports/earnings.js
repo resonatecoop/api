@@ -23,7 +23,7 @@ const findOneArtistEarnings = async (startDate, endDate, creatorId) => {
     include: [
       {
         model: UserGroup,
-        as: 'user_groups',
+        as: 'userGroups',
         attributes: ['displayName'],
         required: true,
         include: [{
@@ -49,7 +49,7 @@ const findOneArtistEarnings = async (startDate, endDate, creatorId) => {
 
   // For each user group of this user
   const report = []
-  const sums = user.user_groups.map(group => {
+  const sums = user.userGroups.map(group => {
     const groupSums = {
       id: group.id,
       displayName: group.displayName,

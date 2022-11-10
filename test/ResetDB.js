@@ -26,7 +26,7 @@ const ResetDB = () => {
   before('reset the test database to test seed data', async () => {
     await seeder.down({ to: 0 })
     await seeder.up()
-    console.log('>>> reset the db! >>>')
+    console.log('   >>> reset the db! >>>')
   })
 }
 

@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs')
-
 async function hashPassword ({ password }) {
   return await bcrypt.hash(password, 3)
   // const salt = generateSalt()
@@ -97,6 +96,39 @@ module.exports = (sequelize, DataTypes) => {
     underscored: true,
     modelName: 'User',
     tableName: 'users',
+    defaultScope: {
+      attributes: [
+        'id',
+        'displayName',
+        'email',
+        'country',
+        'emailConfirmed',
+        'member',
+        'roleId',
+        'newsletterNotification']
+    },
+    scopes: {
+      profile: () => ({
+        include: [
+          {
+            model: sequelize.models.Role,
+            as: 'role'
+          },
+          {
+            model: sequelize.models.Credit,
+            as: 'credit'
+          },
+          {
+            model: sequelize.models.UserGroup,
+            as: 'userGroups'
+          },
+          {
+            model: sequelize.models.UserMembership,
+            as: 'memberships'
+          }
+        ]
+      })
+    },
     hooks: {
       beforeCreate: async (instance, options) => {
         instance.dataValues.email = instance.dataValues.email.toLowerCase()
@@ -111,7 +143,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.hasOne(models.Role, { as: 'role', sourceKey: 'roleId', foreignKey: 'id' })
     User.hasOne(models.Credit, { as: 'credit', foreignKey: 'userId' })
-    User.hasMany(models.UserGroup, { as: 'user_groups', foreignKey: 'ownerId' })
+    User.hasMany(models.UserGroup, { as: 'userGroups', foreignKey: 'ownerId' })
     User.hasMany(models.UserMembership, { as: 'memberships', foreignKey: 'userId' })
   }
 

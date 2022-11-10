@@ -1,4 +1,4 @@
-const { Playlist, PlaylistItem, Track, User } = require('../../../../../../db/models')
+const { Playlist, PlaylistItem, Track } = require('../../../../../../db/models')
 const { Op } = require('sequelize')
 const { authenticate } = require('../../../../authenticate')
 
@@ -20,23 +20,18 @@ module.exports = function () {
   async function PUT (ctx, next) {
     const body = ctx.request.body
     try {
-      const user = User.findOne({
-        where: {
-          id: ctx.profile.id
-        }
-      })
       let result = await Playlist.findOne({
         attributes: ['id'],
         where: {
-          creatorId: user.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         },
         include: [{
           model: PlaylistItem,
           attributes: ['id', 'index'],
           where: {
-            track_id: {
-              [Op.notIn]: body.tracks.map((item) => item.track_id)
+            trackId: {
+              [Op.notIn]: body.tracks.map((item) => item.trackId)
             }
           },
           required: false,
@@ -85,7 +80,8 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      console.error(err)
+      ctx.throw(500, err.message)
     }
 
     await next()
@@ -116,9 +112,9 @@ module.exports = function () {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['track_id'],
+                required: ['trackId'],
                 properties: {
-                  track_id: {
+                  trackId: {
                     type: 'string',
                     format: 'uuid'
                   },

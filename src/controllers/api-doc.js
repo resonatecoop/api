@@ -30,6 +30,18 @@ const apiDoc = {
     version: '4.0.0'
   },
   definitions: {
+    ProfileUpdate: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        displayName: {
+          type: 'string'
+        },
+        newsletterNotification: {
+          type: 'boolean'
+        }
+      }
+    },
     Artist: {
       type: 'object',
       properties: {
