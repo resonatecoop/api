@@ -3,6 +3,30 @@ const profileImage = require('../../../../util/profile-image')
 const gravatar = require('gravatar')
 const { authenticate } = require('../../authenticate')
 
+const profileService = ctx => {
+  return {
+    single: async (user) => {
+      const aYearAgo = new Date()
+      aYearAgo.setFullYear(aYearAgo.getFullYear() - 1)
+
+      const data = {
+        ...user.get(),
+        credit: user.credit ?? { total: 0 },
+        isListenerMember: !!user.memberships?.find(
+          (m) => m.class.name === 'Listener' &&
+            new Date(m.updatedAt).getTime() > aYearAgo.getTime()
+        ),
+        gravatar: gravatar.url(user.email, { protocol: 'https' })
+      }
+
+      data.isMusicMember = !!user.userGroups?.find(ug => ug.trackgroups?.length)
+
+      data.avatar = await profileImage(ctx.profile.id)
+      return data
+    }
+  }
+}
+
 module.exports = function () {
   const operations = {
     GET: [authenticate, GET],
@@ -21,18 +45,8 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
-      // FIXME: use a profileService
-      const data = {
-        ...result.get(),
-        nickname: result.displayName ?? result.email,
-        credit: result.credit ?? { total: 0 },
-        gravatar: gravatar.url(result.email, { protocol: 'https' })
-      }
-
-      data.avatar = await profileImage(ctx.profile.id)
-
       ctx.body = {
-        data,
+        data: await profileService(ctx).single(result),
         status: 'ok'
       }
     } catch (err) {
@@ -96,9 +110,8 @@ module.exports = function () {
         }
       })
 
-      // FIXME: use a profileService
       ctx.body = {
-        data: scopedUser.get(),
+        data: await profileService(ctx).single(scopedUser.get()),
         message: 'Profile data updated',
         status: 'ok'
       }

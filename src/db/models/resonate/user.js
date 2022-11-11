@@ -1,16 +1,9 @@
 const bcrypt = require('bcryptjs')
+const { Op } = require('sequelize')
+
 async function hashPassword ({ password }) {
   return await bcrypt.hash(password, 3)
-  // const salt = generateSalt()
-  // const hash = crypto
-  //   .pbkdf2Sync(password, salt, 10000, 512, 'sha512')
-  //   .toString('base64')
-  // return `${hash}:${salt}`
 }
-
-// function generateSalt () {
-//   return crypto.randomBytes(16).toString('base64')
-// }
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -87,11 +80,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    defaultScope: {
-      attributes: {
-        exclude: ['password']
-      }
-    },
     paranoid: true,
     underscored: true,
     modelName: 'User',
@@ -109,6 +97,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     scopes: {
       profile: () => ({
+        subQuery: false,
         include: [
           {
             model: sequelize.models.Role,
@@ -120,11 +109,37 @@ module.exports = (sequelize, DataTypes) => {
           },
           {
             model: sequelize.models.UserGroup,
-            as: 'userGroups'
+            as: 'userGroups',
+            include: [{
+              model: sequelize.models.UserGroupType,
+              as: 'type'
+            }, {
+              model: sequelize.models.TrackGroup,
+              required: false,
+              attributes: ['enabled', 'private', 'release_date'],
+              where: {
+                enabled: true,
+                private: false,
+                release_date: {
+                  [Op.gte]: sequelize.literal('NOW() - interval \'2 year\'')
+                }
+              },
+              as: 'trackgroups'
+            }, {
+              model: sequelize.models.Track,
+              attributes: [],
+              as: 'tracks'
+            }]
           },
           {
             model: sequelize.models.UserMembership,
-            as: 'memberships'
+            as: 'memberships',
+            attributes: ['id'],
+            include: [{
+              model: sequelize.models.MembershipClass,
+              as: 'class',
+              attributes: ['name', 'id']
+            }]
           }
         ]
       })

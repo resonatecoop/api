@@ -21,6 +21,7 @@ module.exports = function () {
         attributes: ['id', 'displayName', 'description', 'shortBio', 'email'],
         include: [{
           model: UserGroupType,
+          as: 'type',
           where: {
             name: 'artist'
           },
@@ -37,6 +38,7 @@ module.exports = function () {
         attributes: ['id', 'displayName', 'description', 'shortBio', 'email'],
         include: [{
           model: UserGroupType,
+          as: 'type',
           where: {
             name: 'labels'
           },
@@ -53,6 +55,7 @@ module.exports = function () {
         attributes: ['id', 'displayName', 'description', 'shortBio', 'email'],
         include: [{
           model: UserGroupType,
+          as: 'type',
           where: {
             name: 'bands'
           },
@@ -103,7 +106,7 @@ module.exports = function () {
       }
     } catch (err) {
       console.error(err)
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
   }
 

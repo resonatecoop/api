@@ -49,5 +49,9 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'user_memberships'
   })
 
+  UserMembership.associate = (models) => {
+    UserMembership.hasOne(models.MembershipClass, { as: 'class', sourceKey: 'membershipClassId', foreignKey: 'id' })
+  }
+
   return UserMembership
 }

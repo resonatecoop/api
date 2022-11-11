@@ -1,4 +1,5 @@
 const coverSrc = require('../../../util/cover-src')
+const trackService = require('../../tracks/services/trackService')
 
 const playlistService = (ctx) => {
   const single = (data) => {
@@ -20,34 +21,10 @@ const playlistService = (ctx) => {
       creatorId: data.creator?.id,
       id: data.id,
       items: data.items?.map((item) => {
-        const fallback = !item.track.cover_art ? false : !item.track.cover_metadata
-
+        const track = trackService(ctx).single(item.track)
         return {
           index: item.index,
-          track: {
-            id: item.track.id,
-            title: item.track.title,
-            status: item.track.status,
-            album: item.track.album,
-            duration: item.track.duration,
-            creator_id: item.track.creator_id,
-            artist: item.track.artist,
-            cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
-            images: variants.reduce((o, key) => {
-              const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-              return Object.assign(o,
-                {
-                  [variant]: {
-                    width: key,
-                    height: key,
-                    url: coverSrc(item.track.cover_art || data.cover, key, ext, fallback)
-                  }
-                }
-              )
-            }, {}),
-            url: `${process.env.APP_HOST}/api/v3/user/stream/${item.track.id}`
-          }
+          track
         }
       }),
       images: variants.reduce((o, key) => {

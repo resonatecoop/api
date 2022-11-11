@@ -1,4 +1,4 @@
-const { User, Playlist, PlaylistItem, Track, File } = require('../../../../../db/models')
+const { User, Playlist, PlaylistItem, File } = require('../../../../../db/models')
 const { Op } = require('sequelize')
 const { authenticate } = require('../../../authenticate')
 const playlistService = require('../../../../playlists/services/playlistService')
@@ -187,7 +187,7 @@ module.exports = function () {
         where.type = type
       }
 
-      const result = await Playlist.findOne({
+      const result = await Playlist.scope('items').findOne({
         attributes: [
           'about',
           'id',
@@ -198,9 +198,6 @@ module.exports = function () {
           'title'
         ],
         where,
-        order: [
-          [{ model: PlaylistItem, as: 'items' }, 'index', 'asc']
-        ],
         include: [
           {
             model: User,
@@ -218,40 +215,6 @@ module.exports = function () {
                 [Op.in]: ['image/jpeg', 'image/png']
               }
             }
-          },
-          {
-            model: PlaylistItem,
-            attributes: ['id', 'index'],
-            as: 'items',
-            include: [{
-              model: Track,
-              attributes: ['id', 'creator_id', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
-              as: 'track',
-              where: {
-                status: {
-                  [Op.in]: [0, 2, 3]
-                }
-              },
-              include: [
-                {
-                  model: File,
-                  required: false,
-                  attributes: ['id', 'owner_id'],
-                  as: 'cover_metadata',
-                  where: {
-                    mime: {
-                      [Op.in]: ['image/jpeg', 'image/png']
-                    }
-                  }
-                },
-                {
-                  model: File,
-                  attributes: ['id', 'size', 'owner_id'],
-                  as: 'audiofile'
-                }
-              ]
-            }
-            ]
           }
         ]
       })

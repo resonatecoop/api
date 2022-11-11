@@ -101,7 +101,7 @@ module.exports = function () {
       }
     } catch (err) {
       console.error(err)
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, 'Error finding file')
     }
 
     await next()

@@ -1,6 +1,5 @@
-const { apiRoot } = require('../../../../../constants')
 const { Resonate: sequelize, Track } = require('../../../../../db/models')
-const coverSrc = require('../../../../../util/cover-src')
+const trackService = require('../../../../tracks/services/trackService')
 
 module.exports = function () {
   const operations = {
@@ -47,46 +46,8 @@ module.exports = function () {
         model: Track
       })
 
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600, 1500]
-
       ctx.body = {
-        data: result.map((item) => {
-          return {
-            id: item.id,
-            creator_id: item.creator_id,
-            title: item.title,
-            duration: item.duration,
-            album: item.album,
-            year: item.year,
-            cover: coverSrc(item.cover_art, '600', '.jpg', !item.cover),
-            cover_metadata: {
-              id: item.cover_art
-              // width, height ?
-            },
-            artist: item.artist,
-            status: item.status === 2 ? 'Free' : 'Paid',
-            url: `${process.env.APP_HOST}${apiRoot}/stream/${item.id}`,
-            images: variants.reduce((o, key) => {
-              const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-              return Object.assign(o,
-                {
-                  [variant]: {
-                    width: key,
-                    height: key,
-                    url: coverSrc(item.cover_art, key, ext, !item.dataValues.cover)
-                  }
-                }
-              )
-            }, {})
-          }
-        })
+        data: trackService(ctx).list(result)
       }
     } catch (err) {
       ctx.throw(ctx.status, err.message)

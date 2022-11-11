@@ -84,7 +84,7 @@ module.exports = function () {
                   as: 'memberships'
                 }, {
                   model: UserGroup,
-                  as: 'user_groups',
+                  as: 'userGroups',
                   attributes: ['id'],
                   include: [{
                     model: TrackGroup,

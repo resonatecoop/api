@@ -6,7 +6,7 @@ const { request, expect, testUserId, testArtistId, testArtistUserId } = require(
 const { Track, UserGroupType, UserGroup, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 
-describe('Api.ts/artists endpoint test', () => {
+describe('baseline/artists endpoint test', () => {
   ResetDB()
 
   let response = null
@@ -252,11 +252,11 @@ describe('Api.ts/artists endpoint test', () => {
     expect(theData.length).to.eql(1)
 
     const theItem = theData[0]
-    expect(theItem).to.include.keys('id', 'title', 'cover_metadata', 'cover', 'artist', 'status', 'url', 'images')
+    expect(theItem).to.include.keys('id', 'title', 'cover_metadata', 'creatorId', 'artist', 'status', 'url', 'images')
 
     expect(theItem.id).to.eql(track.id)
     expect(theItem.title).to.eql(displayName)
-    expect(theItem.trackgroup.title).to.eql(displayName + 'Album')
+    expect(theItem.trackGroup.title).to.eql(displayName + 'Album')
 
     expect(theItem.cover_metadata).to.be.an('object')
     expect(theItem.cover_metadata).to.include.keys('id')

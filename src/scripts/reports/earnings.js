@@ -27,7 +27,8 @@ const findOneArtistEarnings = async (startDate, endDate, creatorId) => {
         attributes: ['displayName'],
         required: true,
         include: [{
-          model: UserGroupType
+          model: UserGroupType,
+          as: 'type'
         }, {
           model: Track,
           attributes: ['id', 'title'],
