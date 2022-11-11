@@ -1,17 +1,9 @@
 const bcrypt = require('bcryptjs')
+const { Op } = require('sequelize')
 
 async function hashPassword ({ password }) {
   return await bcrypt.hash(password, 3)
-  // const salt = generateSalt()
-  // const hash = crypto
-  //   .pbkdf2Sync(password, salt, 10000, 512, 'sha512')
-  //   .toString('base64')
-  // return `${hash}:${salt}`
 }
-
-// function generateSalt () {
-//   return crypto.randomBytes(16).toString('base64')
-// }
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -88,15 +80,70 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    defaultScope: {
-      attributes: {
-        exclude: ['password']
-      }
-    },
     paranoid: true,
     underscored: true,
     modelName: 'User',
     tableName: 'users',
+    defaultScope: {
+      attributes: [
+        'id',
+        'displayName',
+        'email',
+        'country',
+        'emailConfirmed',
+        'member',
+        'roleId',
+        'newsletterNotification']
+    },
+    scopes: {
+      profile: () => ({
+        subQuery: false,
+        include: [
+          {
+            model: sequelize.models.Role,
+            as: 'role'
+          },
+          {
+            model: sequelize.models.Credit,
+            as: 'credit'
+          },
+          {
+            model: sequelize.models.UserGroup,
+            as: 'userGroups',
+            include: [{
+              model: sequelize.models.UserGroupType,
+              as: 'type'
+            }, {
+              model: sequelize.models.TrackGroup,
+              required: false,
+              attributes: ['enabled', 'private', 'release_date'],
+              where: {
+                enabled: true,
+                private: false,
+                release_date: {
+                  [Op.gte]: sequelize.literal('NOW() - interval \'2 year\'')
+                }
+              },
+              as: 'trackgroups'
+            }, {
+              model: sequelize.models.Track,
+              attributes: [],
+              as: 'tracks'
+            }]
+          },
+          {
+            model: sequelize.models.UserMembership,
+            as: 'memberships',
+            attributes: ['id'],
+            include: [{
+              model: sequelize.models.MembershipClass,
+              as: 'class',
+              attributes: ['name', 'id']
+            }]
+          }
+        ]
+      })
+    },
     hooks: {
       beforeCreate: async (instance, options) => {
         instance.dataValues.email = instance.dataValues.email.toLowerCase()
@@ -111,7 +158,7 @@ module.exports = (sequelize, DataTypes) => {
   User.associate = (models) => {
     User.hasOne(models.Role, { as: 'role', sourceKey: 'roleId', foreignKey: 'id' })
     User.hasOne(models.Credit, { as: 'credit', foreignKey: 'userId' })
-    User.hasMany(models.UserGroup, { as: 'user_groups', foreignKey: 'ownerId' })
+    User.hasMany(models.UserGroup, { as: 'userGroups', foreignKey: 'ownerId' })
     User.hasMany(models.UserMembership, { as: 'memberships', foreignKey: 'userId' })
   }
 

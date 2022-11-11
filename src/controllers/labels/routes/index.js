@@ -24,6 +24,7 @@ module.exports = function () {
         limit,
         include: [{
           model: UserGroupType,
+          as: 'type',
           required: true,
           where: {
             name: 'label'
@@ -43,7 +44,8 @@ module.exports = function () {
         pages: Math.ceil(count / limit)
       }
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      console.error(err)
+      ctx.throw(500, err.message)
     }
 
     await next()

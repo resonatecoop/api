@@ -1,4 +1,4 @@
-const { User, Playlist, PlaylistItem, Track, File } = require('../../../db/models')
+const { User, Playlist, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 const { loadProfileIntoContext } = require('../../user/authenticate')
@@ -37,7 +37,7 @@ module.exports = function () {
     }
 
     try {
-      const result = await Playlist.findOne({
+      const result = await Playlist.scope('items').findOne({
         attributes: [
           'about',
           'cover',
@@ -65,42 +65,6 @@ module.exports = function () {
                 [Op.in]: ['image/jpeg', 'image/png']
               }
             }
-          },
-          {
-            model: PlaylistItem,
-            separate: true,
-            attributes: ['id', 'index'],
-            order: [['index', 'ASC']],
-            as: 'items',
-            include: [{
-              model: Track,
-              attributes: ['id', 'creatorId', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
-              as: 'track',
-              where: {
-                status: {
-                  [Op.in]: [0, 2, 3]
-                }
-              },
-              include: [
-                {
-                  model: File,
-                  required: false,
-                  attributes: ['id', 'owner_id'],
-                  as: 'cover_metadata',
-                  where: {
-                    mime: {
-                      [Op.in]: ['image/jpeg', 'image/png']
-                    }
-                  }
-                },
-                {
-                  model: File,
-                  attributes: ['id', 'size', 'owner_id'],
-                  as: 'audiofile'
-                }
-              ]
-            }
-            ]
           }
         ]
       })

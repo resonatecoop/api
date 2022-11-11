@@ -1,4 +1,5 @@
 const { UserGroup, UserGroupType, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
+const trackgroupService = require('../../../trackgroups/services/trackgroupService')
 const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
@@ -103,7 +104,7 @@ module.exports = function () {
       ctx.body = {
         data: result.map((item) => {
           const o = Object.assign({}, item.dataValues)
-
+          o.trackgroups = trackgroupService(ctx).list(o.trackgroups)
           return o
         }),
         count: count,

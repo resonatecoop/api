@@ -5,7 +5,7 @@ const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/mod
 const { faker } = require('@faker-js/faker')
 const ResetDB = require('../../ResetDB')
 
-describe('Api.ts/track endpoint test', () => {
+describe('baeline/track endpoint test', () => {
   ResetDB()
   let response = null
 
@@ -53,10 +53,12 @@ describe('Api.ts/track endpoint test', () => {
 
     const theData = attributes.data[0]
 
-    expect(theData).to.include.keys('id', 'title', 'trackgroup', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creator', 'creatorId', 'cover_metadata', 'artist', 'status', 'url', 'images')
     expect(theData.id).to.eql(track.id)
     expect(theData.title).to.eql(track.title)
-    expect(theData.trackgroup.title).to.eql(trackgroup.title)
+    expect(theData.trackGroup.title).to.eql(trackgroup.title)
+    expect(theData.creatorId).to.eql(testArtistId)
+    expect(theData.creator.id).to.eql(testArtistId)
 
     expect(theData.cover_metadata).to.include.keys('id')
     expect(theData.cover_metadata.id).to.be.null
@@ -97,7 +99,7 @@ describe('Api.ts/track endpoint test', () => {
 
     const theData = attributes.data[0]
     expect(theData).to.be.an('object')
-    expect(theData).to.include.keys('id', 'title', 'trackgroup', 'year', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creatorId', 'creator', 'year', 'cover_metadata', 'artist', 'status', 'url', 'images')
 
     // We can't really know what item is first
     expect(theData.cover_metadata).to.be.an('object')

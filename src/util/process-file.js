@@ -176,8 +176,8 @@ uploadQueue.process(uploadJob)
  */
 const processFile = ctx => {
   return async file => {
-    const { size: fileSize, path: filePath } = file
-    const type = await FileType.fromFile(filePath)
+    const { size: fileSize, filepath } = file
+    const type = await FileType.fromFile(filepath)
     const mime = type !== null ? type.mime : file.type
     const isImage = SUPPORTED_IMAGE_MIME_TYPES
       .includes(mime)
@@ -190,7 +190,7 @@ const processFile = ctx => {
       ctx.throw(400, `File type not supported: ${mime}`)
     }
 
-    const buffer = await fs.readFile(file.path)
+    const buffer = await fs.readFile(filepath)
     const sha1sum = shasum(buffer)
 
     // create record for original file
@@ -206,7 +206,7 @@ const processFile = ctx => {
 
     try {
       await fs.rename(
-        file.path,
+        filepath,
         path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`)
       )
     } catch (e) {

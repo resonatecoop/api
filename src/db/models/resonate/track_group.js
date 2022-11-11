@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     cover: {
       type: DataTypes.UUID,
-      allowNull: false,
       validate: {
         isUUID: 4
       }

@@ -1,7 +1,31 @@
-const { UserGroup, User, Role, OauthUser, Credit /* Resonate: sequelize */ } = require('../../../../db/models')
+const { User } = require('../../../../db/models')
 const profileImage = require('../../../../util/profile-image')
 const gravatar = require('gravatar')
 const { authenticate } = require('../../authenticate')
+
+const profileService = ctx => {
+  return {
+    single: async (user) => {
+      const aYearAgo = new Date()
+      aYearAgo.setFullYear(aYearAgo.getFullYear() - 1)
+
+      const data = {
+        ...user.get(),
+        credit: user.credit ?? { total: 0 },
+        isListenerMember: !!user.memberships?.find(
+          (m) => m.class.name === 'Listener' &&
+            new Date(m.updatedAt).getTime() > aYearAgo.getTime()
+        ),
+        gravatar: gravatar.url(user.email, { protocol: 'https' })
+      }
+
+      data.isMusicMember = !!user.userGroups?.find(ug => ug.trackgroups?.length)
+
+      data.avatar = await profileImage(ctx.profile.id)
+      return data
+    }
+  }
+}
 
 module.exports = function () {
   const operations = {
@@ -10,33 +34,10 @@ module.exports = function () {
   }
   async function GET (ctx, next) {
     try {
-      const result = await User.findOne({
-        attributes: [
-          'id',
-          'displayName',
-          'email',
-          'country',
-          'newsletterNotification'
-          // 'role'
-          // 'registered'
-        ],
+      const result = await User.scope('defaultScope', 'profile').findOne({
         where: {
           id: ctx.profile.id
-        },
-        include: [
-          {
-            model: Role,
-            as: 'role'
-          },
-          {
-            model: Credit,
-            as: 'credit'
-          },
-          {
-            model: UserGroup,
-            as: 'user_groups'
-          }
-        ]
+        }
       })
 
       if (!result) {
@@ -44,35 +45,13 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
-      const { id, login, newsletterNotification, displayName, country, registered, email, role, credit, user_groups: userGroups } = result
-
-      // FIXME: Just return the Sequelize response here
-      const data = {
-        nickname: displayName ?? email,
-        token: ctx.accessToken, // for upload endpoint, may replace with upload specific token
-        id,
-        login,
-        country,
-        newsletterNotification,
-        registered,
-        email,
-        role,
-        credit: credit ?? { total: 0 },
-        userGroups,
-        gravatar: gravatar.url(email, { protocol: 'https' }),
-        profiles: []
-      }
-
-      data.avatar = await profileImage(ctx.profile.id)
-
       ctx.body = {
-        data,
+        data: await profileService(ctx).single(result),
         status: 'ok'
       }
     } catch (err) {
       console.error('err', err)
-      ctx.status = err.status
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()
@@ -112,49 +91,33 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
-      if (body.email && body.email !== ctx.profile.email) {
-        const oauthuser = await OauthUser.findOne({
-          where: {
-            username: body.email
-          }
-        })
-
-        const user = await User.findOne({
-          where: {
-            email: body.email
-          }
-        })
-
-        if (oauthuser || user) {
-          ctx.status = 400
-          ctx.throw(400, 'Email is already taken')
+      const user = await User.scope('defaultScope', 'profile').findOne({
+        where: {
+          id: ctx.profile.id
         }
+      })
 
-        await OauthUser.update({
-          username: body.email
-        }, {
-          where: {
-            username: ctx.profile.email
-          }
-        })
-
-        await User.update({
-          email: body.email
-        }, {
-          where: {
-            id: ctx.profile.id
-          }
-        })
+      if (!user) {
+        ctx.status = 404
+        ctx.throw(404, 'Something weird happened')
       }
 
+      await user.update(body)
+
+      const scopedUser = await User.scope('defaultScope', 'profile').findOne({
+        where: {
+          id: user.id
+        }
+      })
+
       ctx.body = {
-        data: null,
+        data: await profileService(ctx).single(scopedUser.get()),
         message: 'Profile data updated',
         status: 'ok'
       }
     } catch (err) {
-      ctx.status = err.status
-      ctx.throw(ctx.status, err.message)
+      console.error(err)
+      ctx.throw(500, err.message)
     }
 
     await next()
@@ -170,7 +133,7 @@ module.exports = function () {
       name: 'profile',
       description: 'The user\'s profile',
       schema: {
-        $ref: '#definitions/Profile'
+        $ref: '#/definitions/ProfileUpdate'
       }
     }],
     responses: {

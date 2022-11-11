@@ -20,7 +20,7 @@ module.exports = function () {
   async function PUT (ctx, next) {
     const body = ctx.request.body
 
-    const ids = body.tracks.map((item) => item.track_id)
+    const ids = body.tracks.map((item) => item.trackId)
 
     try {
       let result = await Playlist.findOne({
@@ -121,14 +121,11 @@ module.exports = function () {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['track_id'],
+                required: ['trackId'],
                 properties: {
-                  track_id: {
-                    type: 'number',
-                    minimum: 1
-                  },
-                  title: {
-                    type: 'string'
+                  trackId: {
+                    type: 'string',
+                    format: 'uuid'
                   },
                   index: {
                     type: 'number',

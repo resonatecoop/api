@@ -24,7 +24,7 @@ module.exports = function () {
       }
       await next()
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
   }
 

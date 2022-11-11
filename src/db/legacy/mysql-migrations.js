@@ -143,7 +143,7 @@ const migrateTracks = async (client) => {
       if (error) reject(error)
 
       const missingUserGroups = uniq(results.filter(r => {
-        return !usersGroupedByLegacyId[r.uid]?.user_groups?.[0]
+        return !usersGroupedByLegacyId[r.uid]?.userGroups?.[0]
       }).map(r => r.uid))
       console.log('missingUserGroups', missingUserGroups)
       await Promise.all(missingUserGroups.map(legacyId =>
@@ -152,7 +152,7 @@ const migrateTracks = async (client) => {
       usersGroupedByLegacyId = await groupUsersByLegacyId()
       console.log('bulk generating tracks')
       await Track.bulkCreate(results.map(r => ({
-        creatorId: usersGroupedByLegacyId[r.uid]?.user_groups?.[0]?.id,
+        creatorId: usersGroupedByLegacyId[r.uid]?.userGroups?.[0]?.id,
         legacyId: r.tid,
         title: r.track_name,
         artist: r.track_artist,
@@ -182,7 +182,7 @@ const groupUsersByLegacyId = async () => {
     },
     include: [{
       model: UserGroup,
-      as: 'user_groups'
+      as: 'userGroups'
     }]
   })
 
@@ -202,7 +202,7 @@ const migrateTrackGroups = async (client, id) => {
     client.query('SELECT * FROM track_groups WHERE type != \'playlist\'', async function (error, results, fields) {
       if (error) reject(error)
 
-      const missingUserGroups = uniq(results.filter(r => !usersGroupedByLegacyId[r.creator_id]?.user_groups?.[0]).map(r => r.creator_id))
+      const missingUserGroups = uniq(results.filter(r => !usersGroupedByLegacyId[r.creator_id]?.userGroups?.[0]).map(r => r.creator_id))
       console.log('missingUserGroups', missingUserGroups)
       await Promise.all(missingUserGroups.map(legacyId =>
         buildUserGroup(client, legacyId, usersGroupedByLegacyId[legacyId])))
@@ -218,7 +218,7 @@ const migrateTrackGroups = async (client, id) => {
           about: r.about,
           private: r.private,
           display_artist: r.display_artist,
-          creatorId: usersGroupedByLegacyId[r.creator_id]?.user_groups?.[0]?.id,
+          creatorId: usersGroupedByLegacyId[r.creator_id]?.userGroups?.[0]?.id,
           composers: r.composers?.split(','),
           performers: r.performers?.split(','),
           tags: r.tags?.split(','),
@@ -469,12 +469,12 @@ const migrateLinks = async (client) => {
 
       try {
         await UserGroupLink.bulkCreate(results
-          .filter(r => usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id && r.meta_value !== '')
+          .filter(r => usersGroupedByLegacyId[r.user_id]?.userGroups?.[0]?.id && r.meta_value !== '')
           .map(r => ({
             uri: r.meta_value,
             platform: r.meta_key,
             personalData: false,
-            ownerId: usersGroupedByLegacyId[r.user_id].user_groups?.[0].id
+            ownerId: usersGroupedByLegacyId[r.user_id].userGroups?.[0].id
           })))
       } catch (e) {
         console.error('e', e)
@@ -515,13 +515,13 @@ const migrateLabels = async (client) => {
         `)
         // Then we need to insert those connections into UserGroupMember
         await UserGroupMember.bulkCreate(results
-          .filter(r => usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id &&
+          .filter(r => usersGroupedByLegacyId[r.user_id]?.userGroups?.[0]?.id &&
             r.meta_value !== '' &&
             !isNaN(+r.meta_value) &&
-            usersGroupedByLegacyId[+r.meta_value]?.user_groups?.[0]?.id)
+            usersGroupedByLegacyId[+r.meta_value]?.userGroups?.[0]?.id)
           .map(r => ({
-            memberId: usersGroupedByLegacyId[r.user_id].user_groups?.[0].id,
-            belongsToId: usersGroupedByLegacyId[+r.meta_value].user_groups?.[0].id
+            memberId: usersGroupedByLegacyId[r.user_id].userGroups?.[0].id,
+            belongsToId: usersGroupedByLegacyId[+r.meta_value].userGroups?.[0].id
           })))
       } catch (e) {
         console.error('e', e)
@@ -566,7 +566,7 @@ const migrateBands = async (client) => {
         // Then we need to insert those connections into UserGroupMember
         const bandRelations = results
           .filter(r => {
-            return usersGroupedByLegacyId[r.user_id]?.user_groups?.[0]?.id &&
+            return usersGroupedByLegacyId[r.user_id]?.userGroups?.[0]?.id &&
               r.meta_value !== ''
           })
           .reduce((array, r) => {
@@ -574,12 +574,12 @@ const migrateBands = async (client) => {
             const newValue = value?.map(v => +(v.replace(/"/g, ''))) ?? []
             const newArray = array.concat(...newValue.map(v => ({ bandId: v, userId: r.user_id })))
 
-            return newArray.filter(relation => usersGroupedByLegacyId[relation.bandId]?.user_groups?.[0]?.id)
+            return newArray.filter(relation => usersGroupedByLegacyId[relation.bandId]?.userGroups?.[0]?.id)
           }, [])
           .map(r => {
             return {
-              memberId: usersGroupedByLegacyId[r.userId].user_groups?.[0].id,
-              belongsToId: usersGroupedByLegacyId[r.bandId].user_groups?.[0].id
+              memberId: usersGroupedByLegacyId[r.userId].userGroups?.[0].id,
+              belongsToId: usersGroupedByLegacyId[r.bandId].userGroups?.[0].id
             }
           })
         console.log('bandRelations', bandRelations.length)

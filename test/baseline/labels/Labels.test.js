@@ -5,7 +5,7 @@ const { UserGroupType, UserGroup, UserGroupMember, TrackGroup } = require('../..
 const ResetDB = require('../../ResetDB')
 const { request, expect, testUserId, testArtistUserId } = require('../../testConfig')
 
-describe('Api.ts/labels endpoint test', async () => {
+describe('baseline/labels endpoint test', async () => {
   ResetDB()
   let response = null
   let labelType
@@ -33,7 +33,6 @@ describe('Api.ts/labels endpoint test', async () => {
     })
 
     response = await request.get('/labels')
-
     expect(response.status).to.eql(200)
 
     const attributes = response.body

@@ -29,7 +29,7 @@ module.exports = function () {
         offset: page > 1 ? (page - 1) * limit : 0,
         where: {
           private: false,
-          creator_id: ctx.params.id
+          creatorId: ctx.params.id
         },
         attributes: [
           'id',

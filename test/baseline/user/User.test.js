@@ -26,7 +26,7 @@ describe('User.ts/user endpoint test', () => {
     expect(response.status).to.eql(401)
   })
 
-  it('should get user profiles', async () => {
+  it('should GET user/profile', async () => {
     response = await request.get('/user/profile/').set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -38,9 +38,24 @@ describe('User.ts/user endpoint test', () => {
     const theData = attributes.data
     expect(theData).to.be.an('object')
 
-    expect(theData).to.include.keys('nickname', 'token', 'id', 'country', 'newsletterNotification', 'email', 'role', 'credit', 'userGroups', 'gravatar', 'profiles', 'avatar')
-    expect(theData.nickname).to.eql('artist')
-    expect(theData.token).to.eql('test-!@#$-test-%^&*')
+    expect(theData).to.include.keys(
+      'displayName',
+      'emailConfirmed',
+      'member',
+      'memberships',
+      'id',
+      'country',
+      'newsletterNotification',
+      'isListenerMember',
+      'isMusicMember',
+      'email',
+      'role',
+      'roleId',
+      'credit',
+      'userGroups',
+      'gravatar',
+      'avatar')
+    expect(theData.displayName).to.eql('artist')
     expect(theData.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
     expect(theData.country).to.be.null
     expect(theData.newsletterNotification).to.be.null
@@ -64,10 +79,6 @@ describe('User.ts/user endpoint test', () => {
     expect(theUserGroups.length).to.eql(1)
 
     expect(theData.gravatar).to.eql('https://s.gravatar.com/avatar/97f8b41e7967dcc56a5a0de728807d23')
-
-    const theProfiles = theData.profiles
-    expect(theProfiles).to.be.an('array')
-    expect(theProfiles.length).to.eql(0)
 
     expect(theData.avatar).to.be.an('object')
 
@@ -97,14 +108,6 @@ describe('User.ts/user endpoint test', () => {
 
     expect(response.status).to.eql(400)
     expect(response.body.message).to.include('Title is a required field')
-  })
-
-  it('should fail POST /user/trackgroups if cover is not provided', async () => {
-    response = await request.post('/user/trackgroups')
-      .set('Authorization', `Bearer ${testAccessToken}`)
-
-    expect(response.status).to.eql(400)
-    expect(response.body.message).to.include('TrackGroup.cover cannot be null')
   })
 
   it('should POST /user/trackgroups', async () => {

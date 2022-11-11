@@ -6,7 +6,7 @@ const { faker } = require('@faker-js/faker')
 const { UserGroup, UserGroupType } = require('../../../src/db/models')
 const ResetDB = require('../../ResetDB')
 
-describe('Api.ts/search endpoint test', () => {
+describe('baseline/search endpoint test', () => {
   ResetDB()
 
   it('should handle no provided search term/s', async () => {
@@ -35,7 +35,7 @@ describe('Api.ts/search endpoint test', () => {
     })
 
     const response = await request.get(`/search?q=${displayName}`)
-
+    console.log('response', response.body)
     expect(response.status).to.eql(200)
     expect(response.body.data.artists[0].displayName).to.eql(displayName)
 

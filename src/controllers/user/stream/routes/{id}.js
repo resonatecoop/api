@@ -82,7 +82,7 @@ module.exports = function () {
           try {
             ctx.body = fs.createReadStream(path.join(process.env.BASE_DATA_DIR ?? '/', '/data/media', alias))
           } catch (e) {
-            console.log('error', e)
+            console.error(e)
             ctx.throw(404, 'Not found')
           }
         } else {
@@ -100,8 +100,8 @@ module.exports = function () {
         }
       }
     } catch (err) {
-      console.log('err', err)
-      ctx.throw(ctx.status, err.message)
+      console.error(err)
+      ctx.throw(500, 'Error finding file')
     }
 
     await next()

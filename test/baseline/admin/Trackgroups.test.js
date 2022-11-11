@@ -22,8 +22,6 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     it('should handle an invalid access token', async () => {
       response = await request.get('/user/admin/trackgroups/').set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
-      console.log('trackgroups response.status: ', response.status)
-      // FIXME: status should be 401, but I'll take a 403. Close enough.
       expect(response.status).to.eql(401)
     })
     it('should reject access token for non-admin user', async () => {
