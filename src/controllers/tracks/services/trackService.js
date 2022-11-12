@@ -4,11 +4,11 @@ const { apiRoot } = require('../../../constants')
 
 const trackService = (ctx) => {
   const single = (item) => {
-    let ext = '.jpg'
+    const ext = '.jpg'
 
-    if (ctx.accepts('image/webp')) {
-      ext = '.webp'
-    }
+    // if (ctx.accepts('image/webp')) {
+    //   ext = '.webp'
+    // }
 
     const variants = [120, 600]
 

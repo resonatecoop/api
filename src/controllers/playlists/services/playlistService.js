@@ -3,11 +3,11 @@ const trackService = require('../../tracks/services/trackService')
 
 const playlistService = (ctx) => {
   const single = (data) => {
-    let ext = '.jpg'
+    const ext = '.jpg'
 
-    if (ctx.accepts('image/webp')) {
-      ext = '.webp'
-    }
+    // if (ctx.accepts('image/webp')) {
+    //   ext = '.webp'
+    // }
 
     const variants = [120, 600, 1500]
 
