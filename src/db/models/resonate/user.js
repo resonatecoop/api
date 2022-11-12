@@ -101,7 +101,8 @@ module.exports = (sequelize, DataTypes) => {
         include: [
           {
             model: sequelize.models.Role,
-            as: 'role'
+            as: 'role',
+            attribute: ['id', 'name']
           },
           {
             model: sequelize.models.Credit,

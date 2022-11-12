@@ -12,7 +12,6 @@ const trackService = (ctx) => {
 
     const variants = [120, 600]
 
-    console.log('item', item, item.trackOn?.[0]?.trackGroup ?? { title: item.get?.('trackgroup.title') })
     return {
       id: item.id,
       creatorId: item.creatorId ?? item.creator_id,
@@ -20,6 +19,7 @@ const trackService = (ctx) => {
       duration: item.duration,
       trackGroup: item.trackOn?.[0]?.trackGroup ?? { title: item.get?.('trackgroup.title') },
       year: item.year,
+      status: item.status,
       cover: item.cover_art
         ? coverSrc(item.cover_art, '600', ext, !item.cover)
         : coverSrc(item.cover, '600', ext, !item.file),
@@ -30,7 +30,6 @@ const trackService = (ctx) => {
       creator: item.creator,
       // FIXME: artist is legacy stuff, we probably need to migrate it.
       artist: item.artist ? he.decode(item.artist) : null,
-      status: item.status === 2 ? 'Free' : 'Paid',
       url: `${process.env.APP_HOST}${apiRoot}user/stream/${item.id}`,
       images: variants.reduce((o, key) => {
         const variant = ['small', 'medium', 'large'][variants.indexOf(key)]

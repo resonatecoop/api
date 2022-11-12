@@ -1,7 +1,7 @@
 const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
 const { Op } = require('sequelize')
-const coverSrc = require('../../../util/cover-src')
 const ms = require('ms')
+const trackgroupService = require('../services/trackgroupService')
 
 module.exports = function () {
   const operations = {
@@ -100,6 +100,10 @@ module.exports = function () {
                   model: File,
                   attributes: ['id', 'size', 'owner_id'],
                   as: 'audiofile'
+                }, {
+                  model: UserGroup,
+                  as: 'creator',
+                  attributes: ['id', 'displayName']
                 }
               ]
             }
@@ -117,78 +121,11 @@ module.exports = function () {
         plain: true
       })
 
-      let ext = '.jpg'
+      console.log('data', data)
 
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600]
-
+      // FIXME: combine this with trackService
       ctx.body = {
-        data: {
-          about: data.about,
-          cover: coverSrc(data.cover, !data.cover_metadata ? '600' : '1500', ext, !data.cover_metadata),
-          cover_metadata: {
-            id: data.cover
-          },
-          creatorId: data.creatorId,
-          display_artist: data.display_artist,
-          creator: data.creator,
-          download: data.download,
-          id: data.id,
-          items: data.items.map((item) => {
-            const fallback = !item.track.cover_art ? false : !item.track.cover_metadata
-
-            return {
-              index: item.index,
-              track: {
-                id: item.track.id,
-                title: item.track.title,
-                status: item.track.status,
-                album: item.track.album,
-                duration: item.track.duration,
-                artistId: item.track.creatorId,
-                artist: item.track.artist,
-                cover: coverSrc(item.track.cover_art || data.cover, '600', ext, fallback),
-                images: variants.reduce((o, key) => {
-                  const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-                  return Object.assign(o,
-                    {
-                      [variant]: {
-                        width: key,
-                        height: key,
-                        url: coverSrc(item.track.cover_art || data.cover, key, ext, fallback)
-                      }
-                    }
-                  )
-                }, {}),
-                url: `${process.env.APP_HOST}/api/v3/user/stream/${item.track.id}`
-              }
-            }
-          }),
-          images: variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(data.cover, key, ext, !data.cover_metadata)
-                }
-              }
-            )
-          }, {}),
-          peformers: data.peformers,
-          private: data.private,
-          release_date: data.release_date,
-          slug: data.slug,
-          tags: data.tags,
-          title: data.title,
-          type: data.type
-        },
+        data: trackgroupService(ctx).single(data),
         status: 'ok'
       }
     } catch (err) {

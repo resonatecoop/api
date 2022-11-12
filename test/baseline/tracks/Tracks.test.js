@@ -5,7 +5,7 @@ const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/mod
 const { faker } = require('@faker-js/faker')
 const ResetDB = require('../../ResetDB')
 
-describe('baeline/track endpoint test', () => {
+describe('baseline/track endpoint test', () => {
   ResetDB()
   let response = null
 
@@ -64,7 +64,7 @@ describe('baeline/track endpoint test', () => {
     expect(theData.cover_metadata.id).to.be.null
 
     expect(theData.artist).to.be.null
-    expect(theData.status).to.eql('Paid')
+    expect(theData.status).to.eql('paid')
     expect(theData.url).to.include(`user/stream/${track.id}`)
 
     expect(theData.images).to.include.keys('small', 'medium')
@@ -107,7 +107,7 @@ describe('baeline/track endpoint test', () => {
     expect(theData.cover_metadata.id).to.be.null
 
     expect(theData.artist).to.be.null
-    expect(theData.status).to.eql('Paid')
+    expect(theData.status).to.eql('free')
 
     expect(theData.images).to.be.an('object')
     expect(theData.images).to.include.keys('small', 'medium')

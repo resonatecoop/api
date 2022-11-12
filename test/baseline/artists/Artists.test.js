@@ -177,33 +177,20 @@ describe('baseline/artists endpoint test', () => {
     expect(theData.items.length).to.eql(10)
 
     const theItem = theData.items[0]
-    expect(theItem).to.include.keys('id', 'index', 'track_id', 'track')
-    expect(theItem.id).to.eql('ab536810-deef-4645-9ec5-7c642c035d6c')
+    expect(theItem).to.include.keys('trackId', 'index', 'track')
     expect(theItem.index).to.eql(0)
-    expect(theItem.track_id).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
+    expect(theItem.trackId).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
 
     const theTrack = theItem.track
-    expect(theTrack).to.include.keys('status', 'id', 'legacyId', 'creatorId', 'title', 'artist', 'album', 'album_artist', 'composer', 'year', 'url', 'cover_art',
-      'number', 'tags', 'updatedAt', 'createdAt', 'deletedAt', 'track_url', 'track_cover_art')
+    expect(theTrack).to.include.keys('status', 'id', 'creatorId', 'title', 'artist', 'year', 'images', 'url', 'cover_metadata',
+      'trackGroup')
     expect(theTrack.status).to.eql('free')
     expect(theTrack.id).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
-    expect(theTrack.legacyId).to.be.null
     expect(theTrack.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theTrack.title).to.eql('Future-proofed methodical conglomeration')
     expect(theTrack.artist).to.eql('Calvin Larson')
-    expect(theTrack.album).to.eql('monitor')
-    expect(theTrack.album_artist).to.be.null
-    expect(theTrack.composer).to.be.null
+    expect(theTrack.trackGroup.title).to.eql('Best album ever 3')
     expect(theTrack.year).to.be.null
-    expect(theTrack.url).to.be.null
-    expect(theTrack.cover_art).to.be.null
-    expect(theTrack.number).to.null
-    expect(theTrack.tags).to.be.null
-    expect(theTrack.updatedAt).to.eql('2022-09-28T17:31:59.554Z')
-    expect(theTrack.createdAt).to.eql('2022-09-28T17:31:59.554Z')
-    expect(theTrack.deletedAt).to.be.null
-    expect(theTrack.track_url).to.be.null
-    expect(theTrack.track_cover_art).to.be.null
 
     expect(attributes.count).to.eql(30)
     expect(attributes.numberOfPages).to.eql(1)
@@ -263,7 +250,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theItem.cover_metadata.id).to.be.null
 
     expect(theItem.artist).to.eql('matrix')
-    expect(theItem.status).to.eql('Paid')
+    expect(theItem.status).to.eql('paid')
     expect(theItem.url).to.include('user/stream/' + track.id)
 
     expect(theItem.images).to.be.an('object')

@@ -4,7 +4,7 @@
 const ResetDB = require('../../ResetDB')
 const { request, expect, testTrackGroupId } = require('../../testConfig')
 
-describe('Api.ts/Trackgroups endpoint test', () => {
+describe('baseline/trackgroups endpoint test', () => {
   ResetDB()
   let response = null
 
@@ -75,9 +75,7 @@ describe('Api.ts/Trackgroups endpoint test', () => {
     expect(theData).to.include.keys('about', 'cover_metadata', 'creatorId', 'display_artist', 'creator', 'download', 'id', 'items', 'images', 'private', 'release_date', 'slug', 'tags', 'title', 'type')
     expect(theData.about).to.eql('this is the best album')
 
-    expect(theData.cover_metadata).to.be.an('object')
-    expect(theData.cover_metadata).to.include.keys('id')
-    expect(theData.cover_metadata.id).to.be.null
+    expect(theData.cover_metadata).to.be.null
 
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.display_artist).to.eql('Jack')
@@ -100,12 +98,12 @@ describe('Api.ts/Trackgroups endpoint test', () => {
 
     const theTrack = theItem.track
     expect(theTrack).to.be.an('object')
-    expect(theTrack).to.include.keys('id', 'title', 'status', 'album', 'artistId', 'artist', 'images', 'url')
+    expect(theTrack).to.include.keys('id', 'title', 'status', 'artist', 'images', 'trackGroup', 'creator', 'creatorId', 'cover_metadata', 'url')
     expect(theTrack.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
     expect(theTrack.title).to.eql('Ergonomic interactive concept')
     expect(theTrack.status).to.eql('free')
-    expect(theTrack.album).to.eql('firewall')
-    expect(theTrack.artistId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theTrack.trackGroup.title).to.eql('Best album ever')
+    expect(theTrack.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theTrack.artist).to.eql('Laurie Yost')
     expect(theTrack.images).to.be.an('object')
     expect(theTrack.images).to.include.keys('small', 'medium')

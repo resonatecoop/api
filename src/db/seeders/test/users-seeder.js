@@ -1,6 +1,11 @@
+const { Credit } = require('../../models')
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
+    await Credit.create({
+      userId: '251c01f6-7293-45f6-b8cd-242bdd76cd0d',
+      total: 10000
+    })
     return queryInterface.sequelize.query(
       `
         INSERT INTO public.users (id, legacy_id, password, email, email_confirmed, display_name, country, full_name, member, newsletter_notification, last_login, last_password_change, role_id, updated_at, created_at, deleted_at) 

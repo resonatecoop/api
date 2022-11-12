@@ -321,7 +321,8 @@ module.exports = (provider) => {
       where: {
         email: ctx.request.body.email,
         emailConfirmed: true
-      }
+      },
+      attributes: ['password']
     })
 
     const passwordOkay = await User.checkPassword({ hash: user.password, password: ctx.request.body.password })

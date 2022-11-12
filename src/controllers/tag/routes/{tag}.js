@@ -1,4 +1,4 @@
-const { Track, TrackGroup, TrackGroupItem } = require('../../../db/models')
+const { Track, TrackGroup, TrackGroupItem, UserGroup } = require('../../../db/models')
 const { Op } = require('sequelize')
 const trackgroupService = require('../../trackgroups/services/trackgroupService')
 const trackService = require('../../tracks/services/trackService')
@@ -59,7 +59,11 @@ module.exports = function () {
           },
           private: false,
           enabled: true
-        }
+        },
+        include: [{
+          model: UserGroup,
+          as: 'creator'
+        }]
       })
 
       ctx.body = {

@@ -7,7 +7,7 @@ const { request, expect, testUserId, testArtistId, testTrackGroupId, testAccessT
 const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
 
-describe('Admin.ts/trackgroups endpoint test', () => {
+describe('baseline/admin/trackgroups endpoint test', () => {
   let response = null
   ResetDB()
 
@@ -38,7 +38,6 @@ describe('Admin.ts/trackgroups endpoint test', () => {
     it('should GET /user/admin/trackgroups', async () => {
       response = await request.get('/user/admin/trackgroups/')
         .set('Authorization', `Bearer ${testAccessToken}`)
-
       expect(response.status).to.eql(200)
       const attributes = response.body
       expect(attributes).to.be.an('object')
