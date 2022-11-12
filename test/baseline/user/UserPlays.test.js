@@ -1,20 +1,36 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testArtistId, testAdminUserId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
-const MockAccessToken = require('../../MockAccessToken')
+const { request, expect, testArtistId, testAdminUserId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
 const ResetDB = require('../../ResetDB')
-const { Track, TrackGroup, TrackGroupItem, Credit, Play, UserGroup } = require('../../../src/db/models')
+const { Track, TrackGroup, TrackGroupItem, User, Credit, Play, UserGroup } = require('../../../src/db/models')
 const { Op } = require('sequelize')
 const { faker } = require('@faker-js/faker')
+const TestRedisAdapter = require('../../../src/auth/redis-adapter')
 
-describe('User.ts/user plays endpoint test', () => {
+describe('baseline/user plays endpoint test', () => {
   ResetDB()
-  MockAccessToken(testUserId)
+  const adapter = new TestRedisAdapter('AccessToken')
   const from = '2020-01-01'
   const to = faker.date.future().toISOString().split('T')[0]
-
+  let user
   let response = null
+
+  before('set user', async () => {
+    user = await User.create({
+      password: 'bla',
+      email: 'bla@bla.com',
+      roleId: 4
+    })
+    await adapter.upsert(testAccessToken, {
+      accountId: user.id
+    })
+  })
+
+  after('delete user', async () => {
+    await user.destroy({ force: true })
+    await adapter.destroy(testAccessToken)
+  })
 
   it('should handle no authentication / accessToken', async () => {
     response = await request
@@ -61,18 +77,18 @@ describe('User.ts/user plays endpoint test', () => {
     const longAgoDate = faker.date.past()
 
     const play = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       createdAt: longAgoDate
     })
     const dateForDoubleCount = faker.date.soon()
     const play2 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track2.id,
       createdAt: dateForDoubleCount
     })
     const play3 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track2.id,
       createdAt: dateForDoubleCount
     })
@@ -81,7 +97,8 @@ describe('User.ts/user plays endpoint test', () => {
       trackId: track2.id,
       createdAt: dateForDoubleCount
     })
-    response = await request.get(`/user/plays/stats?from=${from}&to=${to}`).set('Authorization', `Bearer ${testAccessToken}`)
+    response = await request.get(`/user/plays/stats?from=${from}&to=${to}`)
+      .set('Authorization', `Bearer ${testAccessToken}`)
     expect(response.status).to.eql(200)
 
     const { data } = response.body
@@ -130,12 +147,12 @@ describe('User.ts/user plays endpoint test', () => {
     })
 
     const play = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       createdAt: faker.date.past()
     })
     const play2 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track2.id,
       createdAt: faker.date.soon()
     })
@@ -168,18 +185,18 @@ describe('User.ts/user plays endpoint test', () => {
     })
 
     const play = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       type: 'paid'
     })
 
     const play2 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       type: 'paid'
     })
     const play3 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track2.id,
       type: 'paid'
     })
@@ -219,18 +236,18 @@ describe('User.ts/user plays endpoint test', () => {
     })
 
     const play = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       type: 'paid'
     })
 
     const play2 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       type: 'paid'
     })
     const play3 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track2.id,
       type: 'paid'
     })
@@ -264,7 +281,7 @@ describe('User.ts/user plays endpoint test', () => {
     })
 
     const credit = await Credit.create({
-      userId: testUserId
+      userId: user.id
     })
 
     response = await request.post('/user/plays')
@@ -283,7 +300,7 @@ describe('User.ts/user plays endpoint test', () => {
       status: 'paid'
     })
     const credit = await Credit.create({
-      userId: testUserId,
+      userId: user.id,
       total: 10000
     })
 
@@ -329,17 +346,17 @@ describe('User.ts/user plays endpoint test', () => {
     })
 
     const play = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       type: 'paid'
     })
     const play2 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track.id,
       type: 'paid'
     })
     const play3 = await Play.create({
-      userId: testUserId,
+      userId: user.id,
       trackId: track2.id,
       type: 'paid'
     })

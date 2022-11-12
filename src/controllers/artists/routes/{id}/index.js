@@ -38,6 +38,10 @@ module.exports = function () {
         ]
       })
 
+      if (!result) {
+        ctx.throw(404, 'Artist not found')
+      }
+
       ctx.body = {
         data: result.get({ plain: true })
       }

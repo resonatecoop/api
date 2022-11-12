@@ -132,7 +132,17 @@ module.exports = (sequelize, DataTypes) => {
                 include: [{
                   model: sequelize.models.TrackGroup,
                   as: 'trackGroup',
-                  attributes: ['id', 'title']
+                  attributes: ['id', 'title'],
+                  include: [{
+                    model: sequelize.models.File,
+                    as: 'cover_metadata',
+                    required: false,
+                    where: {
+                      mime: {
+                        [Op.in]: ['image/jpeg', 'image/png']
+                      }
+                    }
+                  }]
                 }]
               }
             ]

@@ -2,14 +2,14 @@
 /* eslint-env mocha */
 
 const { request, expect, testUserId, testArtistId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
-const { TrackGroup, Track, TrackGroupItem } = require('../../../src/db/models')
+const { TrackGroup, Track, TrackGroupItem, User } = require('../../../src/db/models')
 
 const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
 
 const { faker } = require('@faker-js/faker')
 
-describe('User.ts/user endpoint test', () => {
+describe('baseline/user endpoint test', () => {
   ResetDB()
   MockAccessToken(testArtistUserId)
   let response = null
@@ -84,8 +84,28 @@ describe('User.ts/user endpoint test', () => {
 
     expect(attributes.status).to.eql('ok')
   })
+  it('should PUT user/profile', async () => {
+    const user = await User.findOne({
+      where: {
+        id: testArtistUserId
+      }
+    })
+    user.newsletterNotification = true
+    await user.save()
+    expect(user.newsletterNotification).to.eql(true)
+    response = await request.put('/user/profile/')
+      .send({
+        newsletterNotification: false
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
 
-  it('should get user playlists by user id', async () => {
+    expect(response.status).to.eql(200)
+    expect(response.body.data.newsletterNotification).to.eql(false)
+    await user.reload()
+    expect(user.newsletterNotification).to.eql(false)
+  })
+
+  it('should GET user/:id/playlists', async () => {
     response = await request.get(`/users/${testUserId}/playlists`).set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)

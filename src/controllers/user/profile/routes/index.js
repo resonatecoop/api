@@ -10,7 +10,7 @@ const profileService = ctx => {
       aYearAgo.setFullYear(aYearAgo.getFullYear() - 1)
 
       const data = {
-        ...user.get(),
+        ...user,
         credit: user.credit ?? { total: 0 },
         isListenerMember: !!user.memberships?.find(
           (m) => m.class.name === 'Listener' &&
@@ -46,7 +46,7 @@ module.exports = function () {
       }
 
       ctx.body = {
-        data: await profileService(ctx).single(result),
+        data: await profileService(ctx).single(result.get({ plain: true })),
         status: 'ok'
       }
     } catch (err) {
@@ -111,7 +111,7 @@ module.exports = function () {
       })
 
       ctx.body = {
-        data: await profileService(ctx).single(scopedUser.get()),
+        data: await profileService(ctx).single(scopedUser.get({ plain: true })),
         message: 'Profile data updated',
         status: 'ok'
       }

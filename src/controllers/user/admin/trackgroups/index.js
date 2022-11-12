@@ -74,14 +74,15 @@ module.exports = function () {
           ['release_date', 'DESC']
         ]
       })
-
+      const tgs = trackgroupService(ctx).list(result)
       ctx.body = {
-        data: trackgroupService(ctx).list(result),
+        data: tgs,
         count: count,
         numberOfPages: Math.ceil(count / limit),
         status: 'ok'
       }
     } catch (err) {
+      console.error(err)
       ctx.throw(500, err.message)
     }
 
