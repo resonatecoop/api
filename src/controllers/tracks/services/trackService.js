@@ -6,18 +6,21 @@ const trackService = (ctx) => {
   const single = (item) => {
     const ext = '.jpg'
 
+    // FIXME: Need to migrate existing jpg to webp
     // if (ctx.accepts('image/webp')) {
     //   ext = '.webp'
     // }
 
     const variants = [120, 600]
 
+    const trackGroup = item.trackOn?.[0]?.trackGroup
+
     return {
       id: item.id,
       creatorId: item.creatorId ?? item.creator_id,
       title: item.title,
       duration: item.duration,
-      trackGroup: item.trackOn?.[0]?.trackGroup ?? { title: item.get?.('trackgroup.title') },
+      trackGroup: trackGroup ?? { title: item.get?.('trackgroup.title') },
       year: item.year,
       status: item.status,
       cover: item.cover_art

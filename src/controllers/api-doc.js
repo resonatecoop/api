@@ -99,7 +99,11 @@ const apiDoc = {
     },
     Playlist: {
       type: 'object',
+      required: ['title'],
       properties: {
+        title: {
+          type: 'string'
+        },
         about: {
           type: 'string'
         },

@@ -16,7 +16,7 @@ module.exports = function () {
       // FIXME: We should allow the user to select an artist to add the album to
       const artist = await UserGroup.findOne({
         where: {
-          userId: ctx.profile.id
+          ownerId: ctx.profile.id
         }
       })
       const result = await Playlist.create(Object.assign(body, {
@@ -32,8 +32,7 @@ module.exports = function () {
       }
     } catch (err) {
       console.error(err)
-      ctx.status = err.status || 500
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()

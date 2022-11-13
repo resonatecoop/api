@@ -18,7 +18,7 @@ const playlistService = (ctx) => {
         id: data.cover
       },
       creator: data.creator,
-      creatorId: data.creator?.id,
+      creatorId: data.creator?.id ?? data.creatorId,
       id: data.id,
       items: data.items?.map((item) => {
         const track = trackService(ctx).single(item.track)
