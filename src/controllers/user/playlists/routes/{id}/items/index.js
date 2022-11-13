@@ -20,7 +20,7 @@ module.exports = function () {
     try {
       const body = ctx.request.body
       let result = await Playlist.findOne({
-        attributes: ['creator_id'],
+        attributes: ['creatorId'],
         where: {
           creatorId: ctx.profile.id,
           id: ctx.params.id
@@ -38,21 +38,21 @@ module.exports = function () {
 
       if (!result) {
         ctx.status = 404
-        ctx.throw(ctx.status, 'Playlist does not exist or does not belong to your user account')
+        ctx.throw(404, 'Playlist does not exist or does not belong to your user account')
       }
 
       const count = result.items.length
 
       await PlaylistItem.destroy({
         where: {
-          trackgroupId: ctx.params.id
+          playlistId: ctx.params.id
         }
       })
 
       // assign trackgroup id ref to each track group item
       const playlistItems = body.tracks.map((item, index) => {
         const o = Object.assign(item, {
-          trackgroupId: ctx.params.id
+          playlistId: ctx.params.id
         })
         if (!item.index) {
           o.index = count + 1
@@ -80,7 +80,7 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(ctx.status ?? 500, err.message)
     }
 
     await next()

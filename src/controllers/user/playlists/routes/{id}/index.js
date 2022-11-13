@@ -21,22 +21,21 @@ module.exports = function () {
   }
 
   async function DELETE (ctx, next) {
-    try {
-      const result = await Playlist.findOne({
-        where: {
-          userId: ctx.profile.id,
-          id: ctx.params.id
-        }
-      })
-
-      if (!result) {
-        ctx.status = 404
-        ctx.throw(ctx.status, 'Playlist does not exist')
+    const result = await Playlist.findOne({
+      where: {
+        creatorId: ctx.profile.id,
+        id: ctx.params.id
       }
+    })
 
+    if (!result) {
+      ctx.throw(404, 'Playlist does not exist')
+    }
+
+    try {
       await Playlist.destroy({
         where: {
-          userId: ctx.profile.id,
+          creatorId: ctx.profile.id,
           id: ctx.params.id
         }
       })
@@ -53,7 +52,7 @@ module.exports = function () {
         message: 'Playlist was removed'
       }
     } catch (err) {
-      ctx.throw(ctx.status, err.message)
+      ctx.throw(500, err.message)
     }
 
     await next()
@@ -86,6 +85,7 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
+      console.log('ctx', ctx.profile.id)
       let result = await Playlist.findOne({
         attributes: [
           'id'

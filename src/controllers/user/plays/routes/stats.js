@@ -17,16 +17,19 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     const currentDate = new Date()
+    currentDate.setUTCHours(0, 0, 0, 0)
     const lastYear = new Date()
+    lastYear.setUTCHours(23, 59, 59, 999)
     lastYear.setFullYear(currentDate.getFullYear() - 1)
     const {
-      from = lastYear.toISOString().split('T')[0],
-      to = currentDate.toISOString().split('T')[0]
+      from = currentDate.toISOString(),
+      to = lastYear.toISOString()
       // type = 'paid'
     } = ctx.request.query
+    if (!from || !to) {
+      ctx.throw(400, 'Time range required. Set \'from\' and \'to\'')
+    }
     // FIXME: add filtering by type
-    // const format = getDateFormat(ctx.request.period)
-
     try {
       const res = await Play.findAll({
         attributes: [
@@ -36,10 +39,11 @@ module.exports = function () {
         where: {
           userId: ctx.profile.id,
           createdAt: {
-            [Op.between]: [from, to]
+            [Op.gte]: `${from}T00:00:00Z`,
+            [Op.lte]: `${to}T23:59:59Z`
           }
         },
-        group: ['created_at'],
+        group: [sequelize.literal('DATE("created_at")')],
         order: [['count', 'DESC']]
       })
 

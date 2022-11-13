@@ -121,8 +121,6 @@ module.exports = function () {
         plain: true
       })
 
-      console.log('data', data)
-
       // FIXME: combine this with trackService
       ctx.body = {
         data: trackgroupService(ctx).single(data),

@@ -1,4 +1,5 @@
 module.exports.renderError = (ctx, out, error) => {
+  console.error(error)
   ctx.type = 'html'
   ctx.body = `<!DOCTYPE html>
     <head>
