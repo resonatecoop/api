@@ -100,9 +100,10 @@ module.exports = (sequelize, DataTypes) => {
         return []
       }
     },
-    release_date: {
+    releaseDate: {
       type: DataTypes.DATEONLY,
-      defaultValue: DataTypes.NOW
+      defaultValue: DataTypes.NOW,
+      field: 'release_date'
     },
     download: {
       type: DataTypes.BOOLEAN,

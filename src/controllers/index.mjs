@@ -188,7 +188,7 @@ initialize({
       path: `${root}/apiDocs`, module: apiDocs
     }],
   dependencies: {
-    trackService: trackService
+    trackService: trackService // how does this work?
   }
 })
 

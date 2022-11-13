@@ -43,7 +43,7 @@ describe('baseline/artists endpoint test', () => {
     const theTG = theData.trackgroups[0]
 
     expect(theTG).to.include.keys('composers', 'performers', 'tags', 'id', 'cover', 'title', 'slug', 'type', 'about', 'private', 'display_artist', 'creatorId',
-      'release_date', 'download', 'featured', 'enabled', 'updatedAt', 'createdAt', 'deletedAt', 'items')
+      'releaseDate', 'download', 'featured', 'enabled', 'updatedAt', 'createdAt', 'deletedAt', 'items')
     expect(theTG.composers).to.be.an('array')
     expect(theTG.composers.length).to.eql(0)
     expect(theTG.performers).to.be.an('array')
@@ -59,7 +59,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theTG.private).to.be.false
     expect(theTG.display_artist).to.eql('Jack')
     expect(theTG.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theTG.release_date).to.eql('2019-01-01')
+    expect(theTG.releaseDate).to.eql('2019-01-01')
     expect(theTG.download).to.be.false
     expect(theTG.featured).to.be.false
     expect(theTG.enabled).to.be.true
@@ -152,7 +152,7 @@ describe('baseline/artists endpoint test', () => {
 
     const theData = attributes.data[0]
 
-    expect(theData).to.include.keys('tags', 'about', 'creatorId', 'display_artist', 'id', 'slug', 'title', 'createdAt', 'release_date', 'type',
+    expect(theData).to.include.keys('tags', 'about', 'creatorId', 'display_artist', 'id', 'slug', 'title', 'createdAt', 'releaseDate', 'type',
       'cover_metadata', 'creator', 'items', 'images', 'uri')
     expect(theData.tags).to.be.an('array')
     expect(theData.tags.length).to.eql(0)
@@ -164,7 +164,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theData.slug).to.eql('best-album-ever-3')
     expect(theData.title).to.eql('Best album ever 3')
     expect(theData.createdAt).to.eql('2022-09-28T17:31:59.513Z')
-    expect(theData.release_date).to.eql('2019-01-03')
+    expect(theData.releaseDate).to.eql('2019-01-03')
     expect(theData.type).to.eql('lp')
     expect(theData.cover_metadata).to.be.null
 
@@ -182,7 +182,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theItem.trackId).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
 
     const theTrack = theItem.track
-    expect(theTrack).to.include.keys('status', 'id', 'creatorId', 'title', 'artist', 'year', 'images', 'url', 'cover_metadata',
+    expect(theTrack).to.include.keys('status', 'id', 'creatorId', 'title', 'artist', 'year', 'images', 'url',
       'trackGroup')
     expect(theTrack.status).to.eql('free')
     expect(theTrack.id).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
@@ -239,15 +239,13 @@ describe('baseline/artists endpoint test', () => {
     expect(theData.length).to.eql(1)
 
     const theItem = theData[0]
-    expect(theItem).to.include.keys('id', 'title', 'cover_metadata', 'creatorId', 'artist', 'status', 'url', 'images')
+    expect(theItem).to.include.keys('id', 'title', 'trackGroup', 'creatorId', 'artist', 'status', 'url', 'images')
 
     expect(theItem.id).to.eql(track.id)
     expect(theItem.title).to.eql(displayName)
     expect(theItem.trackGroup.title).to.eql(displayName + 'Album')
-
-    expect(theItem.cover_metadata).to.be.an('object')
-    expect(theItem.cover_metadata).to.include.keys('id')
-    expect(theItem.cover_metadata.id).to.be.null
+    expect(theItem.trackGroup.cover).to.contain('http')
+    expect(theItem.trackGroup.cover).to.contain(trackgroup.cover)
 
     expect(theItem.artist).to.eql('matrix')
     expect(theItem.status).to.eql('paid')
@@ -315,7 +313,7 @@ describe('baseline/artists endpoint test', () => {
       title: faker.animal.fish(),
       creatorId: newArtist.id,
       cover: faker.datatype.uuid(),
-      release_date: faker.date.past(),
+      releaseDate: faker.date.past(),
       type: 'single',
       enabled: true,
       private: false
@@ -324,7 +322,7 @@ describe('baseline/artists endpoint test', () => {
       title: faker.animal.fish(),
       creatorId: newArtist.id,
       cover: faker.datatype.uuid(),
-      release_date: faker.date.recent(),
+      releaseDate: faker.date.recent(),
       type: 'single',
       enabled: true,
       private: false

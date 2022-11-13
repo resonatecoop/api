@@ -23,7 +23,7 @@ module.exports = function (trackService) {
     try {
       // FIXME: Sequelize this
       const result = await sequelize.query(`
-      SELECT track.id as id, track.creator_id as "creatorId", track.status, track.track_name , track.track_url, trackgroup.title as "trackgroup.title", trackgroup.type as type, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_duration, "userGroup".display_name as artist, count(play.id)
+      SELECT track.id as id, track.creator_id as "creatorId", track.status, track.track_name , track.track_url, trackgroup.title as "trackgroup.title", trackgroup.cover as "trackgroup.cover", trackgroup.type as type, track.track_cover_art as cover_art, trackgroup.cover as cover, file.id as file, track.track_duration, "userGroup".display_name as artist, count(play.id)
         FROM track_groups as trackgroup
         INNER JOIN track_group_items as item ON(item.track_group_id = trackgroup.id)
         INNER JOIN tracks as track ON(item.track_id = track.id AND track.status IN(0, 2, 3))

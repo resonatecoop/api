@@ -5,7 +5,7 @@ const ajvFormats = require('ajv-formats')
 const TrackGroup = {
   type: 'object',
   additionalProperties: false,
-  required: ['title', 'type', 'release_date'],
+  required: ['title', 'type', 'releaseDate'],
   properties: {
     title: {
       type: 'string',
@@ -23,7 +23,7 @@ const TrackGroup = {
     display_artist: {
       type: 'string'
     },
-    release_date: {
+    releaseDate: {
       type: 'string',
       format: 'date'
     },

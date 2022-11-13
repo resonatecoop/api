@@ -26,7 +26,7 @@ export default function () {
             enabled: true
           }
         }],
-        order: [[{ model: TrackGroup, as: 'trackgroups' }, 'release_date', 'DESC']],
+        order: [[{ model: TrackGroup, as: 'trackgroups' }, 'releaseDate', 'DESC']],
         limit,
         offset
       })

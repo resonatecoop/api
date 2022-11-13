@@ -117,11 +117,11 @@ module.exports = (sequelize, DataTypes) => {
             }, {
               model: sequelize.models.TrackGroup,
               required: false,
-              attributes: ['enabled', 'private', 'release_date'],
+              attributes: ['enabled', 'private', 'releaseDate'],
               where: {
                 enabled: true,
                 private: false,
-                release_date: {
+                releaseDate: {
                   [Op.gte]: sequelize.literal('NOW() - interval \'2 year\'')
                 }
               },

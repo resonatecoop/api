@@ -1,4 +1,4 @@
-const { Resonate: Sequelize, UserGroup, Track, File, Play, TrackGroup, TrackGroupItem } = require('../../../db/models')
+const { Resonate: Sequelize, Track, Play } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 
@@ -32,33 +32,6 @@ module.exports = function (trackService) {
         'status',
         'createdAt'
       ],
-      include: [
-        {
-          model: File,
-          attributes: ['id'],
-          as: 'cover'
-        },
-        {
-          model: TrackGroupItem,
-          attributes: ['index'],
-          as: 'trackOn',
-          include: [{
-            model: TrackGroup,
-            as: 'trackGroup',
-            attributes: ['title']
-          }]
-        },
-        {
-          model: File,
-          attributes: ['id'],
-          as: 'audiofile'
-        },
-        {
-          model: UserGroup,
-          attributes: ['displayName', 'id'],
-          as: 'creator'
-        }
-      ],
       subQuery: false,
       order: [
         ['created_at', 'DESC']
@@ -89,7 +62,7 @@ module.exports = function (trackService) {
     }
 
     try {
-      const { rows, count } = await Track.findAndCountAll(query)
+      const { rows, count } = await Track.scope('details').findAndCountAll(query)
       ctx.body = {
         data: trackService(ctx).list(rows),
         count: count,

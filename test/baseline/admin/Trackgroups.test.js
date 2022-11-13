@@ -47,7 +47,7 @@ describe('baseline/admin/trackgroups endpoint test', () => {
       expect(attributes.data.length).to.eql(3)
 
       const theData = attributes.data[0]
-      expect(theData).to.include.keys('id', 'title', 'type', 'about', 'private', 'display_artist', 'composers', 'performers', 'release_date', 'enabled', 'cover_metadata', 'tags', 'images')
+      expect(theData).to.include.keys('id', 'title', 'type', 'about', 'private', 'display_artist', 'composers', 'performers', 'releaseDate', 'enabled', 'cover_metadata', 'tags', 'images')
       expect(theData.id).to.eql('58991f22-b172-48e4-8b27-e0a4c946f9b2')
       expect(theData.title).to.eql('Best album ever 3')
       expect(theData.type).to.eql('lp')
@@ -55,7 +55,7 @@ describe('baseline/admin/trackgroups endpoint test', () => {
       expect(theData.private).to.be.false
       expect(theData.display_artist).to.eql('@auggod')
 
-      expect(theData.release_date).to.eql('2019-01-03')
+      expect(theData.releaseDate).to.eql('2019-01-03')
       expect(theData.enabled).to.be.true
       expect(theData.cover_metadata).to.be.null
 
@@ -79,7 +79,7 @@ describe('baseline/admin/trackgroups endpoint test', () => {
 
       expect(attributes.data).to.be.an('object')
       const theData = attributes.data
-      expect(theData).to.include.keys('composers', 'performers', 'tags', 'id', 'title', 'slug', 'type', 'about', 'private', 'display_artist', 'creatorId', 'release_date', 'download', 'featured', 'enabled', 'updatedAt', 'createdAt', 'deletedAt', 'cover_metadata', 'items', 'images')
+      expect(theData).to.include.keys('composers', 'performers', 'tags', 'id', 'title', 'slug', 'type', 'about', 'private', 'display_artist', 'creatorId', 'releaseDate', 'download', 'featured', 'enabled', 'updatedAt', 'createdAt', 'deletedAt', 'cover_metadata', 'items', 'images')
 
       expect(theData.composers).to.be.an('array')
       expect(theData.composers.length).to.eql(0)
@@ -98,7 +98,7 @@ describe('baseline/admin/trackgroups endpoint test', () => {
       expect(theData.private).to.be.false
       expect(theData.display_artist).to.eql('Jack')
       expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-      expect(theData.release_date).to.eql('2019-01-01')
+      expect(theData.releaseDate).to.eql('2019-01-01')
       expect(theData.download).to.be.false
       expect(theData.featured).to.be.false
       expect(theData.enabled).to.be.true

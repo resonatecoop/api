@@ -29,7 +29,7 @@ module.exports = function () {
           // artistId: ctx.params.id,
           creatorId: ctx.params.id,
           enabled: true,
-          release_date: {
+          releaseDate: {
             [Op.or]: {
               [Op.lte]: new Date(),
               [Op.eq]: null
@@ -53,7 +53,7 @@ module.exports = function () {
           'tags',
           'title',
           'createdAt',
-          'release_date',
+          'releaseDate',
           'type'
         ],
         include: [
@@ -87,7 +87,7 @@ module.exports = function () {
         ],
         order: [
           [{ model: TrackGroupItem, as: 'items' }, 'index', 'ASC'],
-          ['release_date', 'DESC'],
+          ['releaseDate', 'DESC'],
           ['createdAt', 'DESC'],
           ['title', 'ASC']
         ]

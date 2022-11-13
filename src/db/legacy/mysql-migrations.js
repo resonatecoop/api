@@ -222,7 +222,7 @@ const migrateTrackGroups = async (client, id) => {
           composers: r.composers?.split(','),
           performers: r.performers?.split(','),
           tags: r.tags?.split(','),
-          release_date: r.release_date,
+          releaseDate: r.releaseDate,
           download: r.download,
           featured: r.featured,
           enabled: r.enabled,

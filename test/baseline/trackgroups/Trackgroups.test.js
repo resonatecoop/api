@@ -72,7 +72,7 @@ describe('baseline/trackgroups endpoint test', () => {
     expect(attributes.data).to.be.an('object')
 
     const theData = attributes.data
-    expect(theData).to.include.keys('about', 'cover_metadata', 'creatorId', 'display_artist', 'creator', 'download', 'id', 'items', 'images', 'private', 'release_date', 'slug', 'tags', 'title', 'type')
+    expect(theData).to.include.keys('about', 'cover_metadata', 'creatorId', 'display_artist', 'creator', 'download', 'id', 'items', 'images', 'private', 'releaseDate', 'slug', 'tags', 'title', 'type')
     expect(theData.about).to.eql('this is the best album')
 
     expect(theData.cover_metadata).to.be.null
@@ -98,11 +98,10 @@ describe('baseline/trackgroups endpoint test', () => {
 
     const theTrack = theItem.track
     expect(theTrack).to.be.an('object')
-    expect(theTrack).to.include.keys('id', 'title', 'status', 'artist', 'images', 'trackGroup', 'creator', 'creatorId', 'cover_metadata', 'url')
+    expect(theTrack).to.include.keys('id', 'title', 'status', 'artist', 'images', 'trackGroup', 'creator', 'creatorId', 'url')
     expect(theTrack.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
     expect(theTrack.title).to.eql('Ergonomic interactive concept')
     expect(theTrack.status).to.eql('free')
-    expect(theTrack.trackGroup.title).to.eql('Best album ever')
     expect(theTrack.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theTrack.artist).to.eql('Laurie Yost')
     expect(theTrack.images).to.be.an('object')
@@ -123,7 +122,7 @@ describe('baseline/trackgroups endpoint test', () => {
     expect(theData.images.medium.height).to.eql(600)
 
     expect(theData.private).to.be.false
-    expect(theData.release_date).to.eql('2019-01-01')
+    expect(theData.releaseDate).to.eql('2019-01-01')
     expect(theData.slug).to.eql('best-album-ever')
     expect(theData.tags).to.be.an('array')
     expect(theData.tags.length).to.eql(0)

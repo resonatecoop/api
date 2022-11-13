@@ -67,7 +67,7 @@ const TrackGroup = {
     display_artist: {
       type: 'string'
     },
-    release_date: {
+    releaseDate: {
       type: 'string',
       format: 'date'
     },

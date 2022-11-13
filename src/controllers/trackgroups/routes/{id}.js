@@ -25,7 +25,7 @@ module.exports = function () {
       id: ctx.params.id,
       enabled: true,
       private: false,
-      release_date: {
+      releaseDate: {
         [Op.or]: {
           [Op.lte]: new Date(),
           [Op.eq]: null
@@ -43,7 +43,7 @@ module.exports = function () {
           'download',
           'id',
           'private',
-          'release_date',
+          'releaseDate',
           'slug',
           'tags',
           'title',
