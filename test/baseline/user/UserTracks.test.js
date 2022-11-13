@@ -31,7 +31,6 @@ describe('User.ts/user tracks endpoint test', () => {
     })
     response = await request.get(`/user/tracks/${track.id}`)
       .set('Authorization', `Bearer ${testAccessToken}`)
-
     expect(response.status).to.eql(200)
     expect(response.body.data.title).to.eql(track.title)
     await track.destroy({ force: true })

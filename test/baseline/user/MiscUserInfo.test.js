@@ -80,7 +80,7 @@ describe('User.ts/misc user info endpoint test', () => {
       title: track.title + 'Album',
       creatorId: testArtistId,
       cover: faker.datatype.uuid(),
-      release_date: faker.date.past(),
+      releaseDate: faker.date.past(),
       type: 'single',
       enabled: true,
       private: false

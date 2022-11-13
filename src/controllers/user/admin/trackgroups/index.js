@@ -51,7 +51,7 @@ module.exports = function () {
           'creatorId',
           'composers',
           'performers',
-          'release_date',
+          'releaseDate',
           'enabled',
           'featured'
         ],
@@ -71,7 +71,7 @@ module.exports = function () {
         where,
         order: [
           ['createdAt', 'DESC'],
-          ['release_date', 'DESC']
+          ['releaseDate', 'DESC']
         ]
       })
       const tgs = trackgroupService(ctx).list(result)

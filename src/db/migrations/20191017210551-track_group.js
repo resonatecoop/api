@@ -65,7 +65,7 @@ module.exports = {
         type: Sequelize.STRING,
         field: 'slug'
       },
-      release_date: {
+      releaseDate: {
         type: Sequelize.DATEONLY,
         defaultValue: Sequelize.NOW,
         field: 'release_date'

@@ -53,15 +53,16 @@ describe('baseline/track endpoint test', () => {
 
     const theData = attributes.data[0]
 
-    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creator', 'creatorId', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creator', 'creatorId', 'artist', 'status', 'url', 'images')
     expect(theData.id).to.eql(track.id)
     expect(theData.title).to.eql(track.title)
+    expect(theData.trackGroup.id).to.eql(trackgroup.id)
+    expect(theData.trackGroup.cover).to.include('http')
+    expect(theData.trackGroup.cover).to.include(trackgroup.cover)
+
     expect(theData.trackGroup.title).to.eql(trackgroup.title)
     expect(theData.creatorId).to.eql(testArtistId)
     expect(theData.creator.id).to.eql(testArtistId)
-
-    expect(theData.cover_metadata).to.include.keys('id')
-    expect(theData.cover_metadata.id).to.be.null
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('paid')
@@ -99,12 +100,9 @@ describe('baseline/track endpoint test', () => {
 
     const theData = attributes.data[0]
     expect(theData).to.be.an('object')
-    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creatorId', 'creator', 'year', 'cover_metadata', 'artist', 'status', 'url', 'images')
+    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creatorId', 'creator', 'year', 'artist', 'status', 'url', 'images')
 
-    // We can't really know what item is first
-    expect(theData.cover_metadata).to.be.an('object')
-    expect(theData.cover_metadata).to.include.keys('id')
-    expect(theData.cover_metadata.id).to.be.null
+    // We can't really know what item is first because this being "random"
 
     expect(theData.artist).to.be.null
     expect(theData.status).to.eql('free')

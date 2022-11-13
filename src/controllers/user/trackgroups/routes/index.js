@@ -141,7 +141,7 @@ module.exports = function () {
           'display_artist',
           'composers',
           'performers',
-          'release_date'
+          'releaseDate'
         ],
         distinct: true,
         include: [

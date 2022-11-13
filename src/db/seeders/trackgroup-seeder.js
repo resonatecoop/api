@@ -92,7 +92,7 @@ module.exports = {
           enabled: true,
           private: false,
           display_artist: 'Jack',
-          release_date: new Date('2019-01-01'),
+          releaseDate: new Date('2019-01-01'),
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -105,7 +105,7 @@ module.exports = {
           enabled: true,
           private: false,
           display_artist: 'Jill',
-          release_date: new Date('2019-01-01'),
+          releaseDate: new Date('2019-01-01'),
           created_at: new Date(),
           updated_at: new Date()
         },
@@ -119,7 +119,7 @@ module.exports = {
           private: false,
           display_artist: '@auggod',
           performers: ['auggod'],
-          release_date: new Date('2019-01-01'),
+          releaseDate: new Date('2019-01-01'),
           created_at: new Date(),
           updated_at: new Date()
         }

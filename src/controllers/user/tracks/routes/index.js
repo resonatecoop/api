@@ -1,4 +1,4 @@
-const { Resonate: Sequelize, User, Track, File, UserGroup } = require('../../../../db/models')
+const { Resonate: Sequelize, User, Track, UserGroup } = require('../../../../db/models')
 const ms = require('ms')
 const { authenticate } = require('../../authenticate')
 
@@ -18,26 +18,17 @@ module.exports = function (trackService) {
       offset: page > 1 ? page * limit : 0,
       attributes: [
         'id',
-        'creator_id',
+        'creatorId',
         'title',
         'url',
         'cover_art',
         'album',
         'duration',
         'year',
-        'status'
+        'status',
+        'createdAt'
       ],
       include: [
-        {
-          model: File,
-          attributes: ['id', 'owner_id'],
-          as: 'cover'
-        },
-        {
-          model: File,
-          attributes: ['id', 'owner_id'],
-          as: 'audiofile'
-        },
         {
           model: UserGroup,
           as: 'creator',
@@ -65,8 +56,7 @@ module.exports = function (trackService) {
     }
 
     try {
-      const { rows, count } = await Track.findAndCountAll(query)
-
+      const { rows, count } = await Track.scope('details').findAndCountAll(query)
       ctx.body = {
         data: trackService(ctx).list(rows),
         count: count,

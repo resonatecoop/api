@@ -101,6 +101,29 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     modelName: 'Track',
     paranoid: true,
+    scopes: {
+      details: () => ({
+        include: [{
+          model: sequelize.models.TrackGroupItem,
+          attributes: ['index'],
+          as: 'trackOn',
+          include: [{
+            model: sequelize.models.TrackGroup,
+            as: 'trackGroup',
+            attributes: ['title', 'cover', 'id']
+          }]
+        }, {
+          model: sequelize.models.File,
+          attributes: ['id'],
+          as: 'audiofile'
+        },
+        {
+          model: sequelize.models.UserGroup,
+          attributes: ['displayName', 'id'],
+          as: 'creator'
+        }]
+      })
+    },
     underscored: true,
     tableName: 'tracks'
   })

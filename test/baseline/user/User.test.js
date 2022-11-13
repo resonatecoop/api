@@ -145,7 +145,7 @@ describe('baseline/user endpoint test', () => {
     expect(result.title).to.eql(title)
     expect(result.private).to.eql(true)
     expect(result.enabled).to.eql(false)
-    expect(result.release_date).to.eql(new Date().toISOString().split('T')[0])
+    expect(result.releaseDate).to.eql(new Date().toISOString().split('T')[0])
     expect(result.cover).to.eql(cover)
 
     // Clean up
@@ -212,7 +212,7 @@ describe('baseline/user endpoint test', () => {
     expect(attributes.data).to.be.an('object')
 
     const theData = attributes.data
-    expect(theData).to.include.keys('about', 'cover_metadata', 'display_artist', 'user', 'download', 'id', 'items', 'images', 'private', 'release_date', 'slug', 'tags', 'title', 'type')
+    expect(theData).to.include.keys('about', 'cover_metadata', 'display_artist', 'user', 'download', 'id', 'items', 'images', 'private', 'releaseDate', 'slug', 'tags', 'title', 'type')
     expect(theData.about).to.eql('this is the best album')
 
     const theCoverMetatdata = theData.cover_metadata
@@ -282,7 +282,7 @@ describe('baseline/user endpoint test', () => {
     expect(theImages.large.height).to.eql(1500)
 
     expect(theData.private).to.be.false
-    expect(theData.release_date).to.eql('2019-01-01')
+    expect(theData.releaseDate).to.eql('2019-01-01')
     expect(theData.slug).to.eql('best-album-ever')
 
     expect(theData.tags).to.be.an('array')

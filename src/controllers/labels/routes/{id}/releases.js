@@ -28,7 +28,7 @@ module.exports = function () {
         where: {
           private: false,
           enabled: true,
-          release_date: {
+          releaseDate: {
             [Op.or]: {
               [Op.lte]: new Date(),
               [Op.eq]: null
