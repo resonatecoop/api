@@ -1,8 +1,6 @@
 const models = require('../../../db/models')
+const artistService = require('../artistService')
 const { UserGroup, TrackGroup, TrackGroupItem, Track } = models
-// const resolveProfileImage = require('../../../util/profile-image')
-// const map = require('awaity/map')
-// const he = require('he')
 
 module.exports = function () {
   const operations = {
@@ -24,11 +22,13 @@ module.exports = function () {
           ['displayName', 'asc']
         ],
         offset: page > 1 ? (page - 1) * limit : 0,
+        subQuery: false,
         include: [
           {
             model: TrackGroup,
             as: 'trackgroups',
             required: true,
+            separate: true,
             include: [{
               model: TrackGroupItem,
               required: true,
@@ -48,11 +48,7 @@ module.exports = function () {
       ctx.lastModified = new Date()
 
       ctx.body = {
-        data: result.map((item) => {
-          const o = Object.assign({}, item.dataValues)
-
-          return o
-        }),
+        data: await artistService(ctx).list(result),
         count,
         pages: Math.ceil(count / limit),
         status: 'ok'

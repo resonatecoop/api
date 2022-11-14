@@ -1,6 +1,5 @@
 import models from '../../../db/models/index.js'
-import resolveProfileImage from '../../../util/profile-image.js'
-import he from 'he'
+import artistService from '../artistService.js'
 
 const { UserGroup, TrackGroup } = models
 
@@ -32,13 +31,7 @@ export default function () {
       })
 
       ctx.body = {
-        data: await Promise.all(result.map(async (item) => {
-          return {
-            displayName: he.decode(item.dataValues.displayName),
-            id: item.id,
-            images: await resolveProfileImage(item.id)
-          }
-        })),
+        data: await artistService(ctx).list(result),
         count,
         numberOfPages: Math.ceil(count / limit)
       }

@@ -1,10 +1,6 @@
 const models = require('../../../../db/models')
-const { User, UserGroup } = models
-// const resolveProfileImage = require('../../../../util/profile-image')
-// const links = require('../../../../util/links')
-// const he = require('he')
-
-// const LAST_WP_ID = process.env.LAST_WP_ID || 20000 // last wp id after migration to user api
+const artistService = require('../../artistService')
+const { UserGroup } = models
 
 module.exports = function () {
   const operations = {
@@ -28,14 +24,7 @@ module.exports = function () {
       const result = await UserGroup.findOne({
         where: {
           id: ctx.params.id
-        },
-        include: [
-          {
-            model: User,
-            required: false,
-            attributes: ['id', 'displayName']
-          }
-        ]
+        }
       })
 
       if (!result) {
@@ -43,7 +32,7 @@ module.exports = function () {
       }
 
       ctx.body = {
-        data: result.get({ plain: true })
+        data: await artistService(ctx).single(result)
       }
     } catch (err) {
       ctx.throw(ctx.status, err.message)

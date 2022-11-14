@@ -1,5 +1,5 @@
 const { UserGroup, UserGroupMember } = require('../../../../db/models')
-const resolveProfileImage = require('../../../../util/profile-image')
+const artistService = require('../../../artists/artistService')
 
 module.exports = function () {
   const operations = {
@@ -37,13 +37,7 @@ module.exports = function () {
       })
 
       ctx.body = {
-        data: await Promise.all(rows.map(async (item) => {
-          return {
-            displayName: item.displayName,
-            id: item.id,
-            images: await resolveProfileImage(item.id)
-          }
-        })),
+        data: await artistService(ctx).list(rows),
         count,
         pages: Math.ceil(count / limit)
       }

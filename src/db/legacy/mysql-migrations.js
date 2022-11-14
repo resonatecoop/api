@@ -58,19 +58,20 @@ const migrateFiles = async (client) => {
     force: true
   })
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
-
   return new Promise((resolve, reject) => {
     client.query('SELECT * FROM files', async function (error, results, fields) {
       if (error) reject(error)
 
       try {
-        await File.bulkCreate(results
-          .filter(f => !!usersGroupedByLegacyId[f.owner_id])
+        const filtered = results
+        // .filter(f => !!usersGroupedByLegacyId[f.owner_id])
+        const files = await File.bulkCreate(filtered
           .map(file => ({
+            id: file.id,
             filename: file.filename,
             filename_prefix: file.filename_prefix,
             // TODO: should this be linked to the UserGroup?
-            owner_id: usersGroupedByLegacyId[file.owner_id].id,
+            owner_id: usersGroupedByLegacyId[file.owner_id]?.id ?? '00000000-0000-0000-0000-000000000000',
             description: file.description,
             size: file.size,
             hash: file.hash,
@@ -80,6 +81,7 @@ const migrateFiles = async (client) => {
             updated_at: file.updated_at,
             created_at: file.created_at
           })))
+        console.log('files', files.length)
       } catch (e) {
         console.log('error', e)
         reject(e)
@@ -175,6 +177,7 @@ const migrateTracks = async (client) => {
 
 const groupUsersByLegacyId = async () => {
   const users = await User.findAll({
+    attributes: ['legacyId', 'id'],
     where: {
       legacyId: {
         [Op.not]: null

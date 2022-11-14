@@ -1,6 +1,6 @@
 const models = require('../../../db/models')
 const { UserGroup, TrackGroup } = models
-const resolveProfileImage = require('../../../util/profile-image')
+const artistService = require('../artistService')
 
 module.exports = function () {
   const operations = {
@@ -28,13 +28,7 @@ module.exports = function () {
         limit: 10
       })
 
-      const data = await Promise.all(result.map(async (item) => {
-        return {
-          id: item.id,
-          displayName: item.displayName,
-          images: await resolveProfileImage(item.id)
-        }
-      }))
+      const data = await artistService(ctx).list(result)
 
       ctx.body = {
         data: data

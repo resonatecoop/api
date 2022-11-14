@@ -25,7 +25,6 @@ module.exports = function (trackService) {
         'creatorId',
         'title',
         'url',
-        'cover_art',
         'album',
         'duration',
         'year',
@@ -35,7 +34,8 @@ module.exports = function (trackService) {
       subQuery: false,
       order: [
         ['created_at', 'DESC']
-      ]
+      ],
+      include: []
     }
 
     if (order === 'random') {

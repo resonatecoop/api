@@ -1,6 +1,6 @@
 const { UserGroup, UserGroupLink } = require('../../../../db/models')
-const resolveProfileImage = require('../../../../util/profile-image')
-const he = require('he')
+
+const artistService = require('../../../artists/artistService')
 
 module.exports = function () {
   const operations = {
@@ -36,34 +36,8 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
-      const {
-        displayName,
-        id,
-        country,
-        shortBio,
-        links,
-        description
-      } = result
-
-      const data = {
-        name: he.decode(displayName),
-        id,
-        shortBio,
-        country,
-        links,
-        images: await resolveProfileImage(ctx.params.id)
-      }
-
-      if (description) {
-        data.bio = he.decode(description)
-      }
-
-      if (country) {
-        data.country = he.decode(country)
-      }
-
       ctx.body = {
-        data: data
+        data: await artistService(ctx).single(result)
       }
     } catch (err) {
       ctx.throw(ctx.status, err.message)

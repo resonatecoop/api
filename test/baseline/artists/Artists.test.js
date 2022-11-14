@@ -26,16 +26,12 @@ describe('baseline/artists endpoint test', () => {
 
     const theData = attributes.data[0]
     //  FIXME: there is 'addressId' and 'AddressId'
-    expect(theData).to.include.keys('id', 'ownerId', 'typeId', 'displayName', 'description', 'shortBio', 'email', 'addressId', 'updatedAt', 'createdAt', 'deletedAt', 'AddressId', 'trackgroups')
+    expect(theData).to.include.keys('id', 'typeId', 'displayName', 'description', 'shortBio', 'images', 'updatedAt', 'createdAt', 'deletedAt', 'avatar', 'banner', 'trackgroups')
     expect(theData.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.ownerId).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
     expect(theData.typeId).to.eql(1)
     expect(theData.displayName).to.eql('matrix')
     expect(theData.description).to.be.null
     expect(theData.shortBio).to.be.null
-    expect(theData.email).to.be.null
-    expect(theData.addressId).to.be.null
-    expect(theData.AddressId).to.be.null
 
     expect(theData.trackgroups).to.be.an('array')
     expect(theData.trackgroups.length).to.eql(3)
@@ -103,7 +99,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theTrack.track_url).to.be.null
     expect(theTrack.track_cover_art).to.be.null
 
-    expect(attributes.count).to.eql(3)
+    expect(attributes.count).to.eql(1)
     expect(attributes.pages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
@@ -120,22 +116,12 @@ describe('baseline/artists endpoint test', () => {
     expect(attributes.data).to.be.an('object')
 
     const theData = attributes.data
-    //  FIXME: there is 'addressId' and 'AddressId'
-    expect(theData).to.include.keys('id', 'ownerId', 'typeId', 'displayName', 'description', 'shortBio', 'email', 'addressId', 'updatedAt', 'createdAt', 'deletedAt', 'AddressId', 'User')
+    expect(theData).to.include.keys('id', 'typeId', 'displayName', 'description', 'shortBio', 'avatar', 'banner', 'updatedAt', 'createdAt', 'deletedAt')
     expect(theData.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.ownerId).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
     expect(theData.typeId).to.eql(1)
     expect(theData.displayName).to.eql('matrix')
     expect(theData.description).to.be.null
     expect(theData.shortBio).to.be.null
-    expect(theData.email).to.be.null
-    expect(theData.addressId).to.be.null
-    expect(theData.AddressId).to.be.null
-
-    expect(theData.User).to.be.an('object')
-    expect(theData.User).to.include.keys('id', 'displayName')
-    expect(theData.User.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
-    expect(theData.User.displayName).to.eql('artist')
   })
 
   it('should GET /artists/:id/releases', async () => {

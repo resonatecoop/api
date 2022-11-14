@@ -43,7 +43,7 @@ describe('User.ts/user artist endpoint test', () => {
     expect(attributes.status).to.eql('ok')
   })
 
-  it('should get user artists by artist id', async () => {
+  it('should GET user/artists/:id', async () => {
     response = await request.get(`/user/artists/${testArtistId}`).set('Authorization', `Bearer ${testAccessToken}`)
 
     expect(response.status).to.eql(200)
@@ -56,21 +56,18 @@ describe('User.ts/user artist endpoint test', () => {
 
     const theData = attributes.data
     // FIXME: has addressId and AddressId
-    expect(theData).to.include.keys('id', 'ownerId', 'typeId', 'displayName', 'description', 'shortBio', 'email', 'addressId', 'updatedAt', 'createdAt', 'deletedAt', 'AddressId', 'User')
+    expect(theData).to.include.keys('id', 'owner', 'avatar', 'banner', 'typeId', 'displayName', 'description', 'shortBio', 'updatedAt', 'createdAt', 'deletedAt')
     expect(theData.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.ownerId).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
     expect(theData.typeId).to.eql(1)
     expect(theData.displayName).to.eql('matrix')
     expect(theData.description).to.be.null
     expect(theData.shortBio).to.be.null
-    expect(theData.email).to.be.null
-    expect(theData.addressId).to.be.null
+
     expect(theData.updatedAt).to.eql('2022-09-28T17:31:59.495Z')
     expect(theData.createdAt).to.eql('2022-09-28T17:31:59.495Z')
     expect(theData.deletedAt).to.be.null
-    expect(theData.AddressId).to.be.null
 
-    const theUser = theData.User
+    const theUser = theData.owner
     expect(theUser).to.be.an('object')
     expect(theUser).to.include.keys('id', 'displayName')
     expect(theUser.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')

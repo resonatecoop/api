@@ -43,8 +43,8 @@ describe('baseline/labels endpoint test', async () => {
     expect(attributes.data.length).to.greaterThan(0)
 
     const theData = attributes.data[0]
-    expect(theData).to.include.keys('id', 'images', 'name')
-    expect(theData.name).to.eql(name)
+    expect(theData).to.include.keys('id', 'images', 'avatar', 'banner', 'createdAt', 'deletedAt', 'description', 'displayName', 'shortBio', 'type', 'typeId', 'updatedAt')
+    expect(theData.displayName).to.eql(name)
     expect(theData.id).to.eql(label.id)
 
     expect(attributes.count).to.eql(1)
@@ -69,7 +69,7 @@ describe('baseline/labels endpoint test', async () => {
     expect(attributes).to.be.an('object')
 
     expect(attributes.data).to.be.an('object')
-    expect(attributes.data.name).to.eql(name)
+    expect(attributes.data.displayName).to.eql(name)
     expect(attributes.data.id).to.eql(label.id)
     expect(attributes.data.links).to.eql([])
     expect(attributes.data.shortBio).to.eql(bio)

@@ -35,6 +35,7 @@ module.exports = function (trackService) {
           required: true,
           include: [{
             model: User,
+            as: 'owner',
             required: true,
             where: {
               id: ctx.profile.id

@@ -1,5 +1,5 @@
-// const fs = require('fs')
-// const path = require('path')
+const fs = require('fs')
+const path = require('path')
 const NodeCache = require('node-cache')
 
 const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
@@ -10,15 +10,19 @@ const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
  *
  */
 
-module.exports.resolveProfileImage = async (id) => {
+module.exports.resolveProfileImage = async (legacyId) => {
   try {
-    const cached = myCache.get(`assets:${id}`)
+    const cached = myCache.get(`assets:${legacyId}`)
 
     if (cached) return cached
 
     // TODO: Figure out a way to read documents
-    // const dirContent = await fs.readdir(path.resolve(path.join(BASE_DATA_DIR, '/data/ultimatemember'), `./${id}`))
-    const dirContent = []
+    let dirContent = []
+    try {
+      dirContent = await fs.readdir(path.resolve(path.join('/data/ultimatemember'), `./${legacyId}`))
+    } catch (e) {
+      console.error('error looking file system')
+    }
     const assets = {}
 
     const variants = {
@@ -51,7 +55,7 @@ module.exports.resolveProfileImage = async (id) => {
         if (!res[key]) {
           const variant = variants[key] || fallback[name]
 
-          res[variant] = `https://resonate.is/wp-content/uploads/ultimatemember/${id}/${value}`
+          res[variant] = `https://resonate.is/wp-content/uploads/ultimatemember/${legacyId}/${value}`
 
           assets[variant] = res[variant]
         }
@@ -59,7 +63,7 @@ module.exports.resolveProfileImage = async (id) => {
         return res
       }, {})
 
-    myCache.set(`assets:${id}`, assets, 10000)
+    myCache.set(`assets:${legacyId}`, assets, 10000)
 
     return assets
   } catch (err) {

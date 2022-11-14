@@ -11,10 +11,13 @@ const trackService = (ctx) => {
     //   ext = '.webp'
     // }
 
-    const variants = [120, 600]
+    const variants = [120, 600, 1500]
     const trackGroup = item.trackOn?.[0]?.trackGroup.get
       ? item.trackOn?.[0]?.trackGroup.get({ plain: true })
       : item.trackOn?.[0]?.trackGroup
+
+    const coverFromTrackGroup = trackGroup ? coverSrc(trackGroup.cover, '600', ext) : undefined
+    const cover = coverFromTrackGroup ?? (item.get?.('trackgroup.cover') ? coverSrc(item.get?.('trackgroup.cover'), '600', ext) : '')
 
     return {
       id: item.id,
@@ -22,10 +25,10 @@ const trackService = (ctx) => {
       title: item.title,
       duration: item.duration,
       trackGroup: trackGroup
-        ? { ...trackGroup, cover: coverSrc(trackGroup.cover, '600', ext) }
+        ? { ...trackGroup, cover }
         : {
             title: item.get?.('trackgroup.title'),
-            cover: item.get?.('trackgroup.cover') ? coverSrc(item.get?.('trackgroup.cover'), '600', ext) : ''
+            cover
           },
       trackGroupId: trackGroup?.id,
       year: item.year,
@@ -33,18 +36,21 @@ const trackService = (ctx) => {
       creator: item.creator,
       // FIXME: artist is legacy stuff, we probably need to migrate it.
       artist: item.artist ? he.decode(item.artist) : null,
-      url: `${process.env.APP_HOST}${apiRoot}user/stream/${item.id}`,
+      url: `${process.env.APP_HOST}${apiRoot}/user/stream/${item.id}`,
       images: variants.reduce((o, key) => {
         const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
+        const coverUrl = coverSrc(cover, key, ext)
+
+        if (!coverUrl) {
+          return o
+        }
 
         return Object.assign(o,
           {
             [variant]: {
               width: key,
               height: key,
-              url: item.cover_art
-                ? coverSrc(item.cover_art, key, ext, !item.cover)
-                : coverSrc(item.cover, ext, ext, !item.file)
+              url: coverUrl
             }
           }
         )
