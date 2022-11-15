@@ -237,13 +237,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theItem.status).to.eql('paid')
     expect(theItem.url).to.include('user/stream/' + track.id)
 
-    expect(theItem.images).to.be.an('object')
-    expect(theItem.images).to.include.keys('small', 'medium')
-    expect(theItem.images.small).to.include.keys('width', 'height')
-    expect(theItem.images.small.width).to.eql(120)
-    expect(theItem.images.small.height).to.eql(120)
-    expect(theItem.images.medium.width).to.eql(600)
-    expect(theItem.images.medium.height).to.eql(600)
+    expect(theItem.images).to.be.empty
 
     await track.destroy({ force: true })
     await play.destroy({ force: true })

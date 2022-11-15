@@ -1,7 +1,6 @@
-const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../../db/models')
+const { Track } = require('../../../db/models')
 const { Op } = require('sequelize')
-const coverSrc = require('../../../util/cover-src')
-const { apiRoot } = require('../../../constants')
+const trackService = require('../services/trackService')
 
 module.exports = function () {
   const operations = {
@@ -21,7 +20,7 @@ module.exports = function () {
   async function GET (ctx, next) {
     if (await ctx.cashed?.()) return
     try {
-      const result = await Track.findOne({
+      const result = await Track.scope('details').findOne({
         where: {
           id: ctx.params.id,
           status: {
@@ -35,21 +34,11 @@ module.exports = function () {
           'url',
           'cover_art',
           'album',
+          'status',
           'duration',
           'year'
-        ],
-        include: [
-          {
-            model: File,
-            attributes: ['id'],
-            as: 'cover'
-          },
-          {
-            model: File,
-            attributes: ['id'],
-            as: 'audiofile'
-          }
         ]
+
       })
 
       if (!result) {
@@ -57,82 +46,8 @@ module.exports = function () {
         ctx.throw(ctx.status, 'No track found')
       }
 
-      // find associated trackgroup for cover fallback
-      const trackgroup = await TrackGroup.findOne({
-        attributes: [
-          'cover'
-        ],
-        where: {
-          creatorId: result.creatorId,
-          type: {
-            [Op.in]: ['single', 'lp', 'ep']
-          },
-          private: false,
-          enabled: true
-        },
-        include: [
-          {
-            model: TrackGroupItem,
-            required: true,
-            attributes: ['id', 'index'],
-            as: 'items',
-            where: {
-              track_id: ctx.params.id
-            }
-          }
-        ]
-      })
-
-      let cover
-
-      if (trackgroup) {
-        cover = trackgroup.cover
-      }
-
-      // FIXME: This should refer an artist, not the original uploader
-      const artist = await UserGroup.scope('public').findOne({ where: { id: result.creatorId } })
-
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600, 1500]
-
-      // FIXME: use trackService
       ctx.body = {
-        data: {
-          id: result.id,
-          creatorId: result.creatorId,
-          title: result.title,
-          duration: result.duration,
-          album: result.album,
-          year: result.year,
-          artist: artist.displayName,
-          cover: !result.cover_art
-            ? coverSrc(cover, '600', ext, false)
-            : coverSrc(result.cover_art, '600', ext, !result.dataValues.cover),
-          cover_metadata: {
-            id: result.cover_art ? result.cover_art : cover
-            // width, height ?
-          },
-          status: result.status === 2 ? 'Free' : 'Paid',
-          url: `${process.env.APP_HOST}${apiRoot}/stream/${result.id}`,
-          images: variants.reduce((o, key) => {
-            const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-            return Object.assign(o,
-              {
-                [variant]: {
-                  width: key,
-                  height: key,
-                  url: coverSrc(result.cover_art, key, ext, !result.dataValues.cover)
-                }
-              }
-            )
-          }, {})
-        }
+        data: trackService(ctx).single(result)
       }
     } catch (err) {
       ctx.throw(ctx.status, err.message)

@@ -188,7 +188,7 @@ describe('baseline/track endpoint test', () => {
     expect(attributes.numberOfPages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
-  it('should get track by id', async () => {
+  it('should GET track/:id', async () => {
     response = await request.get(`/tracks/${testTrackId}`)
 
     expect(response.status).to.eql(200)
@@ -200,28 +200,15 @@ describe('baseline/track endpoint test', () => {
     expect(attributes.data).to.be.an('object')
 
     const theData = attributes.data
-    expect(theData).to.include.keys('id', 'creatorId', 'title', 'album', 'year', 'artist', 'cover_metadata', 'status', 'url', 'images')
+    expect(theData).to.include.keys('id', 'creatorId', 'creator', 'title', 'year', 'artist', 'trackGroup', 'url', 'images')
     expect(theData.id).to.eql('b6d160d1-be16-48a4-8c4f-0c0574c4c6aa')
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.title).to.eql('Sharable maximized utilisation')
-    expect(theData.album).to.eql('hard drive')
     expect(theData.year).to.be.null
     expect(theData.artist).to.eq; ('matrix')
 
-    expect(theData.cover_metadata).to.be.an('object')
-
-    expect(theData.status).to.eql('Paid')
     expect(theData.url).to.include('stream/b6d160d1-be16-48a4-8c4f-0c0574c4c6aa')
 
-    expect(theData.images).to.include.keys('small', 'medium', 'large')
-    expect(theData.images.small).to.include.keys('width', 'height')
-    expect(theData.images.small.width).to.eql(120)
-    expect(theData.images.small.height).to.eql(120)
-    expect(theData.images.medium).to.include.keys('width', 'height')
-    expect(theData.images.medium.width).to.eql(600)
-    expect(theData.images.medium.height).to.eql(600)
-    expect(theData.images.large).to.include.keys('width', 'height')
-    expect(theData.images.large.width).to.eql(1500)
-    expect(theData.images.large.height).to.eql(1500)
+    expect(theData.images).to.be.empty
   })
 })
