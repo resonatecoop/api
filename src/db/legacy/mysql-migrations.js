@@ -202,7 +202,8 @@ const migrateTrackGroups = async (client, id) => {
   let usersGroupedByLegacyId = await groupUsersByLegacyId()
 
   return new Promise((resolve, reject) => {
-    client.query('SELECT * FROM track_groups WHERE type != \'playlist\'', async function (error, results, fields) {
+    client.query(`SELECT * FROM track_groups 
+    WHERE (type != 'playlist' or type IS NULL)`, async function (error, results, fields) {
       if (error) reject(error)
 
       const missingUserGroups = uniq(results.filter(r => !usersGroupedByLegacyId[r.creator_id]?.userGroups?.[0]).map(r => r.creator_id))
@@ -299,10 +300,10 @@ const migrateTrackGroupItems = async (client, id) => {
     client.query(`SELECT tgi.id, tgi.index, track_group_id, track_id, track_performers, track_composers, tgi.updated_at, tgi.created_at FROM track_group_items tgi 
     INNER JOIN track_groups tg 
     ON tgi.track_group_id = tg.id 
-    AND tg.type != 'playlist'
+    AND (tg.type != 'playlist' or tg.type IS NULL)
     `, async function (error, results, fields) {
       if (error) reject(error)
-      console.log('result', results.length)
+      console.log('trackgroup_items result', results.length)
       try {
         await TrackGroupItem.bulkCreate(results
           // TODO: Some tracks' legacy artists don't exist in the user-api database because
