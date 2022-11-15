@@ -19,9 +19,10 @@ module.exports.resolveProfileImage = async (legacyId) => {
     // TODO: Figure out a way to read documents
     let dirContent = []
     try {
-      dirContent = await fs.readdir(path.resolve(path.join('/data/ultimatemember'), `./${legacyId}`))
+      const dirPath = path.resolve(path.join('/data/ultimatemember'), `./${legacyId}`)
+      dirContent = await fs.promises.readdir(dirPath)
     } catch (e) {
-      console.error('error looking in file system')
+      console.error('error looking in file system', e)
     }
     const assets = {}
 
