@@ -16,7 +16,7 @@ module.exports = function () {
         page = 1
       } = ctx.request.query
 
-      const { rows: result, count } = await UserGroup.findAndCountAll({
+      const { rows: result, count } = await UserGroup.scope('public').findAndCountAll({
         limit,
         order: [
           ['displayName', 'asc']

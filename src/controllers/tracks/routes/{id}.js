@@ -90,7 +90,7 @@ module.exports = function () {
       }
 
       // FIXME: This should refer an artist, not the original uploader
-      const artist = await UserGroup.findOne({ where: { id: result.creatorId } })
+      const artist = await UserGroup.scope('public').findOne({ where: { id: result.creatorId } })
 
       let ext = '.jpg'
 
@@ -100,6 +100,7 @@ module.exports = function () {
 
       const variants = [120, 600, 1500]
 
+      // FIXME: use trackService
       ctx.body = {
         data: {
           id: result.id,

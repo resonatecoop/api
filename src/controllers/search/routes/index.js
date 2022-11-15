@@ -12,7 +12,7 @@ module.exports = function () {
 
     const q = ctx.request.query.q
     try {
-      const artists = await UserGroup.findAll({
+      const artists = await UserGroup.scope('public').findAll({
         where: {
           displayName: {
             [Op.iLike]: `%${q}%`
@@ -29,7 +29,7 @@ module.exports = function () {
         }]
       })
 
-      const labels = await UserGroup.findAll({
+      const labels = await UserGroup.scope('public').findAll({
         where: {
           displayName: {
             [Op.iLike]: `%${q}%`
@@ -46,7 +46,7 @@ module.exports = function () {
         }]
       })
 
-      const bands = await UserGroup.findAll({
+      const bands = await UserGroup.scope('public').findAll({
         where: {
           displayName: {
             [Op.iLike]: `%${q}%`

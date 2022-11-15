@@ -21,7 +21,7 @@ module.exports = function () {
     if (await ctx.cashed?.()) return
 
     try {
-      const result = await UserGroup.findOne({
+      const result = await UserGroup.scope('public').findOne({
         where: {
           id: ctx.params.id
         }

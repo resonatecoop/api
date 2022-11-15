@@ -61,6 +61,18 @@ module.exports = (sequelize, DataTypes) => {
         exclude: ['addressId', 'email', 'ownerId', 'AddressId']
       }
     },
+    scopes: {
+      public: () => ({
+        attributes: {
+          exclude: ['addressId', 'email', 'ownerId', 'AddressId']
+        },
+        include: [{
+          model: sequelize.models.User,
+          as: 'owner',
+          attributes: ['id', 'legacyId']
+        }]
+      })
+    },
     modelName: 'UserGroup',
     tableName: 'user_groups',
     underscored: true

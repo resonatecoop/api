@@ -21,7 +21,6 @@ module.exports = function () {
   async function DELETE (ctx, next) {
     try {
       const result = await UserGroup.findOne({
-
         where: {
           userId: ctx.profile.id,
           id: ctx.params.id
@@ -104,7 +103,7 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Could not update')
       }
 
-      result = await UserGroup.findOne({
+      result = await UserGroup.scope('public').findOne({
         where: {
           ownerId: ctx.profile.id,
           id: ctx.params.id
@@ -162,7 +161,7 @@ module.exports = function () {
     }
 
     try {
-      const result = await UserGroup.findOne({
+      const result = await UserGroup.scope('public').findOne({
         where,
         include: [
           {

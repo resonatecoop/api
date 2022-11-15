@@ -16,7 +16,7 @@ export default function () {
     const offset = page > 1 ? (page - 1) * limit : 0
 
     try {
-      const { rows: result, count } = await UserGroup.findAndCountAll({
+      const { rows: result, count } = await UserGroup.scope('public').findAndCountAll({
         include: [{
           model: TrackGroup,
           as: 'trackgroups',
