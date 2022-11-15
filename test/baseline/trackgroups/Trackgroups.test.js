@@ -105,13 +105,7 @@ describe('baseline/trackgroups endpoint test', () => {
     expect(theTrack.creator.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theTrack.artist).to.eql('Laurie Yost')
     expect(theTrack.images).to.be.an('object')
-    expect(theTrack.images).to.include.keys('small', 'medium')
-    expect(theTrack.images.small).to.include.keys('width', 'height')
-    expect(theTrack.images.small.width).to.eql(120)
-    expect(theTrack.images.small.height).to.eql(120)
-    expect(theTrack.images.medium).to.include.keys('width', 'height')
-    expect(theTrack.images.medium.width).to.eql(600)
-    expect(theTrack.images.medium.height).to.eql(600)
+    expect(theTrack.images).to.be.empty
 
     expect(theData.images).to.include.keys('small', 'medium')
     expect(theData.images.small).to.include.keys('width', 'height')

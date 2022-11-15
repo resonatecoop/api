@@ -36,6 +36,12 @@ module.exports = (sequelize, DataTypes) => {
     addressId: {
       type: DataTypes.UUID
     },
+    banner: {
+      type: DataTypes.UUID
+    },
+    avatar: {
+      type: DataTypes.UUID
+    },
     updatedAt: {
       allowNull: false,
       type: DataTypes.DATE
@@ -50,18 +56,25 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
+    defaultScope: {
+      attributes: {
+        exclude: ['addressId', 'email', 'ownerId', 'AddressId']
+      }
+    },
     modelName: 'UserGroup',
     tableName: 'user_groups',
     underscored: true
   })
 
   UserGroup.associate = function (models) {
-    UserGroup.belongsTo(models.Address, { foreignKey: 'addressId' })
+    UserGroup.belongsTo(models.Address, { foreignKey: 'addressId', as: 'address' })
     UserGroup.belongsToMany(models.UserGroup, { through: models.UserGroupMember, as: 'members', foreignKey: 'memberId', otherKey: 'belongsToId' })
     UserGroup.hasMany(models.UserGroupMember, { foreignKey: 'belongsToId', as: 'parent' })
     UserGroup.hasMany(models.UserGroupMember, { foreignKey: 'memberId', as: 'memberOf' })
     UserGroup.belongsTo(models.UserGroupType, { foreignKey: 'typeId', as: 'type' })
-    UserGroup.belongsTo(models.User, { foreignKey: 'ownerId' })
+    UserGroup.belongsTo(models.User, { as: 'owner', foreignKey: 'ownerId' })
+    UserGroup.belongsTo(models.File, { foreignKey: 'banner' })
+    UserGroup.belongsTo(models.File, { foreignKey: 'avatar' })
     UserGroup.hasMany(models.TrackGroup, { foreignKey: 'creatorId', as: 'trackgroups' })
     UserGroup.hasMany(models.Track, { foreignKey: 'creatorId', as: 'tracks' })
     UserGroup.hasMany(models.UserGroupLink, { as: 'links', foreignKey: 'ownerId' })

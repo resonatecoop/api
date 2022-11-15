@@ -1,6 +1,6 @@
 const { Play, Track, Credit } = require('../../../../db/models')
 const { Op } = require('sequelize')
-const { calculateCost, formatCredit } = require('@resonate/utils')
+const { calculateCost } = require('@resonate/utils')
 const numbro = require('numbro')
 const { authenticate } = require('../../authenticate')
 
@@ -77,7 +77,7 @@ module.exports = function () {
           trackId: play.trackId,
           count: newCount,
           cost: cost,
-          total: formatCredit(wallet.total)
+          total: wallet.total
         }
       }
     } catch (err) {

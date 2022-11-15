@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testArtistId, testTrackGroupId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
+const { request, expect, testUserId, testArtistId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
 const { TrackGroup, Track, TrackGroupItem, User } = require('../../../src/db/models')
 
 const MockAccessToken = require('../../MockAccessToken')
@@ -197,100 +197,6 @@ describe('baseline/user endpoint test', () => {
 
     expect(attributes.count).to.eql(3)
     expect(attributes.numberOfPages).to.eql(1)
-    expect(attributes.status).to.eql('ok')
-  })
-
-  it('should GET /user/trackgroups/:id', async () => {
-    response = await request.get(`/user/trackgroups/${testTrackGroupId}`).set('Authorization', `Bearer ${testAccessToken}`)
-
-    expect(response.status).to.eql(200)
-
-    const attributes = response.body
-    expect(attributes).to.be.an('object')
-    expect(attributes).to.include.keys('data', 'status')
-
-    expect(attributes.data).to.be.an('object')
-
-    const theData = attributes.data
-    expect(theData).to.include.keys('about', 'cover_metadata', 'display_artist', 'user', 'download', 'id', 'items', 'images', 'private', 'releaseDate', 'slug', 'tags', 'title', 'type')
-    expect(theData.about).to.eql('this is the best album')
-
-    const theCoverMetatdata = theData.cover_metadata
-    expect(theCoverMetatdata).to.be.an('object')
-    expect(theCoverMetatdata).to.include.keys('id')
-    expect(theCoverMetatdata.id).to.be.null
-
-    expect(theData.display_artist).to.eql('Jack')
-
-    const theUser = theData.user
-    expect(theUser).to.be.an('object')
-
-    expect(theData.download).to.be.false
-    expect(theData.id).to.eql('84322e4f-0247-427f-8bed-e7617c3df5ad')
-
-    const theItems = theData.items
-    expect(theItems).to.be.an('array')
-    expect(theItems.length).to.eql(10)
-
-    const theItem = theItems[0]
-    expect(theItem).to.be.an('object')
-    expect(theItem).to.include.keys('index', 'track')
-    expect(theItem.index).to.eql(0)
-
-    const theTrack = theItem.track
-    expect(theTrack).to.be.an('object')
-    expect(theTrack).to.include.keys('id', 'title', 'status', 'album', 'creator_id', 'artist', 'images', 'url')
-    expect(theTrack.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
-    expect(theTrack.title).to.eql('Ergonomic interactive concept')
-    expect(theTrack.status).to.eql('free')
-    expect(theTrack.album).to.eql('firewall')
-    expect(theTrack.creator_id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theTrack.artist).to.eql('Laurie Yost')
-
-    //  images for the track
-    let theImages = theTrack.images
-    expect(theImages).to.include.keys('small', 'medium', 'large')
-    expect(theImages.small).to.be.an('object')
-    expect(theImages.small).to.include.keys('width', 'height')
-    expect(theImages.small.width).to.eql(120)
-    expect(theImages.small.height).to.eql(120)
-    expect(theImages.medium).to.be.an('object')
-    expect(theImages.medium).to.include.keys('width', 'height')
-    expect(theImages.medium.width).to.eql(600)
-    expect(theImages.medium.height).to.eql(600)
-    expect(theImages.large).to.be.an('object')
-    expect(theImages.large).to.include.keys('width', 'height')
-    expect(theImages.large.width).to.eql(1500)
-    expect(theImages.large.height).to.eql(1500)
-
-    expect(theTrack.url).to.include('user/stream/44a28752-1101-4e0d-8c40-2c36dc82d035')
-
-    // images for the trackgroups
-    theImages = theData.images
-    expect(theImages).to.include.keys('small', 'medium', 'large')
-    expect(theImages.small).to.be.an('object')
-    expect(theImages.small).to.include.keys('width', 'height')
-    expect(theImages.small.width).to.eql(120)
-    expect(theImages.small.height).to.eql(120)
-    expect(theImages.medium).to.be.an('object')
-    expect(theImages.medium).to.include.keys('width', 'height')
-    expect(theImages.medium.width).to.eql(600)
-    expect(theImages.medium.height).to.eql(600)
-    expect(theImages.large).to.be.an('object')
-    expect(theImages.large).to.include.keys('width', 'height')
-    expect(theImages.large.width).to.eql(1500)
-    expect(theImages.large.height).to.eql(1500)
-
-    expect(theData.private).to.be.false
-    expect(theData.releaseDate).to.eql('2019-01-01')
-    expect(theData.slug).to.eql('best-album-ever')
-
-    expect(theData.tags).to.be.an('array')
-    expect(theData.tags.length).to.eql(0)
-
-    expect(theData.title).to.eql('Best album ever')
-    expect(theData.type).to.eql('lp')
-
     expect(attributes.status).to.eql('ok')
   })
 

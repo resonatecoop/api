@@ -96,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
           as: 'items',
           include: [{
             model: sequelize.models.Track,
-            attributes: ['id', 'creatorId', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
+            attributes: ['id', 'creatorId', 'title', 'album', 'artist', 'duration', 'status'],
             as: 'track',
             where: {
               status: {
@@ -104,17 +104,6 @@ module.exports = (sequelize, DataTypes) => {
               }
             },
             include: [
-              {
-                model: sequelize.models.File,
-                required: false,
-                attributes: ['id', 'owner_id'],
-                as: 'cover_metadata',
-                where: {
-                  mime: {
-                    [Op.in]: ['image/jpeg', 'image/png']
-                  }
-                }
-              },
               {
                 model: sequelize.models.File,
                 attributes: ['id', 'size', 'owner_id'],
@@ -132,10 +121,11 @@ module.exports = (sequelize, DataTypes) => {
                 include: [{
                   model: sequelize.models.TrackGroup,
                   as: 'trackGroup',
-                  attributes: ['id', 'title'],
+                  attributes: ['id', 'title', 'cover'],
                   include: [{
                     model: sequelize.models.File,
                     as: 'cover_metadata',
+                    attributes: ['id'],
                     required: false,
                     where: {
                       mime: {

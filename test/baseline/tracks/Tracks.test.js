@@ -86,6 +86,80 @@ describe('baseline/track endpoint test', () => {
     tgi.destroy({ force: true })
   })
 
+  it('should GET /tracks?order=plays', async () => {
+    const displayName = 'Test test'
+    const track = await Track.create({
+      title: displayName,
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+
+    const trackgroup = await TrackGroup.create({
+      title: displayName + 'Album',
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+
+    response = await request.get('/tracks?order=plays')
+
+    expect(response.status).to.eql(200)
+
+    const { data } = response.body
+    expect(response.body).to.be.an('object')
+    expect(response.body).to.include.keys('data', 'count', 'numberOfPages')
+
+    expect(data).to.be.an('array')
+    expect(data.length).to.eql(1)
+
+    const theData = data[0]
+
+    expect(theData).to.include.keys('id', 'title', 'trackGroup', 'creator', 'creatorId', 'artist', 'status', 'url', 'images')
+    expect(theData.id).to.eql(track.id)
+    expect(theData.title).to.eql(track.title)
+    expect(theData.trackGroup.id).to.eql(trackgroup.id)
+    expect(theData.trackGroup.cover).to.include('http')
+    expect(theData.trackGroup.cover).to.include(trackgroup.cover)
+
+    expect(theData.trackGroup.title).to.eql(trackgroup.title)
+    expect(theData.creatorId).to.eql(testArtistId)
+    expect(theData.creator.id).to.eql(testArtistId)
+
+    expect(theData.artist).to.be.null
+    expect(theData.status).to.eql('paid')
+    expect(theData.url).to.include(`user/stream/${track.id}`)
+
+    expect(theData.images).to.include.keys('small', 'medium')
+    expect(theData.images.small).to.include.keys('width', 'height')
+    expect(theData.images.small.width).to.eql(120)
+    expect(theData.images.small.height).to.eql(120)
+    expect(theData.images.medium).to.include.keys('width', 'height')
+    expect(theData.images.medium.width).to.eql(600)
+    expect(theData.images.medium.height).to.eql(600)
+
+    track.destroy({ force: true })
+    play.destroy({ force: true })
+    play2.destroy({ force: true })
+    trackgroup.destroy({ force: true })
+    tgi.destroy({ force: true })
+  })
+
   it('should GET /tracks when options.order is \'random\'', async () => {
     response = await request.get('/tracks?order=random')
 
@@ -108,13 +182,7 @@ describe('baseline/track endpoint test', () => {
     expect(theData.status).to.eql('free')
 
     expect(theData.images).to.be.an('object')
-    expect(theData.images).to.include.keys('small', 'medium')
-    expect(theData.images.small).to.include.keys('width', 'height')
-    expect(theData.images.small.width).to.eql(120)
-    expect(theData.images.small.height).to.eql(120)
-    expect(theData.images.medium).to.include.keys('width', 'height')
-    expect(theData.images.medium.width).to.eql(600)
-    expect(theData.images.medium.height).to.eql(600)
+    expect(theData.images).to.be.empty
 
     expect(attributes.count).to.eql(31)
     expect(attributes.numberOfPages).to.eql(1)

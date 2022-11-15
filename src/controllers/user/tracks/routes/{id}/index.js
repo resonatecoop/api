@@ -1,3 +1,4 @@
+
 const { User, Track, File, UserGroup } = require('../../../../../db/models')
 const coverSrc = require('../../../../../util/cover-src')
 const { validate } = require('../../../../../schemas/tracks')
@@ -132,6 +133,7 @@ module.exports = function () {
             attributes: ['id', 'ownerId', 'typeId', 'displayName'],
             include: [{
               model: User,
+              as: 'owner',
               attributes: ['id'],
               required: true,
               where: {

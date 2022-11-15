@@ -116,17 +116,15 @@ describe('baseline/user/trackgroups endpoint test', () => {
     expect(attributes.data).to.be.an('object')
 
     const theData = attributes.data
-    expect(theData).to.include.keys('about', 'cover_metadata', 'display_artist', 'user', 'download', 'id', 'items', 'images', 'private', 'releaseDate', 'slug', 'tags', 'title', 'type')
+    expect(theData).to.include.keys('about', 'creator', 'creatorId', 'uri', 'cover_metadata', 'display_artist', 'download', 'id', 'items', 'images', 'private', 'releaseDate', 'slug', 'tags', 'title', 'type')
     expect(theData.about).to.eql('this is the best album')
 
     const theCoverMetatdata = theData.cover_metadata
-    expect(theCoverMetatdata).to.be.an('object')
-    expect(theCoverMetatdata).to.include.keys('id')
-    expect(theCoverMetatdata.id).to.be.null
+    expect(theCoverMetatdata).to.be.null
 
     expect(theData.display_artist).to.eql('Jack')
 
-    const theUser = theData.user
+    const theUser = theData.creator
     expect(theUser).to.be.an('object')
 
     expect(theData.download).to.be.false
@@ -143,29 +141,17 @@ describe('baseline/user/trackgroups endpoint test', () => {
 
     const theTrack = theItem.track
     expect(theTrack).to.be.an('object')
-    expect(theTrack).to.include.keys('id', 'title', 'status', 'album', 'creator_id', 'artist', 'images', 'url')
+    expect(theTrack).to.include.keys('id', 'title', 'status', 'creatorId', 'artist', 'images', 'url', 'trackGroup', 'trackGroupId')
     expect(theTrack.id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
     expect(theTrack.title).to.eql('Ergonomic interactive concept')
     expect(theTrack.status).to.eql('free')
-    expect(theTrack.album).to.eql('firewall')
-    expect(theTrack.creator_id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theTrack.trackGroup.title).to.eql('Best album ever')
+    expect(theTrack.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theTrack.artist).to.eql('Laurie Yost')
 
     //  images for the track
     let theImages = theTrack.images
-    expect(theImages).to.include.keys('small', 'medium', 'large')
-    expect(theImages.small).to.be.an('object')
-    expect(theImages.small).to.include.keys('width', 'height')
-    expect(theImages.small.width).to.eql(120)
-    expect(theImages.small.height).to.eql(120)
-    expect(theImages.medium).to.be.an('object')
-    expect(theImages.medium).to.include.keys('width', 'height')
-    expect(theImages.medium.width).to.eql(600)
-    expect(theImages.medium.height).to.eql(600)
-    expect(theImages.large).to.be.an('object')
-    expect(theImages.large).to.include.keys('width', 'height')
-    expect(theImages.large.width).to.eql(1500)
-    expect(theImages.large.height).to.eql(1500)
+    expect(theImages).to.be.empty
 
     expect(theTrack.url).to.include('user/stream/44a28752-1101-4e0d-8c40-2c36dc82d035')
 

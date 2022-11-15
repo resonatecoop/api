@@ -168,8 +168,8 @@ module.exports = function () {
           {
             model: User,
             required: false,
-            attributes: ['id', 'displayName']
-            // as: 'user'
+            attributes: ['id', 'displayName'],
+            as: 'owner'
           }
         ]
       })
