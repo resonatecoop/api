@@ -39,7 +39,7 @@ const trackService = (ctx) => {
       url: `${process.env.APP_HOST}${apiRoot}/user/stream/${item.id}`,
       images: variants.reduce((o, key) => {
         const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-        const coverUrl = coverSrc(cover, key, ext)
+        const coverUrl = coverSrc(trackGroup?.cover, key, ext)
 
         if (!coverUrl) {
           return o
