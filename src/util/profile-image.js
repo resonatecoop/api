@@ -21,7 +21,7 @@ module.exports.resolveProfileImage = async (legacyId) => {
     try {
       dirContent = await fs.readdir(path.resolve(path.join('/data/ultimatemember'), `./${legacyId}`))
     } catch (e) {
-      console.error('error looking file system')
+      console.error('error looking in file system')
     }
     const assets = {}
 

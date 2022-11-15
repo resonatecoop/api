@@ -18,7 +18,7 @@ module.exports = function () {
 
       const offset = page > 1 ? (page - 1) * limit : 0
 
-      const { rows: result, count } = await UserGroup.findAndCountAll({
+      const { rows: result, count } = await UserGroup.scope('public').findAndCountAll({
         offset,
         limit,
         include: [{

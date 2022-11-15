@@ -15,7 +15,7 @@ module.exports = function () {
       // featured on the model directly rather than just whether their
       // track groups are? Dunno.
 
-      const result = await UserGroup.findAll({
+      const result = await UserGroup.scope('public').findAll({
         include: [{
           model: TrackGroup,
           as: 'trackgroups',
