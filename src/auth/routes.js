@@ -229,7 +229,7 @@ module.exports = (provider) => {
     const isExisting = await User.findOne({ where: { email } })
 
     if (isExisting) {
-      this.flash = { error: ['User with this email already exists!'] }
+      message = { error: ['User with this email already exists!'] }
       return ctx.render('registration', {
         messages: message,
         params: {},

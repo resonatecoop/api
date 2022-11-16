@@ -18,6 +18,10 @@ a {
   font-weight: bold;
 }
 
+h1 {
+  text-align: center;
+}
+
 .content {
   min-width: 300px;
   max-width: 400px;
@@ -58,6 +62,10 @@ form button {
 
 .scopes>li {
   list-style: none;
+}
+
+.center {
+  text-align: center;
 }
 
 .error ul,
