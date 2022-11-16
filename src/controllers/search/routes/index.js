@@ -26,7 +26,8 @@ module.exports = function () {
             name: 'artist'
           },
           required: true
-        }]
+        }],
+        limit: 20
       })
 
       const labels = await UserGroup.scope('public').findAll({
@@ -43,7 +44,8 @@ module.exports = function () {
             name: 'labels'
           },
           required: true
-        }]
+        }],
+        limit: 20
       })
 
       const bands = await UserGroup.scope('public').findAll({
@@ -60,7 +62,8 @@ module.exports = function () {
             name: 'bands'
           },
           required: true
-        }]
+        }],
+        limit: 20
       })
 
       const tracks = await Track.findAll({
@@ -82,7 +85,8 @@ module.exports = function () {
               enabled: true
             }
           }]
-        }]
+        }],
+        limit: 20
       })
 
       const trackgroups = await TrackGroup.findAll({
@@ -92,7 +96,8 @@ module.exports = function () {
           },
           private: false,
           enabled: true
-        }
+        },
+        limit: 50
       })
 
       ctx.body = {
