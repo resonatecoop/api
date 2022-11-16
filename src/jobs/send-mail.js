@@ -1,7 +1,7 @@
 const winston = require('winston')
 const path = require('path')
 const nodemailer = require('nodemailer')
-const mailgun = require('nodemailer-mailgun-transport')
+const sendgrid = require('nodemailer-sendgrid')
 const Email = require('email-templates')
 
 const logger = winston.createLogger({
@@ -30,7 +30,7 @@ const sendMail = async (job) => {
   try {
     const email = new Email({
       message: {
-        from: `"Resonate" <${process.env.MAILGUN_SENDER}>`
+        from: `"Resonate" <${process.env.SENDGRID_SENDER ?? 'members@resonate.coop'}>`
       },
       juice: true,
       send: true,
@@ -41,11 +41,8 @@ const sendMail = async (job) => {
         }
       },
       transport: nodemailer.createTransport(
-        mailgun({
-          auth: {
-            api_key: process.env.MAILGUN_API_KEY,
-            domain: process.env.MAILGUN_DOMAIN
-          }
+        sendgrid({
+          apiKey: process.env.SENDGRID_API_KEY
         })
       )
     })
