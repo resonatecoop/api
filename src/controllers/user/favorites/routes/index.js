@@ -1,4 +1,4 @@
-const { Track, TrackGroup, TrackGroupItem, Favorite } = require('../../../../db/models')
+const { Track, TrackGroup, TrackGroupItem, Favorite, UserGroup } = require('../../../../db/models')
 const trackService = require('../../../tracks/services/trackService')
 const { authenticate } = require('../../authenticate')
 const { Op } = require('sequelize')
@@ -118,6 +118,9 @@ module.exports = function () {
                 enabled: true
               }
             }
+          }, {
+            as: 'creator',
+            model: UserGroup
           }]
         }]
       })

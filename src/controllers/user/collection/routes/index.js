@@ -15,6 +15,7 @@ module.exports = function (trackService) {
     const offset = page > 1 ? (page - 1) * limit : 0
 
     try {
+      // FIXME: sequelize this
       const [countResult] = await sequelize.query(`
         SELECT count(*) as count FROM(
           SELECT track.id
