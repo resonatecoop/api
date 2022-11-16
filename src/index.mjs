@@ -16,7 +16,6 @@ import { koaSwagger } from 'koa2-swagger-ui'
 import cors from '@koa/cors'
 import ratelimit from 'koa-ratelimit'
 import Redis from 'ioredis'
-import flash from 'koa-flash'
 import KeyGrip from 'keygrip'
 import _ from 'lodash'
 import swaggerConfig from './config/swagger.js'
@@ -71,7 +70,6 @@ app
     }
   }))
   .use(session(sessionConfig, app))
-  .use(flash())
   .use(compress(compressConfig()))
   .use(koaSwagger(swaggerConfig())) // swagger-ui at /docs
   .use(etag()) // required for koa-cash to propertly set 304

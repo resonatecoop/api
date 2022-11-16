@@ -70,14 +70,16 @@ module.exports = (provider) => {
   })
 
   router.get('/password-reset', async (ctx) => {
-    return ctx.render('password-reset-request', {
-      uid: undefined,
-      client: undefined,
-      messages: this.flash,
-      params: {},
-      title: 'Password reset',
-      dbg: { params: debug({}), prompt: debug({}) }
-    })
+    try {
+      return ctx.render('password-reset-request', {
+        messages: {},
+        params: {},
+        title: 'Password reset',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
+    } catch (e) {
+      console.error(e)
+    }
   })
 
   router.post('/password-reset', body, async (ctx, next) => {
@@ -86,8 +88,12 @@ module.exports = (provider) => {
     const isExisting = await User.findOne({ where: { email } })
 
     if (!isExisting) {
-      this.flash = { error: ['No user with this email exists'] }
-      return ctx.redirect('/password-reset')
+      return ctx.render('password-reset-request', {
+        messages: { error: ['No user with this email exists'] },
+        params: {},
+        title: 'Password reset',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
     }
     const date = new Date()
     date.setMinutes(date.getMinutes() + 20)
@@ -114,8 +120,6 @@ module.exports = (provider) => {
     }
 
     return ctx.render('password-reset-email-sent', {
-      uid: undefined,
-      client: undefined,
       params: {},
       title: 'Password reset email sent',
       session: {},
@@ -128,9 +132,7 @@ module.exports = (provider) => {
     const email = ctx.query.email
 
     return ctx.render('password-reset', {
-      uid: undefined,
-      client: undefined,
-      messages: this.flash,
+      messages: {},
       params: {
         token,
         email
@@ -155,21 +157,25 @@ module.exports = (provider) => {
       user.password = await User.hashPassword({ password: ctx.request.body.password })
       await user.save()
       return ctx.render('password-reset-success', {
-        uid: undefined,
-        client: undefined,
-        messages: this.flash,
+        messages: {},
         params: {},
         title: 'Password reset Success',
         dbg: { params: debug({}), prompt: debug({}) }
       })
     } else {
-      this.flash = { error: ['Something went wrong'] }
-      return ctx.redirect('/register')
+      const message = { error: ['Something went wrong'] }
+      return ctx.render('registration', {
+        params: {},
+        messages: message,
+        title: 'Registration',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
     }
   })
 
   router.get('/register/emailConfirmation/:token', async (ctx, next) => {
     const token = ctx.params.token
+    let message = {}
     const user = await User.findOne({
       where: {
         emailConfirmationToken: token,
@@ -183,15 +189,13 @@ module.exports = (provider) => {
       user.emailConfirmed = true
 
       await user.save()
-      this.flash = { success: ['Your email has been confirmed! You can now log in using your favorite Resonate app'] }
+      message = { success: ['Your email has been confirmed! You can now log in using your favorite Resonate app'] }
     } else {
-      this.flash = { error: ['We couldn\'t find that email or token'] }
+      message = { error: ['We couldn\'t find that email or token'] }
     }
 
     return ctx.render('email-confirmed', {
-      uid: undefined,
-      client: undefined,
-      messages: this.flash,
+      messages: message,
       params: {},
       title: 'Registration',
       session: {},
@@ -201,9 +205,6 @@ module.exports = (provider) => {
 
   router.get('/register', async (ctx) => {
     return ctx.render('registration', {
-      uid: undefined,
-      client: undefined,
-      messages: this.flash,
       params: {},
       title: 'Registration',
       dbg: { params: debug({}), prompt: debug({}) }
@@ -212,10 +213,16 @@ module.exports = (provider) => {
 
   router.post('/register', body, async (ctx, next) => {
     const user = ctx.request.body
+    let message = {}
 
     if (user.password.length < 8) {
-      this.flash = { error: ['Password must be at least 8 characters long'] }
-      return ctx.redirect('/register')
+      message = { error: ['Password must be at least 8 characters long'] }
+      return ctx.render('registration', {
+        messages: message,
+        params: {},
+        title: 'Registration',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
     }
 
     const email = user.email.toLowerCase()
@@ -223,7 +230,12 @@ module.exports = (provider) => {
 
     if (isExisting) {
       this.flash = { error: ['User with this email already exists!'] }
-      return ctx.redirect('/register')
+      return ctx.render('registration', {
+        messages: message,
+        params: {},
+        title: 'Registration',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
     }
 
     const role = await Role.findOne({ where: { name: 'user' } })
@@ -263,8 +275,13 @@ module.exports = (provider) => {
         dbg: { params: debug({}), prompt: debug({}) }
       })
     } else {
-      this.flash = { error: ['Something went wrong'] }
-      return ctx.redirect('/register')
+      message = { error: ['Something went wrong'] }
+      return ctx.render('registration', {
+        messages: message,
+        params: {},
+        title: 'Registration',
+        dbg: { params: debug({}), prompt: debug({}) }
+      })
     }
   })
 
@@ -282,7 +299,7 @@ module.exports = (provider) => {
           uid,
           details: prompt.details,
           params,
-          messages: this.flash,
+          messages: {},
           title: 'Sign-in',
           session: session ? debug(session) : undefined,
           dbg: {
@@ -331,12 +348,12 @@ module.exports = (provider) => {
         ctx.req,
         ctx.res
       )
-      this.flash = { error: ['User not found'] }
+      const message = { error: ['User not found'] }
 
       return ctx.redirect(`/interaction/${uid}`, {
         uid,
         client: undefined,
-        messages: this.flash,
+        messages: message,
         params: { error: 'User not found' },
         title: 'User not found',
         session: {},
