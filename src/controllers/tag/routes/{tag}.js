@@ -33,6 +33,7 @@ module.exports = function () {
             [Op.contains]: [`${tag}`]
           }
         },
+        limit: 50, // TODO: how do you paginate this?
         attributes: ['id', 'creatorId', 'title', 'year', 'status', 'tags'],
         include: [{
           model: TrackGroupItem,
@@ -62,8 +63,10 @@ module.exports = function () {
         },
         include: [{
           model: UserGroup,
+          required: true,
           as: 'creator'
-        }]
+        }],
+        limit: 50 // TODO is there a way to paginate this?
       })
 
       ctx.body = {
