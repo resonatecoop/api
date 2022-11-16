@@ -41,7 +41,7 @@ describe('Api.ts/tag endpoint test', () => {
     })
 
     response = await request.get('/tag/reggae')
-    console.log('response', response.body.data)
+    console.log('response', response.body)
     expect(response.status).to.eql(200)
 
     const { data } = response.body

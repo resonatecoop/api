@@ -1,6 +1,9 @@
 const { UserGroup, UserGroupType, Track, TrackGroup, TrackGroupItem } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
+const artistService = require('../../artists/artistService')
+const trackService = require('../../tracks/services/trackService')
+const trackgroupService = require('../../trackgroups/services/trackgroupService')
 
 module.exports = function () {
   const operations = {
@@ -74,6 +77,7 @@ module.exports = function () {
         },
         include: [{
           model: TrackGroupItem,
+          separate: true,
           required: true,
           as: 'trackOn',
           include: [{
@@ -102,11 +106,11 @@ module.exports = function () {
 
       ctx.body = {
         data: {
-          artists: artists.map(a => a.toJSON()),
-          labels: labels.map(l => l.toJSON()),
-          bands: bands.map(l => l.toJSON()),
-          tracks: tracks.map(l => l.toJSON()),
-          trackgroups: trackgroups.map(l => l.toJSON())
+          artists: await artistService(ctx).list(artists),
+          labels: await artistService(ctx).list(labels),
+          bands: await artistService(ctx).list(bands),
+          tracks: trackService(ctx).list(tracks),
+          trackgroups: trackgroupService(ctx).list(trackgroups)
         }
       }
     } catch (err) {

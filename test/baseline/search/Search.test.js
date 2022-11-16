@@ -19,7 +19,6 @@ describe('baseline/search endpoint test', () => {
     const searchTerm = 'asdf'
 
     const response = await request.get(`/search?q=${searchTerm}`)
-
     expect(response.status).to.eql(200)
     expect(response.body.data).to.include.keys('artists', 'labels', 'tracks', 'trackgroups', 'bands')
   })

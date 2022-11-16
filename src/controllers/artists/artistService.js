@@ -14,7 +14,7 @@ const artistService = (ctx) => {
 
   return {
     single,
-    list (rows) {
+    list: async (rows) => {
       return Promise.all(rows.map(single))
     }
   }
