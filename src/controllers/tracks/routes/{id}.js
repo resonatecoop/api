@@ -1,10 +1,10 @@
 const { Track } = require('../../../db/models')
-const { Op } = require('sequelize')
 const trackService = require('../services/trackService')
+const { loadProfileIntoContext } = require('../../user/authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
+    GET: [loadProfileIntoContext, GET],
     parameters: [
       {
         name: 'id',
@@ -20,12 +20,9 @@ module.exports = function () {
   async function GET (ctx, next) {
     if (await ctx.cashed?.()) return
     try {
-      const result = await Track.scope('details').findOne({
+      const result = await Track.scope('details', 'public', { method: ['loggedIn', ctx.profile?.id] }).findOne({
         where: {
-          id: ctx.params.id,
-          status: {
-            [Op.in]: [0, 2, 3]
-          }
+          id: ctx.params.id
         },
         attributes: [
           'id',

@@ -2,10 +2,11 @@ const { UserGroup, TrackGroup, TrackGroupItem, Track, File } = require('../../..
 const { Op } = require('sequelize')
 const ms = require('ms')
 const trackgroupService = require('../services/trackgroupService')
+const { loadProfileIntoContext } = require('../../user/authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
+    GET: [loadProfileIntoContext, GET],
     parameters: [
       {
         name: 'id',
@@ -76,14 +77,9 @@ module.exports = function () {
             attributes: ['id', 'index'],
             as: 'items',
             include: [{
-              model: Track,
-              attributes: ['id', 'creatorId', 'cover_art', 'title', 'album', 'artist', 'duration', 'status'],
+              model: Track.scope('public', { method: ['loggedIn', ctx.profile?.id] }),
+              attributes: ['id', 'creatorId', 'title', 'album', 'artist', 'duration', 'status'],
               as: 'track',
-              where: {
-                status: {
-                  [Op.in]: [0, 2, 3]
-                }
-              },
               include: [
                 {
                   model: File,

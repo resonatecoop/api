@@ -1,12 +1,15 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
-const { request, expect, testTrackId, testUserId, testArtistId } = require('../../testConfig')
-const { Track, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
+const { request, expect, testTrackId, testUserId, testAccessToken, testArtistId, testArtistUserId } = require('../../testConfig')
+const { Track, TrackGroup, TrackGroupItem, Play, Favorite } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 const ResetDB = require('../../ResetDB')
+const MockAccessToken = require('../../MockAccessToken')
 
 describe('baseline/track endpoint test', () => {
   ResetDB()
+  MockAccessToken(testUserId)
+
   let response = null
 
   it('should GET /tracks?order=latest', async () => {
@@ -188,6 +191,7 @@ describe('baseline/track endpoint test', () => {
     expect(attributes.numberOfPages).to.eql(1)
     expect(attributes.status).to.eql('ok')
   })
+
   it('should GET track/:id', async () => {
     response = await request.get(`/tracks/${testTrackId}`)
 
@@ -206,9 +210,63 @@ describe('baseline/track endpoint test', () => {
     expect(theData.title).to.eql('Sharable maximized utilisation')
     expect(theData.year).to.be.null
     expect(theData.artist).to.eq; ('matrix')
-
+    expect(theData.userPlays).to.eql(undefined)
+    expect(theData.userFavorited).to.eql(undefined)
     expect(theData.url).to.include('stream/b6d160d1-be16-48a4-8c4f-0c0574c4c6aa')
 
     expect(theData.images).to.be.empty
+  })
+
+  it('should GET track/:id for logged in user', async () => {
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play3 = await Play.create({
+      userId: testArtistUserId,
+      trackId: track.id
+    })
+    const favorite = await Favorite.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: true
+    })
+
+    response = await request.get(`/tracks/${track.id}`)
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+
+    const attributes = response.body
+    expect(attributes).to.be.an('object')
+    expect(attributes).to.include.keys('data')
+
+    expect(attributes.data).to.be.an('object')
+
+    const theData = attributes.data
+    expect(theData).to.include.keys('id', 'creatorId', 'creator', 'title', 'year', 'artist', 'trackGroup', 'url', 'images')
+    expect(theData.id).to.eql(track.id)
+    expect(theData.creatorId).to.eql(track.creatorId)
+    expect(theData.title).to.eql(track.title)
+    expect(theData.year).to.be.null
+    expect(theData.userPlays).to.eql(2)
+    expect(theData.userFavorited).to.eql(true)
+    expect(theData.url).to.include(track.id)
+
+    expect(theData.images).to.be.empty
+    await track.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await play3.destroy({ force: true })
+    await favorite.destroy({ force: true })
   })
 })

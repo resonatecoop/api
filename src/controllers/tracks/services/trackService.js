@@ -34,6 +34,8 @@ const trackService = (ctx) => {
       year: item.year,
       status: item.status,
       creator: item.creator,
+      userPlays: item.plays ? item.plays.length : undefined,
+      userFavorited: item.favorites ? item.favorites.length === 1 : undefined,
       // FIXME: artist is legacy stuff, we probably need to migrate it.
       artist: item.artist ? he.decode(item.artist) : null,
       url: `${process.env.APP_HOST}${apiRoot}/user/stream/${item.id}`,
