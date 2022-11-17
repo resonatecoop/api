@@ -148,7 +148,7 @@ module.exports = function () {
           {
             model: File,
             required: false,
-            attributes: ['id', 'owner_id'],
+            attributes: ['id', 'ownerId'],
             as: 'cover_metadata',
             where: {
               mime: {

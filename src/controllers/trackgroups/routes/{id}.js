@@ -64,7 +64,7 @@ module.exports = function () {
           {
             model: File,
             required: false,
-            attributes: ['id', 'owner_id'],
+            attributes: ['id', 'ownerId'],
             as: 'cover_metadata',
             where: {
               mime: {
@@ -84,7 +84,7 @@ module.exports = function () {
                 {
                   model: File,
                   required: false,
-                  attributes: ['id', 'owner_id'],
+                  attributes: ['id', 'ownerId'],
                   as: 'cover_metadata',
                   where: {
                     mime: {
@@ -94,7 +94,7 @@ module.exports = function () {
                 },
                 {
                   model: File,
-                  attributes: ['id', 'size', 'owner_id'],
+                  attributes: ['id', 'size', 'ownerId'],
                   as: 'audiofile'
                 }, {
                   model: UserGroup,

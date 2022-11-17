@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testAccessToken, testInvalidAccessToken, testUserId, testAdminUserId } = require('../../testConfig')
+const { request, expect, testAccessToken, testInvalidAccessToken, testUserId } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 const { File } = require('../../../src/db/models')
 const ResetDB = require('../../ResetDB')
-const { faker } = require('@faker-js/faker')
 
 describe('user/admin/files endpoint test', () => {
   let response = null
@@ -15,39 +14,26 @@ describe('user/admin/files endpoint test', () => {
     MockAccessToken(testUserId)
 
     it('should handle no authentication', async () => {
-      response = await request.get('/user/admin/files')
+      response = await request.get('/user/files')
 
       expect(response.status).to.eql(401)
     })
     it('should handle an invalid access token', async () => {
-      response = await request.get('/user/admin/files')
+      response = await request.get('/user/files')
         .set('Authorization', `Bearer ${testInvalidAccessToken}`)
 
       expect(response.status).to.eql(401)
     })
-
-    it('should reject access token for non-admin user', async () => {
-      response = await request.get('/user/admin/files')
-        .set('Authorization', `Bearer ${testAccessToken}`)
-
-      expect(response.status).to.eql(401)
-    })
-
-    it('should reject access token for non-admin user', async () => {
-      response = await request.put(`/user/admin/files/${faker.datatype.uuid()}`)
-        .set('Authorization', `Bearer ${testAccessToken}`)
-      expect(response.status).to.eql(401)
-    })
   })
   describe('Authorized', () => {
-    MockAccessToken(testAdminUserId)
+    MockAccessToken(testUserId)
 
     it('should GET /user/admin/files', async () => {
       const file = await File.create({
         ownerId: testUserId,
         mime: 'image/png'
       })
-      response = await request.get('/user/admin/files')
+      response = await request.get('/user/files')
         .set('Authorization', `Bearer ${testAccessToken}`)
 
       expect(response.status).to.eql(200)
@@ -64,7 +50,7 @@ describe('user/admin/files endpoint test', () => {
         ownerId: testUserId,
         mime: 'image/png'
       })
-      response = await request.put(`/user/admin/files/${file.id}`)
+      response = await request.put(`/user/files/${file.id}`)
         .send({
           filename: 'ok'
         })

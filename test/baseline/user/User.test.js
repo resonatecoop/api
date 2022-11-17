@@ -1,17 +1,35 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-env mocha */
 
-const { request, expect, testUserId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
-const { User, UserMembership, MembershipClass } = require('../../../src/db/models')
+const { request, expect, testUserId, testAccessToken, testInvalidAccessToken } = require('../../testConfig')
+const { User, UserMembership, testListenerUserId, MembershipClass, UserGroupType, Track, Play, UserGroup } = require('../../../src/db/models')
+const { faker } = require('@faker-js/faker')
+const TestRedisAdapter = require('../../../src/auth/redis-adapter')
 
-const MockAccessToken = require('../../MockAccessToken')
 const ResetDB = require('../../ResetDB')
 
 describe('baseline/user endpoint test', () => {
   ResetDB()
-  MockAccessToken(testArtistUserId)
+  const adapter = new TestRedisAdapter('AccessToken')
+  let user
   let response = null
 
+  before('set user', async () => {
+    user = await User.create({
+      password: 'bla',
+      displayName: 'Yes',
+      email: 'bla@bla.com',
+      roleId: 4
+    })
+    await adapter.upsert(testAccessToken, {
+      accountId: user.id
+    })
+  })
+
+  after('delete user', async () => {
+    await user.destroy({ force: true })
+    await adapter.destroy(testAccessToken)
+  })
   it('should handle no authentication / accessToken', async () => {
     response = await request.get('/user/profile')
 
@@ -53,11 +71,11 @@ describe('baseline/user endpoint test', () => {
       'userGroups',
       'gravatar',
       'avatar')
-    expect(theData.displayName).to.eql('artist')
-    expect(theData.id).to.eql('1c88dea6-0519-4b61-a279-4006954c5d4c')
+    expect(theData.displayName).to.eql(user.displayName)
+    expect(theData.id).to.eql(user.id)
     expect(theData.country).to.be.null
     expect(theData.newsletterNotification).to.be.null
-    expect(theData.email).to.eql('artist@admin.com')
+    expect(theData.email).to.eql(user.email)
 
     const theRole = theData.role
     expect(theRole).to.be.an('object')
@@ -74,9 +92,9 @@ describe('baseline/user endpoint test', () => {
 
     const theUserGroups = theData.userGroups
     expect(theUserGroups).to.be.an('array')
-    expect(theUserGroups.length).to.eql(1)
+    expect(theUserGroups.length).to.eql(0)
 
-    expect(theData.gravatar).to.eql('https://s.gravatar.com/avatar/97f8b41e7967dcc56a5a0de728807d23')
+    expect(theData.gravatar).to.eql('https://s.gravatar.com/avatar/ec69cee30e0f484433cdd537ec0ce2db')
 
     expect(theData.avatar).to.be.an('object')
 
@@ -90,7 +108,7 @@ describe('baseline/user endpoint test', () => {
       }
     })
     const userMembership = await UserMembership.create({
-      userId: testArtistUserId,
+      userId: user.id,
       membershipClassId: membershipClass.id,
       subscriptionId: 'arandomstring'
     })
@@ -113,12 +131,63 @@ describe('baseline/user endpoint test', () => {
     await userMembership.destroy({ force: true })
   })
 
-  it('should PUT user/profile', async () => {
-    const user = await User.findOne({
-      where: {
-        id: testArtistUserId
-      }
+  it('should GET /user/earnings', async () => {
+    const type = await UserGroupType.findOne({ where: { name: 'artist' } })
+
+    const newArtist = await UserGroup.create({
+      displayName: faker.animal.cow(),
+      ownerId: user.id,
+      typeId: type.id
     })
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: newArtist.id
+    })
+
+    const newPlays = Array(12)
+      .fill()
+      .map(() => ({
+        trackId: track.id,
+        userId: testListenerUserId,
+        type: 'paid',
+        createdAt: '2021-01-01'
+      }))
+    const plays = await Play.bulkCreate(newPlays)
+    response = await request.post('/user/earnings/')
+      .send({
+        date: {
+          from: '2020-01-01',
+          to: '2022-12-31'
+        }
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+
+    const { data, stats } = response.body
+    expect(data[0].id).to.eql(track.id)
+    expect(data[0].title).to.eql(track.title)
+    expect(data[0].userGroup).to.eql(newArtist.displayName)
+    expect(data[0].paidPlays).to.eql(9)
+    expect(data[0].playsAfterBought).to.eql(3)
+    expect(data[0].creditsSpent).to.eql(1022)
+    expect(data[0].eurosSpent).to.eql(1.2775)
+
+    expect(stats[0].displayName).to.eql(newArtist.displayName)
+    expect(stats[0].totalCredits).to.eql(1022)
+    expect(stats[0].artistTotalCredits).to.eql('715.40')
+    expect(stats[0].artistTotalEuros).to.eql('0.89')
+    expect(stats[0].resonateTotalCredits).to.eql('306.60')
+    expect(stats[0].resonateTotalEuros).to.eql('0.38')
+
+    await track.destroy({ force: true })
+    await newArtist.destroy({ force: true })
+    await Promise.all(plays.map(async (p) => {
+      await p.destroy({ force: true })
+    }))
+  })
+
+  it('should PUT user/profile', async () => {
     user.newsletterNotification = true
     await user.save()
     expect(user.newsletterNotification).to.eql(true)

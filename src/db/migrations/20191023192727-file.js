@@ -20,7 +20,7 @@ module.exports = {
         type: Sequelize.STRING,
         field: 'filename_prefix'
       },
-      owner_id: {
+      ownerId: {
         type: Sequelize.UUID,
         allowNull: false,
         field: 'owner_id'

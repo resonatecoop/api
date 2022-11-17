@@ -143,12 +143,7 @@ module.exports = function () {
           },
           {
             model: File,
-            attributes: ['id', 'size', 'owner_id'],
-            as: 'cover'
-          },
-          {
-            model: File,
-            attributes: ['id', 'size', 'owner_id'],
+            attributes: ['id', 'size', 'ownerId'],
             as: 'audiofile'
           }
         ]
