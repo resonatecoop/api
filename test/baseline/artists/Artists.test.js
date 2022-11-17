@@ -37,6 +37,7 @@ describe('baseline/artists endpoint test', () => {
     expect(theData.trackgroups.length).to.eql(3)
 
     const theTG = theData.trackgroups[0]
+    console.log('response', theTG)
 
     expect(theTG).to.include.keys('composers', 'performers', 'tags', 'id', 'cover', 'title', 'slug', 'type', 'about', 'private', 'display_artist', 'creatorId',
       'releaseDate', 'download', 'featured', 'enabled', 'updatedAt', 'createdAt', 'deletedAt', 'items')

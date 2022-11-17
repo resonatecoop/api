@@ -135,7 +135,7 @@ module.exports = (sequelize, DataTypes) => {
           {
             model: sequelize.models.UserMembership,
             as: 'memberships',
-            attributes: ['id'],
+            attributes: ['id', 'updatedAt'],
             include: [{
               model: sequelize.models.MembershipClass,
               as: 'class',

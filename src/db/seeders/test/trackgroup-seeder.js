@@ -150,6 +150,7 @@ module.exports = {
     await queryInterface.bulkDelete('track_group_items', null, {})
     await queryInterface.bulkDelete('plays', null, {})
     await queryInterface.bulkDelete('user_groups', null, {})
+    await queryInterface.bulkDelete('user_memberships', null, {})
     await queryInterface.bulkDelete('credits', null, {})
     await queryInterface.bulkDelete('playlists', null, {})
     return queryInterface.bulkDelete('files', null, {})
