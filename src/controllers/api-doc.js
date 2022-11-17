@@ -39,6 +39,9 @@ const apiDoc = {
         },
         newsletterNotification: {
           type: 'boolean'
+        },
+        country: {
+          type: 'string'
         }
       }
     },
