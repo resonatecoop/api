@@ -42,7 +42,7 @@ module.exports = function () {
           {
             model: File,
             required: false,
-            attributes: ['id', 'owner_id', 'mime'],
+            attributes: ['id', 'ownerId', 'mime'],
             as: 'cover_metadata',
             where: {
               mime: {
@@ -71,12 +71,12 @@ module.exports = function () {
               include: [
                 {
                   model: File,
-                  attributes: ['id', 'owner_id'],
+                  attributes: ['id', 'ownerId'],
                   as: 'audiofile'
                 },
                 {
                   model: File,
-                  attributes: ['id', 'size', 'owner_id'],
+                  attributes: ['id', 'size', 'ownerId'],
                   as: 'cover'
                 }
               ]

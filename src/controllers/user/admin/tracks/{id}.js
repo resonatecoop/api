@@ -29,13 +29,8 @@ module.exports = function () {
         include: [
           {
             model: File,
-            attributes: ['id', 'size', 'owner_id'],
+            attributes: ['id', 'size', 'ownerId'],
             as: 'audiofile'
-          },
-          {
-            model: File,
-            attributes: ['id', 'size', 'owner_id'],
-            as: 'cover_metadata'
           }
         ]
       })

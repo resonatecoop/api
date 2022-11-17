@@ -31,13 +31,8 @@ module.exports = function () {
         include: [
           {
             model: File,
-            attributes: ['id', 'owner_id'],
+            attributes: ['id', 'ownerId'],
             as: 'audiofile'
-          },
-          {
-            model: File,
-            attributes: ['id', 'owner_id'],
-            as: 'cover'
           }
         ],
         order: [

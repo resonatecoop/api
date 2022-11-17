@@ -18,7 +18,7 @@ router.get('/:id', async (ctx, next) => {
         {
           required: false,
           model: File,
-          attributes: ['id', 'size', 'owner_id'],
+          attributes: ['id', 'size', 'ownerId'],
           as: 'audiofile'
         }
       ]

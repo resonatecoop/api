@@ -71,7 +71,7 @@ const migrateFiles = async (client) => {
             filename: file.filename,
             filename_prefix: file.filename_prefix,
             // TODO: should this be linked to the UserGroup?
-            owner_id: usersGroupedByLegacyId[file.owner_id]?.id ?? '00000000-0000-0000-0000-000000000000',
+            ownerId: usersGroupedByLegacyId[file.owner_id]?.id ?? '00000000-0000-0000-0000-000000000000',
             description: file.description,
             size: file.size,
             hash: file.hash,

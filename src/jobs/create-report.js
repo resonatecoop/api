@@ -45,7 +45,7 @@ module.exports = async (job) => {
     logger.info('starting creating report')
 
     const { id: fileId } = await File.create({
-      owner_id: profile.id,
+      ownerId: profile.id,
       mime: 'text/csv',
       status: 'processing'
     }, { raw: true })
@@ -59,7 +59,7 @@ module.exports = async (job) => {
     }, {
       where: {
         id: fileId,
-        owner_id: profile.id
+        ownerId: profile.id
       },
       raw: true
     })

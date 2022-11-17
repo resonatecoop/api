@@ -52,6 +52,10 @@ import userProductsCheckout from './user/products/routes/checkout.js'
 import userProductsSuccess from './user/products/routes/success.js'
 import userProfile from './user/profile/routes/index.js'
 import userStream from './user/stream/routes/{id}.js'
+import userEarnings from './user/earnings.js'
+import userFiles from './user/files/index.mjs'
+import userFilesId from './user/files/{id}.mjs'
+
 import userTrack from './user/tracks/routes/{id}/index.js'
 import userTrackFile from './user/tracks/routes/{id}/file.js'
 import userTrackgroup from './user/trackgroups/routes/{id}/index.js'
@@ -152,7 +156,10 @@ initialize({
     { path: `${root}/user/products/cancel`, module: userProductsCancel },
     { path: `${root}/user/products/checkout`, module: userProductsCheckout },
 
+    { path: `${root}/user/earnings`, module: userEarnings },
     { path: `${root}/user/stream/{id}`, module: userStream },
+    { path: `${root}/user/files`, module: userFiles },
+    { path: `${root}/user/files/{id}`, module: userFilesId },
 
     { path: `${root}/user/trackgroups`, module: userTrackgroups },
     { path: `${root}/user/trackgroups/{id}`, module: userTrackgroup },

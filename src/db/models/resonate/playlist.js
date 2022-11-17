@@ -101,7 +101,7 @@ module.exports = (sequelize, DataTypes) => {
             include: [
               {
                 model: sequelize.models.File,
-                attributes: ['id', 'size', 'owner_id'],
+                attributes: ['id', 'size', 'ownerId'],
                 as: 'audiofile'
               },
               {

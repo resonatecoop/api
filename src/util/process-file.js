@@ -195,7 +195,7 @@ const processFile = ctx => {
 
     // create record for original file
     const result = await File.create({
-      owner_id: ctx.profile.id,
+      ownerId: ctx.profile.id,
       filename: file.name, // original file name
       size: fileSize,
       mime,
