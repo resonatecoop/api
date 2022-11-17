@@ -2,12 +2,14 @@
 /* eslint-env mocha */
 
 const ResetDB = require('../../ResetDB')
-const { request, expect, testUserId, testArtistId, testArtistUserId } = require('../../testConfig')
-const { Track, UserGroupType, UserGroup, TrackGroup, TrackGroupItem, Play } = require('../../../src/db/models')
+const MockAccessToken = require('../../MockAccessToken')
+const { request, expect, testUserId, testArtistId, testAccessToken, testArtistUserId } = require('../../testConfig')
+const { Track, UserGroupType, UserGroup, TrackGroup, TrackGroupItem, Play, Favorite } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 
 describe('baseline/artists endpoint test', () => {
   ResetDB()
+  MockAccessToken(testUserId)
 
   let response = null
 
@@ -25,7 +27,6 @@ describe('baseline/artists endpoint test', () => {
     expect(attributes.data.length).to.eql(1)
 
     const theData = attributes.data[0]
-    //  FIXME: there is 'addressId' and 'AddressId'
     expect(theData).to.include.keys('id', 'typeId', 'displayName', 'description', 'shortBio', 'images', 'updatedAt', 'createdAt', 'deletedAt', 'avatar', 'banner', 'trackgroups')
     expect(theData.id).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
     expect(theData.typeId).to.eql(1)
@@ -126,6 +127,25 @@ describe('baseline/artists endpoint test', () => {
   })
 
   it('should GET /artists/:id/releases', async () => {
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.dog(),
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+
     response = await request.get(`/artists/${testArtistId}/releases`)
 
     expect(response.status).to.eql(200)
@@ -135,7 +155,7 @@ describe('baseline/artists endpoint test', () => {
     expect(attributes).to.include.keys('data', 'count', 'numberOfPages', 'status')
 
     expect(attributes.data).to.be.an('array')
-    expect(attributes.data.length).to.eql(3)
+    expect(attributes.data.length).to.eql(4)
 
     const theData = attributes.data[0]
 
@@ -143,17 +163,15 @@ describe('baseline/artists endpoint test', () => {
       'cover_metadata', 'creator', 'items', 'images', 'uri')
     expect(theData.tags).to.be.an('array')
     expect(theData.tags.length).to.eql(0)
-    expect(theData.about).to.eql('this is the best album3')
-    expect(theData.cover_metadata).to.be.null
+    expect(theData.cover_metadata).to.include.keys('id')
     expect(theData.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theData.display_artist).to.eql('@auggod')
-    expect(theData.id).to.eql('58991f22-b172-48e4-8b27-e0a4c946f9b2')
-    expect(theData.slug).to.eql('best-album-ever-3')
-    expect(theData.title).to.eql('Best album ever 3')
-    expect(theData.createdAt).to.eql('2022-09-28T17:31:59.513Z')
-    expect(theData.releaseDate).to.eql('2019-01-03')
-    expect(theData.type).to.eql('lp')
-    expect(theData.cover_metadata).to.be.null
+    expect(theData.creator).to.not.be.null
+    expect(theData.id).to.eql(trackgroup.id)
+    expect(theData.slug).to.eql(trackgroup.slug)
+    expect(theData.title).to.eql(trackgroup.title)
+    expect(theData.createdAt).to.eql(trackgroup.createdAt.toISOString())
+    expect(theData.releaseDate).to.eql(trackgroup.releaseDate)
+    expect(theData.type).to.eql(trackgroup.type)
 
     expect(theData.creator).to.be.an('object')
     expect(theData.creator).to.include.keys('id', 'displayName')
@@ -161,27 +179,113 @@ describe('baseline/artists endpoint test', () => {
     expect(theData.creator.displayName).to.eql('matrix')
 
     expect(theData.items).to.be.an('array')
-    expect(theData.items.length).to.eql(10)
+    expect(theData.items.length).to.eql(1)
 
     const theItem = theData.items[0]
     expect(theItem).to.include.keys('trackId', 'index', 'track')
-    expect(theItem.index).to.eql(0)
-    expect(theItem.trackId).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
+    expect(theItem.index).to.eql(1)
+    expect(theItem.trackId).to.eql(track.id)
 
     const theTrack = theItem.track
     expect(theTrack).to.include.keys('status', 'id', 'creatorId', 'title', 'artist', 'year', 'images', 'url',
       'trackGroup')
-    expect(theTrack.status).to.eql('free')
-    expect(theTrack.id).to.eql('e2a99f8e-0d81-4fe8-9a85-5b6ca115ab44')
+    expect(theTrack.status).to.eql('paid')
+    expect(theTrack.id).to.eql(track.id)
     expect(theTrack.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
-    expect(theTrack.title).to.eql('Future-proofed methodical conglomeration')
-    expect(theTrack.artist).to.eql('Calvin Larson')
-    expect(theTrack.trackGroup.title).to.eql('Best album ever 3')
+    expect(theTrack.title).to.eql(track.title)
+    expect(theTrack.trackGroup.title).to.eql(trackgroup.title)
     expect(theTrack.year).to.be.null
+    expect(theTrack.userPlays).to.eql(undefined)
+    expect(theTrack.userFavorited).to.eql(undefined)
 
-    expect(attributes.count).to.eql(30)
+    expect(attributes.count).to.eql(4)
     expect(attributes.numberOfPages).to.eql(1)
     expect(attributes.status).to.eql('ok')
+
+    await track.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
+  })
+
+  it('should GET /artists/:id/releases with logged in user', async () => {
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.dog(),
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play3 = await Play.create({
+      userId: testArtistUserId,
+      trackId: track.id
+    })
+    const favorite = await Favorite.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: true
+    })
+
+    response = await request.get(`/artists/${testArtistId}/releases`)
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    expect(response.status).to.eql(200)
+
+    const attributes = response.body
+    expect(attributes).to.be.an('object')
+
+    expect(attributes.data).to.be.an('array')
+
+    const theData = attributes.data[0]
+
+    expect(theData.items.length).to.eql(1)
+
+    const theItem = theData.items[0]
+    expect(theItem).to.include.keys('trackId', 'index', 'track')
+    expect(theItem.index).to.eql(1)
+    expect(theItem.trackId).to.eql(track.id)
+
+    const theTrack = theItem.track
+    expect(theTrack).to.include.keys('status', 'id', 'creatorId', 'title', 'artist', 'year', 'images', 'url',
+      'trackGroup')
+    expect(theTrack.status).to.eql('paid')
+    expect(theTrack.id).to.eql(track.id)
+    expect(theTrack.creatorId).to.eql('49d2ac44-7f20-4a47-9cf5-3ea5d6ef78f6')
+    expect(theTrack.title).to.eql(track.title)
+    expect(theTrack.trackGroup.title).to.eql(trackgroup.title)
+    expect(theTrack.year).to.be.null
+    expect(theTrack.userPlays).to.eql(2)
+    expect(theTrack.userFavorited).to.eql(true)
+
+    expect(attributes.count).to.eql(4)
+    expect(attributes.numberOfPages).to.eql(1)
+    expect(attributes.status).to.eql('ok')
+
+    await track.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await play3.destroy({ force: true })
+    await favorite.destroy({ force: true })
   })
 
   it('should GET /artists/:id/tracks/top', async () => {

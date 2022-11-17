@@ -1,10 +1,11 @@
 const models = require('../../../db/models')
+const { loadProfileIntoContext } = require('../../user/authenticate')
 const artistService = require('../artistService')
 const { UserGroup, TrackGroup, TrackGroupItem, Track } = models
 
 module.exports = function () {
   const operations = {
-    GET
+    GET: [loadProfileIntoContext, GET]
   }
 
   async function GET (ctx, next) {
@@ -37,7 +38,7 @@ module.exports = function () {
               separate: true,
               order: [['index', 'ASC']],
               include: [{
-                model: Track,
+                model: Track.scope({ method: ['loggedIn', ctx.profile?.id] }),
                 as: 'track'
               }]
             }]

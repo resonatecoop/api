@@ -37,7 +37,7 @@ module.exports = function () {
     }
 
     try {
-      const result = await Playlist.scope('items').findOne({
+      const result = await Playlist.scope({ method: ['items', ctx.profile?.id] }).findOne({
         attributes: [
           'about',
           'cover',

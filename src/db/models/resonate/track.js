@@ -1,5 +1,6 @@
 const numbro = require('numbro')
 const roundTo = require('round-to')
+const { Op } = require('sequelize')
 
 const statusValues = ['free+paid', 'hidden', 'free', 'paid', 'deleted']
 
@@ -122,7 +123,36 @@ module.exports = (sequelize, DataTypes) => {
           attributes: ['displayName', 'id'],
           as: 'creator'
         }]
-      })
+      }),
+      public: () => ({
+        where: {
+          status: {
+            [Op.in]: [0, 2, 3]
+          }
+        }
+      }),
+      loggedIn: (userId) => {
+        return userId
+          ? {
+              include: [{
+                as: 'plays',
+                required: false,
+                model: sequelize.models.Play,
+                where: {
+                  userId
+                }
+              }, {
+                as: 'favorites',
+                required: false,
+                model: sequelize.models.Favorite,
+                where: {
+                  userId,
+                  type: true
+                }
+              }]
+            }
+          : {}
+      }
     },
     underscored: true,
     tableName: 'tracks'
@@ -131,7 +161,7 @@ module.exports = (sequelize, DataTypes) => {
   Track.associate = function (models) {
     Track.hasMany(models.TrackGroupItem, { targetKey: 'trackId', as: 'trackOn' })
     Track.hasMany(models.Play, { targetKey: 'trackId', as: 'plays' })
-    // Track.hasMany(models.Tag, { as: 'tags', foreignKey: 'trackId', sourceKey: 'id' })
+    Track.hasMany(models.Favorite, { targetKey: 'trackId', as: 'favorites' })
     Track.hasOne(models.UserGroup, { as: 'creator', sourceKey: 'creatorId', foreignKey: 'id' })
     Track.hasOne(models.File, { as: 'cover_metadata', sourceKey: 'track_cover_art', foreignKey: 'id' })
     Track.belongsTo(models.File, { as: 'audiofile', foreignKey: 'track_url' })

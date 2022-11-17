@@ -83,7 +83,7 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Playlist',
     tableName: 'playlists',
     scopes: {
-      items: () => ({
+      items: (userId) => ({
         // order: [
         //   [{ model: sequelize.models.PlaylistItem, as: 'items' }, 'index', 'asc']
         // ],
@@ -95,14 +95,9 @@ module.exports = (sequelize, DataTypes) => {
           order: [['index', 'ASC']],
           as: 'items',
           include: [{
-            model: sequelize.models.Track,
+            model: sequelize.models.Track.scope('public', { method: ['loggedIn', userId] }),
             attributes: ['id', 'creatorId', 'title', 'album', 'artist', 'duration', 'status'],
             as: 'track',
-            where: {
-              status: {
-                [Op.in]: [0, 2, 3]
-              }
-            },
             include: [
               {
                 model: sequelize.models.File,

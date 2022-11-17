@@ -2,10 +2,15 @@
 /* eslint-env mocha */
 
 const ResetDB = require('../../ResetDB')
-const { request, expect, testTrackGroupId } = require('../../testConfig')
+const MockAccessToken = require('../../MockAccessToken')
+const { request, expect, testUserId, testArtistId, testArtistUserId, testAccessToken, testTrackGroupId } = require('../../testConfig')
+const { Track, TrackGroup, TrackGroupItem, Play, Favorite } = require('../../../src/db/models')
+const { faker } = require('@faker-js/faker')
 
 describe('baseline/trackgroups endpoint test', () => {
   ResetDB()
+  MockAccessToken(testUserId)
+
   let response = null
 
   it('should GET /trackgroups', async () => {
@@ -124,5 +129,59 @@ describe('baseline/trackgroups endpoint test', () => {
     expect(theData.type).to.eql('lp')
 
     expect(attributes.status).to.eql('ok')
+  })
+
+  it('should GET trackgroups/:id for logged in user', async () => {
+    const track = await Track.create({
+      title: faker.animal.cat(),
+      creatorId: testArtistId,
+      status: 'paid'
+    })
+    const trackgroup = await TrackGroup.create({
+      title: faker.animal.dog(),
+      creatorId: testArtistId,
+      cover: faker.datatype.uuid(),
+      type: 'single',
+      enabled: true,
+      private: false
+    })
+    const tgi = await TrackGroupItem.create({
+      trackgroupId: trackgroup.id,
+      track_id: track.id,
+      index: 1
+    })
+    const play = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play2 = await Play.create({
+      userId: testUserId,
+      trackId: track.id
+    })
+    const play3 = await Play.create({
+      userId: testArtistUserId,
+      trackId: track.id
+    })
+    const favorite = await Favorite.create({
+      userId: testUserId,
+      trackId: track.id,
+      type: true
+    })
+
+    response = await request.get(`/trackgroups/${trackgroup.id}`)
+      .set('Authorization', `Bearer ${testAccessToken}`)
+
+    const { data } = response.body
+
+    expect(data.items[0].track.userPlays).to.eql(2)
+    expect(data.items[0].track.userFavorited).to.eql(true)
+
+    await track.destroy({ force: true })
+    await trackgroup.destroy({ force: true })
+    await tgi.destroy({ force: true })
+    await play.destroy({ force: true })
+    await play2.destroy({ force: true })
+    await play3.destroy({ force: true })
+    await favorite.destroy({ force: true })
   })
 })

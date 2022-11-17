@@ -2,10 +2,11 @@ const { UserGroup, Track, TrackGroup, TrackGroupItem, File } = require('../../..
 const { Op } = require('sequelize')
 const trackgroupService = require('../../../trackgroups/services/trackgroupService')
 const ms = require('ms')
+const { loadProfileIntoContext } = require('../../../user/authenticate')
 
 module.exports = function () {
   const operations = {
-    GET,
+    GET: [loadProfileIntoContext, GET],
     parameters: [
       {
         name: 'id',
@@ -76,17 +77,17 @@ module.exports = function () {
           },
           {
             model: TrackGroupItem,
+            separate: true,
             attributes: ['id', 'index', 'track_id'],
+            order: [['index', 'ASC']],
             as: 'items',
             include: [{
-              model: Track,
+              model: Track.scope('public', { method: ['loggedIn', ctx.profile?.id] }),
               as: 'track'
             }]
-
           }
         ],
         order: [
-          [{ model: TrackGroupItem, as: 'items' }, 'index', 'ASC'],
           ['releaseDate', 'DESC'],
           ['createdAt', 'DESC'],
           ['title', 'ASC']
@@ -116,6 +117,7 @@ module.exports = function () {
         status: 'ok'
       }
     } catch (err) {
+      console.error('err', err)
       ctx.throw(ctx.status, err.message)
     }
 
