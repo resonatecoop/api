@@ -81,10 +81,10 @@ http://localhost:4000/docs
 If you want to upload music or upload images, you'll need a worker running.
 
 ```sh
-docker exec -it resonate-api node src/jobs/queue-worker.js run convert-audio
+docker exec -it resonate-api node src/jobs/queue-worker.js run
 ```
 
-> TODO: we should look into setting this up so that it starts running automatically on `docker-compose up`. The _right_ way to do this is probably to set up a container that launches the job.
+> NOTE: this is done automatically by the `resonate-background` container in docker.
 
 ## Docker tips & tricks
 

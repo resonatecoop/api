@@ -43,6 +43,7 @@ const uploadFile = async (filename, mime, data) => {
   logger.info('Authorized b2')
 
   const auth = await b2.getUploadUrl(B2_BUCKET_ID)
+
   const uploaded = await b2.uploadFile({
     uploadUrl: auth.data.uploadUrl,
     uploadAuthToken: auth.data.authorizationToken,
@@ -93,8 +94,6 @@ const uploadParts = async (filename, mime, data) => {
 
   await b2.authorize()
 
-  logger.info('Authorized b2')
-
   logger.info('Starting large file')
 
   const response = await b2.startLargeFile({
@@ -127,7 +126,7 @@ const uploadParts = async (filename, mime, data) => {
 
 const uploadB2 = async (job) => {
   const { filename, filesize, mime } = job.data
-  logger.info('Starting upload to b2')
+  logger.info('Starting upload to b2 for file', job.data.filename, job.data)
 
   try {
     const data = await fs.readFile(path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`))
@@ -138,7 +137,7 @@ const uploadB2 = async (job) => {
       await uploadFile(filename, mime, data)
     }
 
-    return Promise.resolve()
+    return Promise.resolve(job.data)
   } catch (err) {
     return Promise.reject(err)
   }
