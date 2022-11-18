@@ -1,5 +1,4 @@
-// const { Queue } = require('bullmq') // TODO: phase this out
-const { Queue3, Queue, QueueEvents } = require('bullmq')
+const { Queue, QueueEvents } = require('bullmq')
 const FileType = require('file-type')
 const { promises: fs } = require('fs')
 const path = require('path')
@@ -10,8 +9,6 @@ const mm = require('music-metadata')
 
 const { Track, File } = require('../db/models')
 
-const sendEmailJob = require('../jobs/send-mail')
-const uploadJob = require('../jobs/upload-b2')
 const sharpConfig = require('../config/sharp') // TODO publish this)
 
 const {
@@ -19,13 +16,14 @@ const {
   SUPPORTED_IMAGE_MIME_TYPES
 } = require('../config/supported-media-types')
 const { REDIS_CONFIG } = require('../config/redis')
+const sendMail = require('../jobs/send-mail')
 
 const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
 
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  defaultMeta: { service: 'upload' },
+  defaultMeta: { service: 'process-file' },
   transports: [
     new winston.transports.Console({
       level: 'debug',
@@ -85,30 +83,28 @@ audioQueueEvents.on('global:completed', async (jobId) => {
   }
 })
 
-const sendEmailQueue = new Queue3('send-email', queueOptions)
+const uploadQueue = new Queue('upload-b2', queueOptions)
 
-const sendEmailQueueEvents = new QueueEvents('send-email', queueOptions)
-
-sendEmailQueueEvents.on('completed', (job, result) => {
-  logger.info(`Email sent to ${job.data.message.to}`)
-})
-
-const uploadQueue = new Queue3('upload', queueOptions)
-
-const uploadQueueEvents = new QueueEvents('upload', queueOptions)
+const uploadQueueEvents = new QueueEvents('upload-b2', queueOptions)
 
 uploadQueueEvents.on('completed', async (job, result) => {
-  const { profile } = job.data
+  console.log('profile', job.returnvalue.profile)
+  // const { profile } = job.data
+  const profile = job.returnvalue?.profile
 
   try {
-    sendEmailQueue.add({
-      template: 'new-upload',
-      message: {
-        to: process.env.APP_EMAIL
-      },
-      locals: {
-        name: profile.nickname,
-        firstName: profile.first_name
+    sendMail({
+      data: {
+        template: 'new-upload',
+        message: {
+          to: process.env.APP_EMAIL
+        },
+        locals: {
+          name: profile.displayName,
+          email: profile.email,
+          filename: job.returnvalue?.filename,
+          filesize: job.returnvalue?.filesize
+        }
       }
     })
   } catch (err) {
@@ -116,7 +112,7 @@ uploadQueueEvents.on('completed', async (job, result) => {
   }
 })
 
-const audioDurationQueue = new Queue3('audio-duration', queueOptions)
+const audioDurationQueue = new Queue('audio-duration', queueOptions)
 
 const audioDurationQueueEvents = new QueueEvents('audio-duration', queueOptions)
 
@@ -166,9 +162,6 @@ imageQueueEvents.on('global:completed', async (jobId) => {
   }
 })
 
-sendEmailQueue.process(sendEmailJob)
-uploadQueue.process(uploadJob)
-
 /*
  * Process a file then queue it for upload
  * @param {object} ctx Koa context
@@ -196,7 +189,7 @@ const processFile = ctx => {
     // create record for original file
     const result = await File.create({
       ownerId: ctx.profile.id,
-      filename: file.name, // original file name
+      filename: file.originalFilename, // original file name
       size: fileSize,
       mime,
       hash: sha1sum
@@ -210,11 +203,12 @@ const processFile = ctx => {
         path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`)
       )
     } catch (e) {
-      console.error(e)
+      logger.error(e)
     }
 
     if (process.env.NODE_ENV !== 'development') {
-      uploadQueue.add({
+      logger.info('Adding audio to upload-b2 queue')
+      uploadQueue.add('upload-b2', {
         profile: ctx.profile,
         filename,
         filesize: fileSize,
@@ -254,13 +248,13 @@ const processFile = ctx => {
       // })
 
       if (!metadata.format.duration) {
-        audioDurationQueue.add({ filename })
+        audioDurationQueue.add('audio-duration', { filename })
       }
 
       data.metadata = metadata.common
       // data.track = track.get({ plain: true })
 
-      logger.info('Adding audio to queue')
+      logger.info('Adding audio to convert-audio queue')
       audioQueue.add('convert-audio', { filename })
     }
 

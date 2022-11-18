@@ -44,6 +44,7 @@ module.exports = async job => {
           .on('end', async () => {
             profiler.done({ message: 'Done converting to m4a' })
 
+            // FIXME: should this point to the trim track?
             const stat = await fs.stat(path.join(BASE_DATA_DIR, `/data/media/audio/trim-${filename}.m4a`))
 
             return resolve(stat)
