@@ -88,11 +88,9 @@ const uploadQueue = new Queue('upload-b2', queueOptions)
 const uploadQueueEvents = new QueueEvents('upload-b2', queueOptions)
 
 uploadQueueEvents.on('completed', async (job, result) => {
-  console.log('profile', job.returnvalue.profile)
-  // const { profile } = job.data
-  const profile = job.returnvalue?.profile
-
   try {
+    const profile = job.returnvalue?.profile
+
     sendMail({
       data: {
         template: 'new-upload',

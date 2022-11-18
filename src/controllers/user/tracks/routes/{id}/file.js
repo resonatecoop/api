@@ -9,21 +9,26 @@ module.exports = function () {
   }
 
   async function PUT (ctx, next) {
-    const files = ctx.request.files.files
+    try {
+      const files = ctx.request.files.files
 
-    const data = Array.isArray(files)
-      ? await Promise.all(files.map(processFile(ctx)))
-      : await processFile(ctx)(files)
+      const data = Array.isArray(files)
+        ? await Promise.all(files.map(processFile(ctx)))
+        : await processFile(ctx)(files)
 
-    const track = await Track.findOne({ where: { id: ctx.request.params.id } })
-    track.set('url', data.filename)
-    await track.save()
-    await track.reload()
-    ctx.body = {
-      data: track,
-      status: 'ok'
+      const track = await Track.findOne({ where: { id: ctx.request.params.id } })
+      track.set('url', data.filename)
+      await track.save()
+      await track.reload()
+      ctx.body = {
+        data: track,
+        status: 'ok'
+      }
+      await next()
+    } catch (e) {
+      ctx.status = 500
+      ctx.throw(ctx.status, 'Problem creating file')
     }
-    await next()
   }
 
   PUT.apiDoc = {

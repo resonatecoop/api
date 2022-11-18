@@ -103,7 +103,6 @@ module.exports = async (job) => {
 
     return Promise.resolve()
   } catch (err) {
-    console.log(err)
     logger.error(err)
     return Promise.reject(err)
   }

@@ -4,8 +4,6 @@ const querystring = require('querystring')
 const { inspect } = require('util')
 const { User, Role } = require('../db/models')
 const RedisAdapter = require('./redis-adapter')
-const send = require('koa-send')
-const path = require('path')
 const { v4: uuidv4 } = require('uuid')
 
 const isEmpty = require('lodash/isEmpty')
@@ -13,7 +11,6 @@ const bodyParser = require('koa-body')
 const Router = require('@koa/router')
 const { renderError } = require('./utils')
 const sendMail = require('../jobs/send-mail')
-const role = require('../db/models/resonate/role')
 const { Op } = require('sequelize')
 
 const keys = new Set()
@@ -103,7 +100,7 @@ module.exports = (provider) => {
     await isExisting.save()
 
     try {
-      sendMail({
+      await sendMail({
         data: {
           template: 'password-reset',
           message: {
@@ -249,7 +246,7 @@ module.exports = (provider) => {
     })
 
     try {
-      sendMail({
+      await sendMail({
         data: {
           template: 'new-user',
           message: {
