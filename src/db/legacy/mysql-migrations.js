@@ -723,6 +723,39 @@ const migrateGFEntryMembers = async (client) => {
   })
 }
 
+// eslint-disable-next-line
+const migrateDescriptions = async (client) => {
+  const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+  return new Promise((resolve, reject) => {
+    client.query(`SELECT * FROM rsntr_usermeta
+      WHERE meta_key = 'description'
+      AND meta_value != ''
+    `, async function (error, results, fields) {
+      if (error) reject(error)
+      try {
+        const filtered = results.filter(r => !!usersGroupedByLegacyId[r.user_id])
+        console.log('length of descriptions', filtered.length)
+        await Promise.all(filtered.map(r => {
+          return UserGroup.update({
+            description: r.meta_value
+          }, {
+            where: {
+              ownerId: usersGroupedByLegacyId[r.user_id].id,
+              description: ''
+            }
+          })
+        }))
+        console.log('done updating descriptions')
+      } catch (e) {
+        console.error('e', e)
+        reject(e)
+      }
+      resolve()
+    })
+  })
+}
+
 module.exports = async (client) => {
   console.log('migrating')
   await migrateTracks(client)
@@ -740,4 +773,5 @@ module.exports = async (client) => {
   await migrateMemberOrders(client)
   await migrateGFEntryShares(client)
   await migrateGFEntryMembers(client)
+  await migrateDescriptions(client)
 }
