@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content 
+  h1 Log out from the entire Resonate ecosystem?
+  p you've been logged out from the Resonate client. Do you want to log out from our identity server as well?
+  | !{form}
+  button(autofocus, type="submit", form="op.logoutForm" value="yes" name="logout") Yes, sign me out
+  button(type="submit", form="op.logoutForm") No, stay signed in
+      
