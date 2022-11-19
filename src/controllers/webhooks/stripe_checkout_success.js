@@ -3,10 +3,10 @@ const unparsed = require('koa-body/unparsed.js')
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 const values = {
-  'Stream-Credit-05': 5,
-  'Stream-Credit-10': 10,
-  'Stream-Credit-20': 20,
-  'Stream-Credit-50': 50
+  'Stream-Credit-05': 5000,
+  'Stream-Credit-10': 10000,
+  'Stream-Credit-20': 20000,
+  'Stream-Credit-50': 50000
 }
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET ?? ''

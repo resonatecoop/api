@@ -48,6 +48,7 @@ form input {
 button {
   background-color: white;
   border: 1px solid black;
+  border-radius: 6px;
   font-size: 1rem;
   margin: .25rem;
   padding: 1rem;
