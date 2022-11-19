@@ -29,6 +29,11 @@ module.exports = function () {
         ctx.throw(404, 'User not found')
       }
 
+      if (!user.emailConfirmed) {
+        ctx.status = 401
+        ctx.throw(401, 'User\'s email is not confirmed')
+      }
+
       const { data: products } = await stripe.products.list({ limit: 50 })
 
       const priceIds = ctx.request.query.priceIds.split(',')
