@@ -108,7 +108,7 @@ module.exports = function () {
 
       await user.update(omit(body, 'email', 'password'))
 
-      if (body.email !== user.email) {
+      if (body.email && body.email !== user.email) {
         if (!body.password) {
           ctx.status = 400
           ctx.throw(ctx.status, 'Changing the e-mail requires the password')
@@ -163,7 +163,7 @@ module.exports = function () {
       }
     } catch (err) {
       console.error(err)
-      ctx.throw(500, err.message)
+      ctx.throw(ctx.status ?? 500, err.message)
     }
 
     await next()
