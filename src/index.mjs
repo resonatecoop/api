@@ -102,7 +102,8 @@ if (process.env.NODE_ENV !== 'production') {
       })
       await send(ctx, filename, { root: path.join(BASE_DATA_DIR, '/data/media/images') })
     } catch (e) {
-      console.error('e', e)
+      // console.error('e', e)
+      ctx.throw(404, e)
     }
     await next()
   })
@@ -114,7 +115,7 @@ if (process.env.NODE_ENV !== 'production') {
       ctx.body = fs.createReadStream(path.join(BASE_DATA_DIR, '/data/media/audio', filename))
       next()
     } catch (e) {
-      console.error('e', e)
+      // console.error('e', e)
       ctx.throw(500, e)
     }
     // await next()
