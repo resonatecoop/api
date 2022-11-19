@@ -13,10 +13,25 @@ View the [product backlog](https://mattermost.resonate.coop/plugins/focalboard/w
 ```sh
 git clone <repo>
 cd <repo>
+```
+
+Copy over all the required env variables
+
+```
 cp .env.example .env
 cp jwk-keys.json.example jwk-keys.json
 cp cookies-keys.json.example cookies-keys.json
+```
+
+Set up the dev environment
+
+```
 yarn install
+yarn husky install
+
+And then run the server!
+
+```
 docker-compose up
 ```
 
