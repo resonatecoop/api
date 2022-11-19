@@ -639,15 +639,6 @@ const migrateMemberOrders = async (client) => {
 
 // eslint-disable-next-line
 const migrateGFEntryShares = async (client) => {
-  await ShareTransaction.destroy({
-    truncate: true,
-    force: true,
-    where: {
-      legacyTransactionId: {
-        [Op.not]: null
-      }
-    }
-  })
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
 
   return new Promise((resolve, reject) => {
@@ -680,15 +671,6 @@ const migrateGFEntryShares = async (client) => {
 
 // eslint-disable-next-line
 const migrateGFEntryMembers = async (client) => {
-  await UserMembership.destroy({
-    truncate: true,
-    force: true,
-    where: {
-      legacySource: {
-        [Op.not]: null
-      }
-    }
-  })
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
   const membershipClass = await MembershipClass.findOne({ where: { name: 'Listener' } })
 

@@ -48,8 +48,10 @@ module.exports = function () {
         }
       })
         .filter(lineItem => lineItem.price !== '' && lineItem.quantity > 0)
+
       const stripeSession = await stripe.checkout.sessions.create({
         line_items: lineItems,
+        client_reference_id: user.id,
         mode: isRecurring ? 'subscription' : 'payment',
         success_url: `${process.env.APP_HOST}/api/v3/user/products/success?session_id={CHECKOUT_SESSION_ID}&${new URLSearchParams(query).toString()}`,
         cancel_url: `${process.env.APP_HOST}/api/v3/user/products/cancel?session_id={CHECKOUT_SESSION_ID}${new URLSearchParams(query).toString()}`
@@ -63,36 +65,6 @@ module.exports = function () {
     }
 
     await next()
-  }
-
-  GET.apiDoc = {
-    operationId: 'processChosenProducts',
-    description: 'Process chosen products',
-    summary: 'Process chosen products',
-    tags: ['products'],
-    produces: [
-      'application/json'
-    ],
-    responses: {
-      400: {
-        description: 'Bad request',
-        schema: {
-          $ref: '#/responses/BadRequest'
-        }
-      },
-      404: {
-        description: 'Not found',
-        schema: {
-          $ref: '#/responses/NotFound'
-        }
-      },
-      default: {
-        description: 'error payload',
-        schema: {
-          $ref: '#/definitions/Error'
-        }
-      }
-    }
   }
 
   return operations

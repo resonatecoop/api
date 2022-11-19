@@ -50,6 +50,8 @@ import userProducts from './user/products/routes/index.js'
 import userProductsCancel from './user/products/routes/cancel.js'
 import userProductsCheckout from './user/products/routes/checkout.js'
 import userProductsSuccess from './user/products/routes/success.js'
+import webhooksStripeCheckoutSuccess from './webhooks/stripe_checkout_success.js'
+
 import userProfile from './user/profile/routes/index.js'
 import userStream from './user/stream/routes/{id}.js'
 import userEarnings from './user/earnings.js'
@@ -191,6 +193,8 @@ initialize({
     { path: `${root}/user/admin/files/{id}`, module: adminFilesId },
     { path: `${root}/user/admin/plays`, module: adminPlays },
 
+    { path: '/webhooks/stripe/checkout_success', module: webhooksStripeCheckoutSuccess },
+
     {
       path: `${root}/apiDocs`, module: apiDocs
     }],
@@ -201,6 +205,7 @@ initialize({
 
 apiRouter.use(koaBody({
   multipart: true,
+  includeUnparsed: true,
   formidable: {
     uploadDir: path.join(BASE_DATA_DIR, '/data/media/incoming/'),
     maxFileSize: bytes('2 GB')
