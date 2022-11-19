@@ -2,6 +2,9 @@ const { User } = require('../../../../db/models')
 const profileImage = require('../../../../util/profile-image')
 const gravatar = require('gravatar')
 const { authenticate } = require('../../authenticate')
+const { omit } = require('lodash')
+const { v4: uuidv4 } = require('uuid')
+const sendMail = require('../../../../jobs/send-mail')
 
 const profileService = ctx => {
   return {
@@ -94,15 +97,58 @@ module.exports = function () {
       const user = await User.scope('defaultScope', 'profile').findOne({
         where: {
           id: ctx.profile.id
-        }
+        },
+        attributes: ['password']
       })
 
       if (!user) {
         ctx.status = 404
-        ctx.throw(404, 'Something weird happened')
+        ctx.throw(404, 'User not found')
       }
 
-      await user.update(body)
+      await user.update(omit(body, 'email', 'password'))
+
+      if (body.email && body.email !== user.email) {
+        if (!body.password) {
+          ctx.status = 400
+          ctx.throw(ctx.status, 'Changing the e-mail requires the password')
+        }
+        const passwordOkay = await User.checkPassword({
+          hash: user.password,
+          password: body.password
+        })
+        if (!passwordOkay) {
+          ctx.status = 401
+          ctx.throw(ctx.status, 'Permission denied')
+        }
+
+        const date = new Date()
+        date.setMinutes(date.getMinutes() + 20)
+
+        user.email = body.email
+        user.emailConfirmed = false
+        user.emailConfirmationToken = uuidv4()
+        user.emailConfirmationExpiration = date.toISOString()
+
+        await user.save()
+
+        try {
+          await sendMail({
+            data: {
+              template: 'email-confirmation',
+              message: {
+                to: user.email
+              },
+              locals: {
+                user: user,
+                host: process.env.APP_HOST
+              }
+            }
+          })
+        } catch (e) {
+          console.error(e)
+        }
+      }
 
       const scopedUser = await User.scope('defaultScope', 'profile').findOne({
         where: {
@@ -117,7 +163,7 @@ module.exports = function () {
       }
     } catch (err) {
       console.error(err)
-      ctx.throw(500, err.message)
+      ctx.throw(ctx.status ?? 500, err.message)
     }
 
     await next()

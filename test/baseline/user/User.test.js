@@ -203,6 +203,31 @@ describe('baseline/user endpoint test', () => {
     expect(user.newsletterNotification).to.eql(false)
   })
 
+  it('should not PUT user/profile when sending email without password', async () => {
+    user.newsletterNotification = true
+    await user.save()
+    expect(user.newsletterNotification).to.eql(true)
+    response = await request.put('/user/profile/')
+      .send({
+        email: 'test@test.com'
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
+    expect(response.status).to.eql(400)
+  })
+
+  it('should not PUT user/profile when sending email with wrong password', async () => {
+    user.newsletterNotification = true
+    await user.save()
+    expect(user.newsletterNotification).to.eql(true)
+    response = await request.put('/user/profile/')
+      .send({
+        email: 'test@test.com',
+        password: 'wrongpassword'
+      })
+      .set('Authorization', `Bearer ${testAccessToken}`)
+    expect(response.status).to.eql(401)
+  })
+
   it('should GET user/:id/playlists', async () => {
     response = await request.get(`/users/${testUserId}/playlists`).set('Authorization', `Bearer ${testAccessToken}`)
 
