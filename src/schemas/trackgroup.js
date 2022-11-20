@@ -115,9 +115,9 @@ const TrackGroupItems = {
       type: 'array',
       items: {
         type: 'object',
-        required: ['track_id'],
+        required: ['trackId'],
         properties: {
-          track_id: {
+          trackId: {
             type: 'number',
             minimum: 1
           },

@@ -198,7 +198,7 @@ describe('baseline/user/trackgroups endpoint test', () => {
     response = await request.put(`/user/trackgroups/${trackgroup.id}/items/add`)
       .send({
         tracks: [{
-          track_id: track.id,
+          trackId: track.id,
           index: 1
         }]
       })
@@ -210,7 +210,7 @@ describe('baseline/user/trackgroups endpoint test', () => {
 
     expect(data.length).to.eql(1)
     expect(data[0].trackgroupId).to.eql(trackgroup.id)
-    expect(data[0].track_id).to.eql(track.id)
+    expect(data[0].trackId).to.eql(track.id)
     expect(data[0].track.id).to.eql(track.id)
     expect(data[0].track.status).to.eql('hidden')
 
@@ -236,14 +236,14 @@ describe('baseline/user/trackgroups endpoint test', () => {
     })
 
     const trackgroupItem = await TrackGroupItem.create({
-      track_id: track.id,
+      trackId: track.id,
       trackgroupId: trackgroup.id,
       index: 0
     })
 
     response = await request.put(`/user/trackgroups/${trackgroup.id}/items/remove`)
       .send({
-        tracks: [{ track_id: track.id }]
+        tracks: [{ trackId: track.id }]
       })
       .set('Authorization', `Bearer ${testAccessToken}`)
 
@@ -287,7 +287,7 @@ describe('baseline/user/trackgroups endpoint test', () => {
 
     expect(data[0].index).to.eql(2)
     expect(data[0].trackgroupId).to.eql(trackgroup.id)
-    expect(data[0].track_id).to.eql(track.id)
+    expect(data[0].trackId).to.eql(track.id)
     expect(data.length).to.eql(1)
 
     await trackgroup.destroy({ force: true })

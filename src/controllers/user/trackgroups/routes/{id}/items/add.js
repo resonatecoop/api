@@ -36,8 +36,8 @@ module.exports = function () {
           model: TrackGroupItem,
           attributes: ['id', 'index'],
           where: {
-            track_id: {
-              [Op.notIn]: body.tracks.map((item) => item.track_id)
+            trackId: {
+              [Op.notIn]: body.tracks.map((item) => item.trackId)
             }
           },
           required: false,
@@ -117,9 +117,9 @@ module.exports = function () {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['track_id'],
+                required: ['trackId'],
                 properties: {
-                  track_id: {
+                  trackId: {
                     type: 'string',
                     format: 'uuid'
                   },

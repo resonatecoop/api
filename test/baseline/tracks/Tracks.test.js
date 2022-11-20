@@ -31,7 +31,7 @@ describe('baseline/track endpoint test', () => {
 
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      track_id: track.id,
+      trackId: track.id,
       index: 1
     })
     const play = await Play.create({
@@ -108,7 +108,7 @@ describe('baseline/track endpoint test', () => {
 
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      track_id: track.id,
+      trackId: track.id,
       index: 1
     })
     const play = await Play.create({

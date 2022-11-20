@@ -113,7 +113,7 @@ module.exports = function () {
       await Track.destroy({
         where: {
           id: ctx.params.id,
-          creator_id: ctx.profile.id
+          creatorId: ctx.profile.id
         },
         transaction: t
       })

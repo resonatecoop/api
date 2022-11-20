@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       field: 'track_group_id'
     },
-    track_id: {
+    trackId: {
       type: DataTypes.UUID,
       field: 'track_id'
     },
@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   TrackGroupItem.associate = function (models) {
-    TrackGroupItem.hasOne(models.Track, { as: 'track', sourceKey: 'track_id', foreignKey: 'id' })
+    TrackGroupItem.hasOne(models.Track, { as: 'track', sourceKey: 'trackId', foreignKey: 'id' })
     TrackGroupItem.belongsTo(models.TrackGroup, { as: 'trackGroup', foreignKey: 'trackgroupId' })
   }
 

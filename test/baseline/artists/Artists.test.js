@@ -71,10 +71,10 @@ describe('baseline/artists endpoint test', () => {
     const theItem = theTG.items[0]
 
     expect(theItem).to.be.an('object')
-    expect(theItem).to.include.keys('id', 'index', 'track_id', 'track')
+    expect(theItem).to.include.keys('id', 'index', 'trackId', 'track')
     expect(theItem.id).to.eql('753eccd9-01b2-4bfb-8acc-8d0e44b998cc')
     expect(theItem.index).to.eql(0)
-    expect(theItem.track_id).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
+    expect(theItem.trackId).to.eql('44a28752-1101-4e0d-8c40-2c36dc82d035')
 
     expect(theItem.track).to.be.an('object')
     const theTrack = theItem.track
@@ -142,7 +142,7 @@ describe('baseline/artists endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      track_id: track.id,
+      trackId: track.id,
       index: 1
     })
 
@@ -223,7 +223,7 @@ describe('baseline/artists endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      track_id: track.id,
+      trackId: track.id,
       index: 1
     })
     const play = await Play.create({
@@ -305,7 +305,7 @@ describe('baseline/artists endpoint test', () => {
     })
     const tgi = await TrackGroupItem.create({
       trackgroupId: trackgroup.id,
-      track_id: track.id,
+      trackId: track.id,
       index: 1
     })
     const play = await Play.create({

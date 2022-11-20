@@ -37,7 +37,7 @@ module.exports = function () {
         attributes: ['id', 'creatorId', 'title', 'year', 'status', 'tags'],
         include: [{
           model: TrackGroupItem,
-          attributes: ['index', 'track_id', 'trackgroupId'],
+          attributes: ['index', 'trackId', 'trackgroupId'],
           required: true,
           separate: true,
           as: 'trackOn',

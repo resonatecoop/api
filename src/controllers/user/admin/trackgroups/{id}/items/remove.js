@@ -22,7 +22,7 @@ module.exports = function () {
   async function PUT (ctx, next) {
     const body = ctx.request.body
 
-    const ids = body.tracks.map((item) => item.track_id)
+    const ids = body.tracks.map((item) => item.trackId)
 
     try {
       let result = await TrackGroup.findOne({
@@ -39,7 +39,7 @@ module.exports = function () {
       await TrackGroupItem.destroy({
         where: {
           track_group_id: ctx.params.id,
-          track_id: {
+          trackId: {
             [Op.in]: ids
           }
         }

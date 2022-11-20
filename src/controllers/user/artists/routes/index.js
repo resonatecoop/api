@@ -90,7 +90,7 @@ module.exports = function () {
             as: 'trackgroups',
             include: [{
               model: TrackGroupItem,
-              attributes: ['id', 'index', 'track_id'],
+              attributes: ['id', 'index', 'trackId'],
               as: 'items',
               include: [{
                 model: Track,

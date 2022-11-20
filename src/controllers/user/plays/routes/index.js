@@ -43,7 +43,7 @@ module.exports = function () {
 
       const currentCount = await Play.count({
         where: {
-          track_id: id,
+          trackId: id,
           user_id: ctx.profile.id,
           event: 1
         }

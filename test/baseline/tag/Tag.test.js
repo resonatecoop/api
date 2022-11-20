@@ -31,13 +31,13 @@ describe('Api.ts/tag endpoint test', () => {
     const tgi = await TrackGroupItem.create({
       trackgroupId: tg.id,
       index: 0,
-      track_id: track.id
+      trackId: track.id
     })
 
     const tgi2 = await TrackGroupItem.create({
       trackgroupId: tg.id,
       index: 0,
-      track_id: track2.id
+      trackId: track2.id
     })
 
     response = await request.get('/tag/reggae')

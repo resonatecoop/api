@@ -78,7 +78,7 @@ module.exports = function () {
           {
             model: TrackGroupItem,
             separate: true,
-            attributes: ['id', 'index', 'track_id'],
+            attributes: ['id', 'index', 'trackId'],
             order: [['index', 'ASC']],
             as: 'items',
             include: [{

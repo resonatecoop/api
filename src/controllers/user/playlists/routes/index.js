@@ -94,7 +94,7 @@ module.exports = function () {
       const whereTrackGroupItem = {}
 
       if (includes) {
-        whereTrackGroupItem.track_id = includes // trackgroup where trackgroup item has a given track
+        whereTrackGroupItem.trackId = includes // trackgroup where trackgroup item has a given track
       }
 
       const { rows: result, count } = await Playlist.findAndCountAll({
@@ -123,7 +123,7 @@ module.exports = function () {
           {
             model: PlaylistItem,
             attributes: ['id', 'index'],
-            required: !!whereTrackGroupItem.track_id,
+            required: !!whereTrackGroupItem.trackId,
             as: 'items',
             where: whereTrackGroupItem,
             include: [{
