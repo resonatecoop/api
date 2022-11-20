@@ -1,5 +1,5 @@
 
-const { User, Track, File, UserGroup } = require('../../../../../db/models')
+const { User, Track, File, UserGroup, Resonate: sequelize, TrackGroupItem } = require('../../../../../db/models')
 const coverSrc = require('../../../../../util/cover-src')
 const { validate } = require('../../../../../schemas/tracks')
 const { authenticate } = require('../../../authenticate')
@@ -89,12 +89,36 @@ module.exports = function () {
 
   async function DELETE (ctx, next) {
     try {
+      const foundTrack = Track.findOne({
+        where: {
+          id: ctx.params.id,
+          creatorId: ctx.profile.id
+        }
+      })
+
+      if (!foundTrack) {
+        ctx.status = 404
+        ctx.throw(ctx.status, 'Track not found')
+      }
+
+      const t = await sequelize.transaction()
+
+      await TrackGroupItem.destroy({
+        where: {
+          trackId: ctx.params.id
+        },
+        transaction: t
+      })
+
       await Track.destroy({
         where: {
           id: ctx.params.id,
           creator_id: ctx.profile.id
-        }
+        },
+        transaction: t
       })
+
+      t.commit()
 
       ctx.body = {
         data: null,
@@ -107,8 +131,38 @@ module.exports = function () {
     await next()
   }
 
-  // TODO: Add Swagger Docs
-
+  DELETE.apiDoc = {
+    operationId: 'getTrack',
+    description: 'Deletes a single track owned by the user',
+    tags: ['tracks'],
+    parameters: [
+      {
+        name: 'id',
+        in: 'path',
+        type: 'string',
+        required: true,
+        description: 'Track id',
+        format: 'uuid'
+      }
+    ],
+    responses: {
+      200: {
+        description: 'Track deleted.',
+        schema: {
+          type: 'object'
+        }
+      },
+      404: {
+        description: 'No track found.'
+      },
+      default: {
+        description: 'Unexpected error',
+        schema: {
+          $ref: '#/definitions/Error'
+        }
+      }
+    }
+  }
   async function GET (ctx, next) {
     try {
       const result = await Track.findOne({
@@ -215,13 +269,13 @@ module.exports = function () {
     ],
     responses: {
       200: {
-        description: 'The requested trackgroup.',
+        description: 'The requested track.',
         schema: {
           type: 'object'
         }
       },
       404: {
-        description: 'No trackgroup found.'
+        description: 'No track found.'
       },
       default: {
         description: 'Unexpected error',
