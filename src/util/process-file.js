@@ -91,11 +91,11 @@ uploadQueueEvents.on('completed', async (job, result) => {
   try {
     const profile = job.returnvalue?.profile
 
-    sendMail({
+    await sendMail({
       data: {
         template: 'new-upload',
         message: {
-          to: process.env.APP_EMAIL
+          to: process.env.profile.email
         },
         locals: {
           name: profile.displayName,
