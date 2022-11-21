@@ -130,6 +130,27 @@ module.exports = (sequelize, DataTypes) => {
             [Op.in]: [0, 2, 3]
           }
         }
+
+      }),
+      publicTrackgroup: () => ({
+        include: [
+          {
+            model: sequelize.models.TrackGroupItem,
+            attributes: ['index'],
+            required: true,
+            as: 'trackOn',
+            include: [{
+              model: sequelize.models.TrackGroup,
+              required: true,
+              as: 'trackGroup',
+              attributes: ['title', 'cover', 'id'],
+              where: {
+                enabled: true,
+                private: false
+              }
+            }]
+          }
+        ]
       }),
       loggedIn: (userId) => {
         return userId

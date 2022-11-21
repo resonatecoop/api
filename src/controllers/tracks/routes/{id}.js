@@ -20,7 +20,7 @@ module.exports = function () {
   async function GET (ctx, next) {
     if (await ctx.cashed?.()) return
     try {
-      const result = await Track.scope('details', 'public', { method: ['loggedIn', ctx.profile?.id] }).findOne({
+      const result = await Track.scope('details', 'public', 'publicTrackgroup', { method: ['loggedIn', ctx.profile?.id] }).findOne({
         where: {
           id: ctx.params.id
         },

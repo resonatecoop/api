@@ -147,7 +147,7 @@ describe('baseline/artists endpoint test', () => {
     })
 
     response = await request.get(`/artists/${testArtistId}/releases`)
-
+    console.log(response.body)
     expect(response.status).to.eql(200)
 
     const attributes = response.body

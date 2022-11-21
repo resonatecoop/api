@@ -61,8 +61,13 @@ module.exports = function (trackService) {
       query.order = [[{ model: Play, as: 'plays' }, 'createdAt', 'DESC']]
     }
 
+    query.logging = console.log
+
     try {
-      const { rows, count } = await Track.scope('details').findAndCountAll(query)
+      const { rows, count } = await Track
+        .scope('public', 'publicTrackgroup', 'details')
+        .findAndCountAll(query)
+
       ctx.body = {
         data: trackService(ctx).list(rows),
         count: count,
