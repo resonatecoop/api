@@ -65,7 +65,7 @@ And then run the tests.
 yarn test:all
 ```
 
-Check out the test [README.md](/tests/README.md) for more details.
+Check out the test [README.md](/test/README.md) for more details.
 
 ## Code standards
 
