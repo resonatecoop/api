@@ -21,7 +21,7 @@ services:
     volumes:
       - ./:/var/www/api
       - ./data/media/incoming:/data/media/incoming
-      - ./data/media/audio:/test/media/audio
+      - ./data/media/audio:/data/media/audio
       - ./data/media/images:/data/media/images
 
   pgsql:
