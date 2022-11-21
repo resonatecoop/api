@@ -26,5 +26,15 @@ module.exports = {
   },
   jwks: {
     keys
+  },
+  ttl: {
+    Session: 14 * 24 * 60 * 60, /* 14 days in seconds */
+    AccessToken: function AccessTokenTTL (ctx, token, client) {
+      if (token.resourceServer) {
+        return token.resourceServer.accessTokenTTL || 60 * 60 // 1 hour in seconds
+      }
+      return 60 * 60
+      // return 60 * 60 // 1 hour in seconds
+    }
   }
 }
