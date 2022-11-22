@@ -3,10 +3,10 @@ const Artist = {
     type: 'string'
   },
   description: {
-    type: 'string'
+    type: ['string', 'null']
   },
   shortBio: {
-    type: 'string'
+    type: ['string', 'null']
   },
   email: {
     type: 'string'

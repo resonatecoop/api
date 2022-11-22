@@ -29,6 +29,7 @@ import tracksId from './tracks/routes/{id}.js'
 import tracksRoutes from './tracks/routes/index.js'
 import userArtists from './user/artists/routes/index.js'
 import userArtistsId from './user/artists/routes/{id}/index.js'
+import userArtistsIdImage from './user/artists/routes/{id}/image.mjs'
 import userCollection from './user/collection/routes/index.js'
 import userFavorites from './user/favorites/routes/index.js'
 import userFavoritesResolve from './user/favorites/routes/resolve.js'
@@ -132,6 +133,8 @@ initialize({
     { path: `${root}/user/profile`, module: userProfile },
     { path: `${root}/user/artists`, module: userArtists },
     { path: `${root}/user/artists/{id}`, module: userArtistsId },
+    { path: `${root}/user/artists/{id}/{imageType}`, module: userArtistsIdImage },
+
     { path: `${root}/user/collection`, module: userCollection },
 
     { path: `${root}/user/favorites/resolve`, module: userFavoritesResolve },

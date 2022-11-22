@@ -69,8 +69,8 @@ describe('baseline/user endpoint test', () => {
       'roleId',
       'credit',
       'userGroups',
-      'gravatar',
-      'avatar')
+      'gravatar'
+    )
     expect(theData.displayName).to.eql(user.displayName)
     expect(theData.id).to.eql(user.id)
     expect(theData.country).to.be.null
@@ -95,8 +95,6 @@ describe('baseline/user endpoint test', () => {
     expect(theUserGroups.length).to.eql(0)
 
     expect(theData.gravatar).to.eql('https://s.gravatar.com/avatar/ec69cee30e0f484433cdd537ec0ce2db')
-
-    expect(theData.avatar).to.be.an('object')
 
     expect(attributes.status).to.eql('ok')
   })

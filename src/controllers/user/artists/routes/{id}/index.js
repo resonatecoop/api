@@ -80,7 +80,7 @@ module.exports = function () {
       let result = await UserGroup.findOne({
 
         where: {
-          userId: ctx.profile.id,
+          ownerId: ctx.profile.id,
           id: ctx.params.id
         }
       })
