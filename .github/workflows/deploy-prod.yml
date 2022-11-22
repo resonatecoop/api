@@ -8,9 +8,9 @@ jobs:
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER}}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.HETZNER_PROD_IP_SERVER }}
+          username: ${{ secrets.HETZNER_PROD_SERVER_USER}}
+          key: ${{ secrets.HETZNER_PROD_SERVER_SSH_KEY }}
           port: 22
           script_stop: true
           script: |
