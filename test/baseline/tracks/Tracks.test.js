@@ -271,8 +271,8 @@ describe('baseline/tracks endpoint test', () => {
       trackId: track.id,
       index: 1
     })
-    response = await request.get(`/tracks/${track.id}`)
 
+    response = await request.get(`/tracks/${track.id}`)
     expect(response.status).to.eql(200)
 
     const attributes = response.body

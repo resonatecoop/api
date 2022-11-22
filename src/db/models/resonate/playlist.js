@@ -83,6 +83,14 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Playlist',
     tableName: 'playlists',
     scopes: {
+      creator: () => ({
+        include: [{
+          model: sequelize.models.User,
+          required: false,
+          attributes: ['id', 'displayName'],
+          as: 'creator'
+        }]
+      }),
       items: (userId) => ({
         // order: [
         //   [{ model: sequelize.models.PlaylistItem, as: 'items' }, 'index', 'asc']

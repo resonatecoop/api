@@ -71,14 +71,22 @@ import userTrackgroups from './user/trackgroups/routes/index.js'
 import userTracks from './user/tracks/routes/index.js'
 import usersId from './users/routes/{id}/index.js'
 import usersIdPlaylists from './users/routes/{id}/playlists.js'
+
 import adminUsers from './user/admin/users/index.js'
 import adminUsersId from './user/admin/users/{id}.js'
+
 import adminTrackgroups from './user/admin/trackgroups/index.js'
 import adminTrackgroupId from './user/admin/trackgroups/{id}/index.js'
-import adminTrackgroupSettings from './user/admin/trackgroups/{id}/settings.js'
 import adminTrackgroupItems from './user/admin/trackgroups/{id}/items/index.js'
 import adminTrackgroupItemsAdd from './user/admin/trackgroups/{id}/items/add.js'
 import adminTrackgroupItemsRemove from './user/admin/trackgroups/{id}/items/remove.js'
+
+import adminPlaylists from './user/admin/playlists/index.js'
+import adminPlaylistId from './user/admin/playlists/{id}/index.js'
+import adminPlaylistItems from './user/admin/playlists/{id}/items/index.js'
+import adminPlaylistItemsAdd from './user/admin/playlists/{id}/items/add.js'
+import adminPlaylistItemsRemove from './user/admin/playlists/{id}/items/remove.js'
+
 import adminTracks from './user/admin/tracks/index.js'
 import adminTracksId from './user/admin/tracks/{id}.js'
 import adminEarnings from './user/admin/earnings.js'
@@ -183,10 +191,15 @@ initialize({
 
     { path: `${root}/user/admin/trackgroups`, module: adminTrackgroups },
     { path: `${root}/user/admin/trackgroups/{id}`, module: adminTrackgroupId },
-    { path: `${root}/user/admin/trackgroups/{id}/settings`, module: adminTrackgroupSettings },
     { path: `${root}/user/admin/trackgroups/{id}/items`, module: adminTrackgroupItems },
     { path: `${root}/user/admin/trackgroups/{id}/items/add`, module: adminTrackgroupItemsAdd },
     { path: `${root}/user/admin/trackgroups/{id}/items/remove`, module: adminTrackgroupItemsRemove },
+
+    { path: `${root}/user/admin/playlists`, module: adminPlaylists },
+    { path: `${root}/user/admin/playlists/{id}`, module: adminPlaylistId },
+    { path: `${root}/user/admin/playlists/{id}/items`, module: adminPlaylistItems },
+    { path: `${root}/user/admin/playlists/{id}/items/add`, module: adminPlaylistItemsAdd },
+    { path: `${root}/user/admin/playlists/{id}/items/remove`, module: adminPlaylistItemsRemove },
 
     { path: `${root}/user/admin/tracks`, module: adminTracks },
     { path: `${root}/user/admin/tracks/{id}`, module: adminTracksId },

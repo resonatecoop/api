@@ -131,6 +131,16 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
+    scopes: {
+      creator: () => ({
+        include: [{
+          model: sequelize.models.UserGroup,
+          required: false,
+          attributes: ['id', 'displayName'],
+          as: 'creator'
+        }]
+      })
+    },
     underscored: true,
     modelName: 'TrackGroup',
     tableName: 'track_groups'

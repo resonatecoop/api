@@ -41,6 +41,7 @@ const playlistService = (ctx) => {
         )
       }, {}),
       private: data.private,
+      featured: data.featured,
       tags: data.tags,
       title: data.title
     }

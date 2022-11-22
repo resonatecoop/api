@@ -1,4 +1,4 @@
-const { Playlist, UserGroup, PlaylistItem, Track, File } = require('../../../../db/models')
+const { Playlist, PlaylistItem, Track, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const coverSrc = require('../../../../util/cover-src')
 const { authenticate } = require('../../authenticate')
@@ -13,14 +13,8 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
-      // FIXME: We should allow the user to select an artist to add the album to
-      const artist = await UserGroup.findOne({
-        where: {
-          ownerId: ctx.profile.id
-        }
-      })
       const result = await Playlist.create(Object.assign(body, {
-        creatorId: artist.id
+        creatorId: ctx.profile.id
       }))
 
       ctx.status = 201

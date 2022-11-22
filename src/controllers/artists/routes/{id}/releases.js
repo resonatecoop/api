@@ -1,4 +1,4 @@
-const { UserGroup, Track, TrackGroup, TrackGroupItem, File } = require('../../../../db/models')
+const { Track, TrackGroup, TrackGroupItem, File } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const trackgroupService = require('../../../trackgroups/services/trackgroupService')
 const ms = require('ms')
@@ -70,12 +70,6 @@ module.exports = function () {
             }
           },
           {
-            model: UserGroup,
-            required: false,
-            attributes: ['id', 'displayName'],
-            as: 'creator'
-          },
-          {
             model: TrackGroupItem,
             separate: true,
             attributes: ['id', 'index', 'trackId'],
@@ -108,7 +102,7 @@ module.exports = function () {
         query.where.type = type
       }
 
-      const { rows, count } = await TrackGroup.findAndCountAll(query)
+      const { rows, count } = await TrackGroup.scope('creator').findAndCountAll(query)
 
       ctx.body = {
         data: trackgroupService(ctx).list(rows),

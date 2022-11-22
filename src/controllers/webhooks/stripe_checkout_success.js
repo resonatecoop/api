@@ -19,7 +19,6 @@ module.exports = function () {
   async function POST (ctx, next) {
     try {
       // FIXME: Better error handling here
-      // console.log('raw', ctx.request)
       const unparsedBody = ctx.request.body[unparsed]
       const sig = ctx.request.headers['stripe-signature']
 
@@ -37,7 +36,6 @@ module.exports = function () {
 
         const session = await stripe.checkout.sessions.retrieve(object.id)
         const userId = session.client_reference_id
-        console.log('event', event, session)
         if (!userId) {
           ctx.throw(404, 'Unmatched userId')
         }
@@ -50,7 +48,6 @@ module.exports = function () {
           ctx.throw(404, 'User not found')
         }
         const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
-        // console.log('lineItems', lineItems.data[1])
         await Promise.all(lineItems.data.map(async lineItem => {
           if (lineItem.description.includes('Stream-Credit')) {
             const [credit] = await Credit.findOrCreate({

@@ -1,4 +1,4 @@
-const { Track } = require('../../../db/models')
+const { Track, UserGroup } = require('../../../db/models')
 const trackService = require('../services/trackService')
 const { loadProfileIntoContext } = require('../../user/authenticate')
 
@@ -20,7 +20,20 @@ module.exports = function () {
   async function GET (ctx, next) {
     if (await ctx.cashed?.()) return
     try {
-      const result = await Track.scope('details', 'public', 'publicTrackgroup', { method: ['loggedIn', ctx.profile?.id] }).findOne({
+      const userGroups = ctx.profile
+        ? await UserGroup.findAll({
+            where: {
+              ownerId: ctx.profile.id
+            },
+            attributes: ['id']
+          })
+        : []
+      const result = await Track.scope(
+        'details',
+        { method: ['public', userGroups.map(ug => ug.id)] },
+        { method: ['publicTrackgroup', userGroups.map(ug => ug.id)] },
+        { method: ['loggedIn', ctx.profile?.id] }
+      ).findOne({
         where: {
           id: ctx.params.id
         },
@@ -35,7 +48,6 @@ module.exports = function () {
           'duration',
           'year'
         ]
-
       })
 
       if (!result) {

@@ -1,8 +1,8 @@
 
-const { TrackGroup, File } = require('../../../../db/models')
+const { Playlist, File } = require('../../../../db/models')
 const { authenticate, hasAccess } = require('../../authenticate')
 const { Op } = require('sequelize')
-const trackgroupService = require('../../../trackgroups/services/trackgroupService')
+const playlistService = require('../../../playlists/services/playlistService')
 
 module.exports = function () {
   const operations = {
@@ -13,20 +13,12 @@ module.exports = function () {
 
   async function GET (ctx, next) {
     try {
-      const { type, limit = 20, page = 1, featured, private: _private, download, enabled } = ctx.request.query
+      const { type, limit = 20, page = 1, featured, private: _private } = ctx.request.query
 
       const where = {}
 
-      if (download) {
-        where.download = true
-      }
-
       if (_private) {
         where.private = true
-      }
-
-      if (enabled) {
-        where.enabled = true
       }
 
       if (featured) {
@@ -36,23 +28,17 @@ module.exports = function () {
       if (type) {
         where.type = type
       }
-      const { rows: result, count } = await TrackGroup.scope('creator').findAndCountAll({
+      const { rows: result, count } = await Playlist.scope('creator').findAndCountAll({
         limit,
         offset: page > 1 ? (page - 1) * limit : 0,
         attributes: [
           'id',
           'cover',
           'title',
-          'type',
           'about',
           'private',
           'createdAt',
-          'display_artist',
           'creatorId',
-          'composers',
-          'performers',
-          'releaseDate',
-          'enabled',
           'featured'
         ],
         include: [
@@ -70,11 +56,10 @@ module.exports = function () {
         ],
         where,
         order: [
-          ['createdAt', 'DESC'],
-          ['releaseDate', 'DESC']
+          ['createdAt', 'DESC']
         ]
       })
-      const tgs = trackgroupService(ctx).list(result)
+      const tgs = playlistService(ctx).list(result)
       ctx.body = {
         data: tgs,
         count: count,
@@ -90,9 +75,9 @@ module.exports = function () {
   }
 
   GET.apiDoc = {
-    operationId: 'getTrackgroupsThroughAdmin',
-    description: 'Returns all trackgroups',
-    summary: 'Find trackgroups',
+    operationId: 'getPlaylistsThroughAdmin',
+    description: 'Returns all playlists',
+    summary: 'Find playlists',
     tags: ['admin'],
     produces: [
       'application/json'
@@ -144,10 +129,10 @@ module.exports = function () {
 
   async function POST (ctx, next) {
     const body = ctx.request.body
-    const creatorId = body.creator_id || ctx.profile.id
+    const creatorId = body.creatorId || ctx.profile.id
 
     try {
-      const result = await TrackGroup.create(Object.assign(body, { creator_id: creatorId }))
+      const result = await Playlist.create(Object.assign(body, { creatorId: creatorId }))
 
       ctx.status = 201
       ctx.body = {
@@ -164,22 +149,22 @@ module.exports = function () {
   }
 
   POST.apiDoc = {
-    operationId: 'createTrackgroup',
-    description: 'Create new trackgroup',
+    operationId: 'createPlaylist',
+    description: 'Create new playlist',
     tags: ['admin'],
     parameters: [
       {
         in: 'body',
-        name: 'trackgroup',
-        description: 'The trackgroup to create.',
+        name: 'playlist',
+        description: 'The playlist to create.',
         schema: {
-          $ref: '#/definitions/Trackgroup'
+          $ref: '#/definitions/Playlist'
         }
       }
     ],
     responses: {
       201: {
-        description: 'Trackgroup created response.',
+        description: 'Playlist created response.',
         schema: {
           type: 'object'
         }

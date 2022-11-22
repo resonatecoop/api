@@ -85,7 +85,6 @@ module.exports = function () {
     const body = ctx.request.body
 
     try {
-      console.log('ctx', ctx.profile.id)
       let result = await Playlist.findOne({
         attributes: [
           'id'

@@ -103,6 +103,14 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'Track',
     paranoid: true,
     scopes: {
+      creator: () => ({
+        include: [
+          {
+            model: sequelize.models.UserGroup,
+            attributes: ['displayName', 'id'],
+            as: 'creator'
+          }]
+      }),
       details: () => ({
         include: [{
           model: sequelize.models.TrackGroupItem,
@@ -124,34 +132,64 @@ module.exports = (sequelize, DataTypes) => {
           as: 'creator'
         }]
       }),
-      public: () => ({
-        where: {
-          status: {
-            [Op.in]: [0, 2, 3]
-          }
-        }
-
-      }),
-      publicTrackgroup: () => ({
-        include: [
-          {
-            model: sequelize.models.TrackGroupItem,
-            attributes: ['index'],
-            required: true,
-            as: 'trackOn',
-            include: [{
-              model: sequelize.models.TrackGroup,
-              required: true,
-              as: 'trackGroup',
-              attributes: ['title', 'cover', 'id'],
+      public: (ugId) => {
+        const query = ugId?.length > 0
+          ? {
               where: {
-                enabled: true,
-                private: false
+                [Op.or]: [
+                  { creatorId: ugId },
+                  {
+                    status: {
+                      [Op.in]: [0, 2, 3]
+                    }
+                  }
+                ]
               }
-            }]
-          }
-        ]
-      }),
+            }
+          : {
+              where: {
+                status: {
+                  [Op.in]: [0, 2, 3]
+                }
+              }
+            }
+        console.log('public query', query)
+        return query
+      },
+      publicTrackgroup: (ugId) => {
+        const where = ugId?.length > 0
+          ? {
+              [Op.or]: [
+                { creatorId: ugId },
+                {
+                  enabled: true,
+                  private: false
+                }
+              ]
+            }
+          : {
+              enabled: true,
+              private: false
+            }
+        console.log('publicTrackgroup where', where)
+        return {
+          include: [
+            {
+              model: sequelize.models.TrackGroupItem,
+              attributes: ['index'],
+              required: true,
+              as: 'trackOn',
+              include: [{
+                model: sequelize.models.TrackGroup,
+                required: true,
+                as: 'trackGroup',
+                attributes: ['title', 'cover', 'id'],
+                where
+              }]
+            }
+          ]
+        }
+      },
       loggedIn: (userId) => {
         return userId
           ? {

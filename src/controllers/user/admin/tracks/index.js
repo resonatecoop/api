@@ -1,7 +1,7 @@
 
-const { File, Track } = require('../../../../db/models')
+const { Track } = require('../../../../db/models')
 const { authenticate, hasAccess } = require('../../authenticate')
-const coverSrc = require('../../../../util/cover-src')
+const trackService = require('../../../tracks/services/trackService')
 
 module.exports = function () {
   const operations = {
@@ -12,7 +12,7 @@ module.exports = function () {
     const { limit = 20, page = 1 } = ctx.request.query
 
     try {
-      const { rows: result, count } = await Track.findAndCountAll({
+      const { rows: result, count } = await Track.scope('details').findAndCountAll({
         attributes: [
           'album',
           'album_artist',
@@ -28,67 +28,13 @@ module.exports = function () {
         ],
         limit,
         offset: page > 1 ? (page - 1) * limit : 0,
-        include: [
-          {
-            model: File,
-            attributes: ['id', 'ownerId'],
-            as: 'audiofile'
-          }
-        ],
         order: [
           ['createdAt', 'DESC']
         ]
       })
 
-      let ext = '.jpg'
-
-      if (ctx.accepts('image/webp')) {
-        ext = '.webp'
-      }
-
-      const variants = [120, 600]
-
       ctx.body = {
-        data: result.map((item) => {
-        // const { nickname } = Object.fromEntries(Object.entries(item.meta)
-        //   .map(([key, value]) => {
-        //     const metaKey = value.meta_key
-        //     let metaValue = value.meta_value
-
-          //     if (!isNaN(Number(metaValue))) {
-          //       metaValue = Number(metaValue)
-          //     }
-
-          //     return [metaKey, metaValue]
-          //   }))
-
-          const o = Object.assign({}, {
-            id: item.dataValues.id,
-            title: item.dataValues.title,
-            album: item.dataValues.album,
-            // artist: nickname,
-            album_artist: item.dataValues.album_artist,
-            composer: item.get('composer'),
-            duration: item.get('duration'),
-            status: item.get('status'),
-            cover: coverSrc(item.dataValues.cover_art, '600', ext, !item.dataValues.cover),
-            images: variants.reduce((o, key) => {
-              const variant = ['small', 'medium', 'large'][variants.indexOf(key)]
-
-              return Object.assign(o,
-                {
-                  [variant]: {
-                    width: key,
-                    height: key,
-                    url: coverSrc(item.dataValues.cover_art, key, ext, !item.dataValues.cover)
-                  }
-                }
-              )
-            }, {})
-          })
-
-          return o
-        }),
+        data: trackService(ctx).list(result),
         count: count,
         numberOfPages: Math.ceil(count / limit),
         status: 'ok'
