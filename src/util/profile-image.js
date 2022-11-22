@@ -4,13 +4,7 @@ const NodeCache = require('node-cache')
 
 const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
-// const BASE_DATA_DIR = process.env.BASE_DATA_DIR || '/'
-
-/**
- *
- */
-
-module.exports.resolveProfileImage = async (legacyId) => {
+const legacyImages = async (legacyId) => {
   try {
     const cached = myCache.get(`assets:${legacyId}`)
 
@@ -70,6 +64,12 @@ module.exports.resolveProfileImage = async (legacyId) => {
   } catch (err) {
     console.error(err)
   } // do not throw
+}
+
+module.exports.resolveProfileImage = async ({ legacyId, bannerId, avatarId }) => {
+  if (legacyId) {
+    legacyImages(legacyId)
+  }
 }
 
 module.exports = module.exports.resolveProfileImage

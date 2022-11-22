@@ -1,5 +1,5 @@
 const { UserGroup, UserGroupType, TrackGroup, TrackGroupItem, Track } = require('../../../../db/models')
-const trackgroupService = require('../../../trackgroups/services/trackgroupService')
+const artistService = require('../../../artists/artistService')
 const { authenticate } = require('../../authenticate')
 
 module.exports = function () {
@@ -24,9 +24,7 @@ module.exports = function () {
 
       ctx.status = 201
       ctx.body = {
-        data: result.get({
-          plain: true
-        }),
+        data: await artistService(ctx).single(result),
         status: 201
       }
     } catch (err) {
@@ -102,11 +100,7 @@ module.exports = function () {
       })
 
       ctx.body = {
-        data: result.map((item) => {
-          const o = Object.assign({}, item.dataValues)
-          o.trackgroups = trackgroupService(ctx).list(o.trackgroups)
-          return o
-        }),
+        data: await artistService(ctx).list(result),
         count: count,
         pages: Math.ceil(count / limit),
         status: 'ok'

@@ -1,5 +1,6 @@
 const { SUPPORTED_MEDIA_TYPES } = require('../../../config/supported-media-types')
 const FILE_STATUS_LIST = require('../../../config/file-status-list')
+// const { promises: fs } = require('fs')
 
 /**
  * File model for both image and audio types
@@ -81,6 +82,24 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     timestamps: true,
+    hooks: {
+      afterDestroy: (instance, options) => {
+        console.log('destroying')
+        console.log('options', instance, options)
+      },
+      afterBulkDestroy: async (instances, options) => {
+        try {
+          const id = instances.where?.id
+          if (id) {
+            // FIXME: we can probably do this more robustly?
+            // await fs.unlink(`/data/media/images/${id}`)
+            // await fs.unlink(`/data/media/audio/${id}`)
+          }
+        } catch (e) {
+          console.error('tried destroying file but failed', e)
+        }
+      }
+    },
     modelName: 'File',
     tableName: 'files'
   })

@@ -258,8 +258,9 @@ const processFile = ctx => {
 
     if (isImage) {
       const { config = 'artwork' } = ctx.request.body // sharp config key
+      console.log('config', config)
       const { width, height } = await dimensions(path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`))
-
+      console.log('width', width, height)
       const file = await File.findOne({
         where: {
           id: filename
@@ -275,8 +276,7 @@ const processFile = ctx => {
       logger.info('Adding image to queue')
 
       data.image = file.dataValues
-
-      imageQueue.add('optimize-image', { filename, config: sharpConfig[config] })
+      imageQueue.add('optimize-image', { filename, config: sharpConfig.config[config] })
     }
 
     return data

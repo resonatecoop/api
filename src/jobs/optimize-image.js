@@ -32,12 +32,14 @@ module.exports = async (job) => {
     config = sharpConfig.artwork
   } = job.data
 
+  logger.info(`passed ${JSON.stringify(config)}`)
+
   const input = path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`)
 
   try {
     const profiler = logger.startTimer()
 
-    logger.info('starting to optimize images', filename)
+    logger.info(`starting to optimize images ${filename}`)
 
     const promises = Object.entries(config).map(([key, value]) => {
       const outputType = key // output type (jpeg, webp)
