@@ -153,7 +153,6 @@ module.exports = (sequelize, DataTypes) => {
                 }
               }
             }
-        console.log('public query', query)
         return query
       },
       publicTrackgroup: (ugId) => {
@@ -171,7 +170,7 @@ module.exports = (sequelize, DataTypes) => {
               enabled: true,
               private: false
             }
-        console.log('publicTrackgroup where', where)
+
         return {
           include: [
             {

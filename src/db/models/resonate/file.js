@@ -84,8 +84,8 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true,
     hooks: {
       afterDestroy: (instance, options) => {
-        console.log('destroying')
-        console.log('options', instance, options)
+        // console.log('destroying')
+        // console.log('options', instance, options)
       },
       afterBulkDestroy: async (instances, options) => {
         try {

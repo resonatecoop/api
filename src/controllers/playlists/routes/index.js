@@ -1,4 +1,4 @@
-const { User, Resonate: Sequelize, Playlist, File } = require('../../../db/models')
+const { Resonate: Sequelize, Playlist, File } = require('../../../db/models')
 const { Op } = require('sequelize')
 const ms = require('ms')
 const playlistService = require('../services/playlistService')
@@ -23,6 +23,7 @@ module.exports = function () {
           'about',
           'cover',
           'creatorId',
+          'createdAt',
           'id',
           'tags',
           'title'
@@ -38,13 +39,6 @@ module.exports = function () {
                 [Op.in]: ['image/jpeg', 'image/png']
               }
             }
-          },
-          {
-            model: User,
-            required: false,
-            attributes: ['id', 'displayName'],
-            as: 'creator'
-
           }
         ],
         order: [
@@ -72,7 +66,7 @@ module.exports = function () {
         query.where.featured = true
       }
 
-      const { rows, count } = await Playlist.findAndCountAll(query)
+      const { rows, count } = await Playlist.scope('items', 'creator').findAndCountAll(query)
 
       ctx.body = {
         data: playlistService(ctx).list(rows),
