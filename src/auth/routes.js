@@ -339,7 +339,10 @@ module.exports = (provider) => {
       attributes: ['password']
     })
 
-    const passwordOkay = await User.checkPassword({ hash: user.password, password: ctx.request.body.password })
+    const passwordOkay = user
+      ? await User.checkPassword({ hash: user.password, password: ctx.request.body.password })
+      : null
+
     if (!user || !passwordOkay) {
       const { uid } = await provider.interactionDetails(
         ctx.req,

@@ -58,7 +58,7 @@ const legacyImages = async (legacyId) => {
         return res
       }, {})
 
-    myCache.set(`assets:${legacyId}`, assets, 10000)
+    myCache.set(`assets:${legacyId}`, assets, 60 * 60 * 3) // three hours
 
     return assets
   } catch (err) {

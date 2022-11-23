@@ -20,7 +20,7 @@ module.exports = function () {
       const { rows: result, count } = await UserGroup.scope('public').findAndCountAll({
         limit,
         order: [
-          ['displayName', 'asc']
+          ['createdAt', 'desc']
         ],
         offset: page > 1 ? (page - 1) * limit : 0,
         subQuery: false,
@@ -30,6 +30,10 @@ module.exports = function () {
             as: 'trackgroups',
             required: true,
             separate: true,
+            where: {
+              enabled: true,
+              private: false
+            },
             include: [{
               model: TrackGroupItem,
               required: true,
