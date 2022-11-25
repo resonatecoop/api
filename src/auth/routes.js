@@ -350,7 +350,7 @@ module.exports = (provider) => {
       )
       const message = { error: ['User not found'] }
 
-      return ctx.redirect(`/interaction/${uid}`, {
+      return ctx.render('interaction-login', {
         uid,
         client: undefined,
         messages: message,

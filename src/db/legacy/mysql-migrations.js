@@ -599,7 +599,39 @@ const migrateBands = async (client) => {
 }
 
 // eslint-disable-next-line
-const migrateMemberOrders = async (client) => {
+// THIS migration looks like it contains duplicate information from the 
+// GF form one
+// const migrateMemberOrders = async (client) => {
+//   const usersGroupedByLegacyId = await groupUsersByLegacyId()
+
+//   return new Promise((resolve, reject) => {
+//     client.query(`SELECT * FROM member_orders
+//     `, async function (error, results, fields) {
+//       if (error) reject(error)
+
+//       try {
+//         ShareTransaction.bulkCreate(results
+//           .filter(r => usersGroupedByLegacyId[r.uid] && r.shares > 0 && r.status === 1)
+//           .map(r => ({
+//             userId: usersGroupedByLegacyId[r.uid].id,
+//             quantity: r.shares,
+//             legacySource: 'member_orders',
+//             invoiceId: r.txid,
+//             updatedAt: r.date,
+//             createdAt: r.date
+//           })))
+//       } catch (e) {
+//         console.error('e', e)
+//         reject(e)
+//       }
+//       console.log('added **old** share transactions')
+//       resolve()
+//     })
+//   })
+// }
+
+// eslint-disable-next-line
+const migrateGFEntryShares = async (client) => {
   await ShareTransaction.destroy({
     truncate: true,
     force: true,
@@ -609,36 +641,6 @@ const migrateMemberOrders = async (client) => {
       }
     }
   })
-  const usersGroupedByLegacyId = await groupUsersByLegacyId()
-
-  return new Promise((resolve, reject) => {
-    client.query(`SELECT * FROM member_orders
-    `, async function (error, results, fields) {
-      if (error) reject(error)
-
-      try {
-        ShareTransaction.bulkCreate(results
-          .filter(r => usersGroupedByLegacyId[r.uid] && r.shares > 0 && r.status === 1)
-          .map(r => ({
-            userId: usersGroupedByLegacyId[r.uid].id,
-            quantity: r.shares,
-            legacySource: 'member_orders',
-            invoiceId: r.txid,
-            updatedAt: r.date,
-            createdAt: r.date
-          })))
-      } catch (e) {
-        console.error('e', e)
-        reject(e)
-      }
-      console.log('added **old** share transactions')
-      resolve()
-    })
-  })
-}
-
-// eslint-disable-next-line
-const migrateGFEntryShares = async (client) => {
   const usersGroupedByLegacyId = await groupUsersByLegacyId()
 
   return new Promise((resolve, reject) => {
@@ -752,7 +754,7 @@ module.exports = async (client) => {
   await migrateLinks(client)
   await migrateLabels(client)
   await migrateBands(client)
-  await migrateMemberOrders(client)
+  // await migrateMemberOrders(client)
   await migrateGFEntryShares(client)
   await migrateGFEntryMembers(client)
   await migrateDescriptions(client)

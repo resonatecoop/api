@@ -51,15 +51,15 @@ module.exports = function () {
               member: true
             }, {
               [Op.and]: [
-                sequelize.literal('"user_groups->trackgroups"."enabled" = true'),
-                sequelize.literal('"user_groups->trackgroups"."private" = false'),
-                sequelize.literal('"user_groups->trackgroups"."release_date" > NOW() - interval \'2 year\'')
+                sequelize.literal('"userGroups->trackgroups"."enabled" = true'),
+                sequelize.literal('"userGroups->trackgroups"."private" = false'),
+                sequelize.literal('"userGroups->trackgroups"."release_date" > NOW() - interval \'2 year\'')
               ]
             }]
         })
 
-        group.push(sequelize.col('"role.id"'), sequelize.col('"memberships"."id"'), sequelize.col('"user_groups"."id"'), sequelize.col('"User"."id"'))
-        having = (sequelize.literal(`(COUNT("user_groups"."id") > 0 and COUNT("user_groups->tracks"."id") > 0)
+        group.push(sequelize.col('"role.id"'), sequelize.col('"memberships"."id"'), sequelize.col('"userGroups"."id"'), sequelize.col('"User"."id"'))
+        having = (sequelize.literal(`(COUNT("userGroups"."id") > 0 and COUNT("userGroups->tracks"."id") > 0)
           or ("memberships"."membership_class_id" = 4 AND "memberships"."updated_at" > NOW() - interval '1 year')
           or ("User"."member" = true)`))
       }
