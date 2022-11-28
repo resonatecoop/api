@@ -56,6 +56,8 @@ module.exports = function () {
 
       let cost = 0
 
+      console.log('cost', cost)
+
       if (track.get('status') !== 'free' && currentCount < 9) {
         cost = calculateCost(currentCount)
       }
@@ -64,9 +66,9 @@ module.exports = function () {
         // 302
         ctx.redirect(`${apiRoot}/stream/${ctx.params.id}`)
       } else {
-        const ext = '.m4a'
+        const ext = '.m3u8'
         const filename = track.url
-        const alias = `/audio/${filename}${ext}`
+        const alias = `/audio/${filename}/playlist${ext}`
 
         // FIXME: this has to happen because of how nginx
         // is set up on local. We can't forward to port :80

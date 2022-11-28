@@ -29,13 +29,14 @@ router.get('/:id', async (ctx, next) => {
       ctx.throw(ctx.status, 'Not found')
     }
 
+    const ext = 'm3u8' // 'm4a'
     const { url: filename } = track
 
-    let alias = `/audio/trim-${filename}.m4a`
+    let alias = `/audio/trim-${filename}.${ext}`
 
-    if (track.get('status') === 'free') {
-      alias = `/audio/${filename}.m4a`
-    }
+    // if (track.get('status') === 'free') {
+    alias = `/audio/${filename}.${ext}`
+    // }
 
     // FIXME: this has to happen because of how nginx
     // is set up on local. We can't forward to port :80

@@ -54,7 +54,9 @@ import userProductsSuccess from './user/products/routes/success.js'
 import webhooksStripeCheckoutSuccess from './webhooks/stripe_checkout_success.js'
 
 import userProfile from './user/profile/routes/index.js'
-import userStream from './user/stream/routes/{id}.js'
+// import userStream from './user/stream/routes/{id}.js'
+import userStreamAudioSegment from './user/stream/routes/audio.{id}.{segment}.js'
+
 import userEarnings from './user/earnings.js'
 import userFiles from './user/files/index.mjs'
 import userFilesId from './user/files/{id}.mjs'
@@ -170,7 +172,8 @@ initialize({
     { path: `${root}/user/products/checkout`, module: userProductsCheckout },
 
     { path: `${root}/user/earnings`, module: userEarnings },
-    { path: `${root}/user/stream/{id}`, module: userStream },
+    { path: `${root}/user/stream/{id}/{segment}`, module: userStreamAudioSegment },
+    // { path: `${root}/user/stream/audio/{id}/{segment}`, module: userStreamAudioSegment },
     { path: `${root}/user/files`, module: userFiles },
     { path: `${root}/user/files/{id}`, module: userFilesId },
 

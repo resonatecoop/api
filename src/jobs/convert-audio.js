@@ -25,7 +25,12 @@ module.exports = async job => {
   const { filename } = job.data
 
   try {
+    await fs.mkdir(`/data/media/audio/${filename}`)
+
     const result = await Promise.all([
+      new Promise((resolve, reject) => {
+        return fs.cp(`/data/media/incoming/${filename}`, `/data/media/audio/${filename}/original.flac`)
+      }),
       new Promise((resolve, reject) => {
         const profiler = logger.startTimer()
         logger.info('starting processing')
@@ -43,13 +48,46 @@ module.exports = async job => {
           })
           .on('end', async () => {
             profiler.done({ message: 'Done converting to m4a' })
+            const stat = await fs.stat(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}/full.m4a`))
+            return resolve(stat)
+          })
+          .save(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}/full.m4a`))
+      }),
+      new Promise((resolve, reject) => {
+        const profiler = logger.startTimer()
+        return ffmpeg(path.join(BASE_DATA_DIR, `/data/media/incoming/${filename}`))
+          .noVideo()
+          .outputOptions(
+            '-movflags',
+            '+faststart'
+          )
+          .addOption('-start_number', 0)// start the first .ts segment at index 0
+          .addOption('-hls_time', 10) // 10 second segment duration
+          .addOption('-hls_list_size', 0)// Maxmimum number of playlist entries (0 means all entries/infinite)
+          // .addOption('-strftime_mkdir', 1)
+          // .addOption('-use_localtime_mkdir', 1)
+          .addOption('-hls_segment_filename', `/data/media/audio/${filename}/segment-%03d.ts`)
+          .addOption('-f', 'hls')// HLS format
+          .audioChannels(2)
+          .audioBitrate('128k')
+          .audioFrequency(48000)
+          .audioCodec('libfdk_aac') // convert using Fraunhofer FDK AAC
+          .on('start', () => {
+            logger.info('Converting original to hls')
+          })
+          .on('error', err => {
+            logger.error(err.message)
+            return reject(err)
+          })
+          .on('end', async () => {
+            profiler.done({ message: 'Done converting to m3u8' })
 
             // FIXME: should this point to the trim track?
-            const stat = await fs.stat(path.join(BASE_DATA_DIR, `/data/media/audio/trim-${filename}.m4a`))
+            const stat = await fs.stat(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}/playlist.m3u8`))
 
             return resolve(stat)
           })
-          .save(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}.m4a`))
+          .save(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}/playlist.m3u8`))
       }),
       new Promise((resolve, reject) => {
         const profiler = logger.startTimer()
@@ -80,11 +118,11 @@ module.exports = async job => {
           .on('end', async () => {
             profiler.done({ message: 'Done trimming track' })
 
-            const stat = await fs.stat(path.join(BASE_DATA_DIR, `/data/media/audio/trim-${filename}.m4a`))
+            const stat = await fs.stat(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}/trim.m4a`))
 
             return resolve(stat)
           })
-          .save(path.join(BASE_DATA_DIR, `/data/media/audio/trim-${filename}.m4a`))
+          .save(path.join(BASE_DATA_DIR, `/data/media/audio/${filename}/trim.m4a`))
       })
     ])
     return Promise.resolve(result)
