@@ -116,6 +116,15 @@ docker ps # look for the resonate pgsql container name
 docker exec -it <resonate-pgsql-container-name> psql -U resonate
 ```
 
+### Windows Pre-reqs for Docker
+
+To use Docker on Windows, you will need to have Windows Subsystem for Linux installed.
+https://docs.docker.com/desktop/install/windows-install/
+
+If you are also working in Visual Studio Code, you may require the Visual Studio Code Remote Development Extension Pack.
+https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack
+
+
 ### Resetting the database
 This will need to be run to reset the database periodically while migrations are still being squared away.
 
