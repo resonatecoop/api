@@ -12,7 +12,8 @@ const { Track, File } = require('../db/models')
 const sharpConfig = require('../config/sharp') // TODO publish this)
 
 const {
-  HIGH_RES_AUDIO_MIME_TYPES,
+  // FIXME: HIGH_RES_AUDIO_MIME_TYPES,
+  SUPPORTED_AUDIO_MIME_TYPES,
   SUPPORTED_IMAGE_MIME_TYPES
 } = require('../config/supported-media-types')
 const { REDIS_CONFIG } = require('../config/redis')
@@ -173,7 +174,8 @@ const processFile = ctx => {
     const isImage = SUPPORTED_IMAGE_MIME_TYPES
       .includes(mime)
 
-    const isAudio = HIGH_RES_AUDIO_MIME_TYPES
+    // FIXME: const isAudio = HIGH_RES_AUDIO_MIME_TYPES
+    const isAudio = SUPPORTED_AUDIO_MIME_TYPES
       .includes(mime)
 
     if (!isImage && !isAudio) {
@@ -204,6 +206,7 @@ const processFile = ctx => {
       logger.error(e)
     }
 
+    //  FIXME: what if NODE_ENV === 'test'?
     if (process.env.NODE_ENV !== 'development') {
       logger.info('Adding audio to upload-b2 queue')
       uploadQueue.add('upload-b2', {

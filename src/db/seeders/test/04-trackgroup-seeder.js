@@ -153,6 +153,7 @@ module.exports = {
     await queryInterface.bulkDelete('user_memberships', null, {})
     await queryInterface.bulkDelete('credits', null, {})
     await queryInterface.bulkDelete('playlists', null, {})
+    // FIXME: vvv ?
     return queryInterface.bulkDelete('files', null, {})
   }
 }
