@@ -1,25 +1,24 @@
 
-const { File, Track, Play, Credit } = require('../../../../db/models')
-const { calculateCost } = require('@resonate/utils')
-const path = require('path')
-const send = require('koa-send')
-const { apiRoot } = require('../../../../constants')
-const { authenticate } = require('../../authenticate')
-const fs = require('fs')
+import models from '../../../../db/models/index.js'
+import { calculateCost } from '@resonate/utils'
+import path from 'path'
+import send from 'koa-send'
+import { apiRoot } from '../../../../constants.js'
+import { authenticate } from '../../authenticate.js'
+import fs from 'fs'
+const { File, Track, Play, Credit } = models
 const fsPromises = fs.promises
 
 const ROOT = '/data/media/audio'
 
-const fetchFile = async (ctx, filename, segment) => {
-  let alias = `${filename}/${segment}`
-
+export const fetchFile = async (ctx, filename, segment, trimmed = false) => {
+  const alias = `${filename}/${trimmed ? 'trim.m4a' : segment}`
+  console.log('fetching file', filename, trimmed)
   // We test if this file works with m3u8.
   try {
-    const stat = await fsPromises.stat(path.join(ROOT, alias))
-    console.log('stat', stat)
+    await fsPromises.stat(path.join(ROOT, alias))
   } catch (e) {
-    // If it doesn't exist, well then we'll check for our old .m4a files
-    alias = `${filename}.m4a`
+    ctx.throw(404, 'Track data not found')
   }
 
   // FIXME: this has to happen because of how nginx
@@ -34,6 +33,7 @@ const fetchFile = async (ctx, filename, segment) => {
   // cleaner way to fix this.
   if (process.env.NODE_ENV !== 'production') {
     try {
+      console.log('reading stream', path.join(ROOT, alias))
       ctx.body = fs.createReadStream(path.join(ROOT, alias))
     } catch (e) {
       console.error(e)
@@ -54,36 +54,43 @@ const fetchFile = async (ctx, filename, segment) => {
   }
 }
 
-module.exports = function () {
+export const findTrack = async (id, ctx) => {
+  const track = await Track.findOne({
+    where: {
+      id
+    },
+    include: [
+      {
+        required: false,
+        model: File,
+        where: {
+          id
+        },
+        attributes: ['id', 'size', 'ownerId'],
+        as: 'audiofile'
+      }
+    ]
+  })
+
+  if (!track) {
+    ctx.status = 404
+    ctx.throw(ctx.status, 'Not found')
+  }
+
+  return track
+}
+
+export default function () {
   const operations = {
     GET: [authenticate, GET]
   }
 
   async function GET (ctx, next) {
-    console.log('ctx', ctx.params)
-
     const { segment, id } = ctx.params
 
     try {
       if (segment === 'playlist.m3u8') {
-        const track = await Track.findOne({
-          where: {
-            id
-          },
-          include: [
-            {
-              required: false,
-              model: File,
-              attributes: ['id', 'size', 'ownerId'],
-              as: 'audiofile'
-            }
-          ]
-        })
-
-        if (!track) {
-          ctx.status = 404
-          ctx.throw(ctx.status, 'Not found')
-        }
+        const track = await findTrack(id, ctx)
 
         const wallet = await Credit.findOne({
           where: {
@@ -108,8 +115,6 @@ module.exports = function () {
 
         let cost = 0
 
-        console.log('cost', cost)
-
         if (track.get('status') !== 'free' && currentCount < 9) {
           cost = calculateCost(currentCount)
         }
@@ -121,22 +126,7 @@ module.exports = function () {
           await fetchFile(ctx, track.url, segment)
         }
       } else {
-        const track = await Track.findOne({
-          where: {
-            id
-          },
-          include: [
-            {
-              required: false,
-              model: File,
-              where: {
-                id
-              },
-              attributes: ['id', 'size', 'ownerId'],
-              as: 'audiofile'
-            }
-          ]
-        })
+        const track = await findTrack(id)
         await fetchFile(ctx, track.url, segment)
       }
     } catch (err) {

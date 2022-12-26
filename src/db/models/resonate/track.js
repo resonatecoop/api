@@ -70,6 +70,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       field: 'track_number'
     },
+    hls: {
+      type: DataTypes.BOOLEAN,
+      field: 'hls'
+    },
     status: {
       type: DataTypes.INTEGER,
       validate: {

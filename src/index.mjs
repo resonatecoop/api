@@ -33,7 +33,7 @@ import Router from '@koa/router'
 import { provider, routes as authRoutes } from './auth/index.js'
 import { apiRouter } from './controllers/index.mjs'
 import { apiRoot } from './constants.js'
-import stream from './controllers/stream/index.js'
+import stream from './controllers/stream/audio.{id}.{segment}.mjs'
 import { REDIS_CONFIG } from './config/redis.js'
 dotenv.config()
 

@@ -56,8 +56,6 @@ module.exports = function () {
 
       let cost = 0
 
-      console.log('cost', cost)
-
       if (track.get('status') !== 'free' && currentCount < 9) {
         cost = calculateCost(currentCount)
       }
