@@ -6,6 +6,9 @@ import path from 'path'
 
 import apiDoc from './api-doc.js'
 import apiDocs from './apiDocs.js'
+
+import streamLegacy from './stream/index.mjs'
+import streamRoutes from './stream/audio.{id}.{segment}.mjs'
 import artistReleases from './artists/routes/{id}/releases.js'
 import artistTopTracks from './artists/routes/{id}/tracks/top.js'
 import artistTracks from './artists/routes/{id}/tracks/index.js'
@@ -54,7 +57,9 @@ import userProductsSuccess from './user/products/routes/success.js'
 import webhooksStripeCheckoutSuccess from './webhooks/stripe_checkout_success.js'
 
 import userProfile from './user/profile/routes/index.js'
-import userStream from './user/stream/routes/{id}.js'
+import userStreamLegacy from './user/stream/routes/{id}.js'
+import userStreamAudioSegment from './user/stream/routes/audio.{id}.{segment}.mjs'
+
 import userEarnings from './user/earnings.js'
 import userFiles from './user/files/index.mjs'
 import userFilesId from './user/files/{id}.mjs'
@@ -106,6 +111,8 @@ initialize({
   basePath: root,
   apiDoc: apiDoc,
   paths: [
+    { path: `${root}/stream/{id}`, module: streamLegacy },
+    { path: `${root}/stream/{id}/{segment}`, module: streamRoutes },
     { path: `${root}/tracks`, module: tracksRoutes },
     { path: `${root}/tracks/{id}`, module: tracksId },
 
@@ -170,7 +177,8 @@ initialize({
     { path: `${root}/user/products/checkout`, module: userProductsCheckout },
 
     { path: `${root}/user/earnings`, module: userEarnings },
-    { path: `${root}/user/stream/{id}`, module: userStream },
+    { path: `${root}/user/stream/{id}/{segment}`, module: userStreamAudioSegment },
+    { path: `${root}/user/stream/{id}`, module: userStreamLegacy },
     { path: `${root}/user/files`, module: userFiles },
     { path: `${root}/user/files/{id}`, module: userFilesId },
 

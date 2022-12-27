@@ -18,6 +18,7 @@ module.exports = function () {
 
       const track = await Track.findOne({ where: { id: ctx.request.params.id } })
       track.set('url', data.filename)
+      track.set('hls', true)
       await track.save()
       await track.reload()
       ctx.body = {

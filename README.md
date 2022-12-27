@@ -28,6 +28,7 @@ Set up the dev environment
 ```
 yarn install
 yarn husky install
+```
 
 And then run the server!
 
