@@ -297,9 +297,9 @@ const migrateTrackGroupItems = async (client, id) => {
   const tracksGroupedByLegacyId = keyBy(tracks, 'legacyId')
 
   return new Promise((resolve, reject) => {
-    client.query(`SELECT tgi.id, tgi.index, track_group_id, track_id, track_performers, track_composers, tgi.updated_at, tgi.created_at FROM track_group_items tgi 
-    INNER JOIN track_groups tg 
-    ON tgi.track_group_id = tg.id 
+    client.query(`SELECT tgi.id, tgi.index, track_group_id, track_id, track_performers, track_composers, tgi.updated_at, tgi.created_at FROM track_group_items tgi
+    INNER JOIN track_groups tg
+    ON tgi.track_group_id = tg.id
     AND (tg.type != 'playlist' or tg.type IS NULL)
     `, async function (error, results, fields) {
       if (error) reject(error)
@@ -310,11 +310,12 @@ const migrateTrackGroupItems = async (client, id) => {
           // they didn't have an e-mail associated with them.
           .filter(r => tracksGroupedByLegacyId[r.track_id])
           .map(r => {
+            const trackId = tracksGroupedByLegacyId[r.track_id].id ?? null
             return {
               id: r.id,
               index: r.index,
               trackgroupId: r.track_group_id,
-              track_id: tracksGroupedByLegacyId[r.track_id].id ?? null,
+              trackId: trackId,
               track_performers: r.track_performers?.split(','),
               track_composers: r.track_composers?.split(','),
               updatedAt: r.updated_at,

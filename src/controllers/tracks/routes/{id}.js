@@ -45,6 +45,7 @@ module.exports = function () {
           'cover_art',
           'album',
           'status',
+          'hls',
           'duration',
           'year'
         ]

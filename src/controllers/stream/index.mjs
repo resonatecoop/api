@@ -6,6 +6,7 @@ import models from '../../db/models/index.js'
 
 const { File, Track } = models
 
+// Legacy
 export default function () {
   const operations = {
     GET,
@@ -35,7 +36,7 @@ export default function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
-      const ext = 'm3u8' // 'm4a'
+      const ext = 'm4a' // 'm4a'
       const { url: filename } = track
 
       let alias = `/audio/trim-${filename}.${ext}`

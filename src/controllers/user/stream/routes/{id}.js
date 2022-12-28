@@ -33,6 +33,12 @@ module.exports = function () {
         ctx.throw(ctx.status, 'Not found')
       }
 
+      if (!ctx.profile) {
+        const notLoggedInUrl = `${apiRoot}/stream/${ctx.params.id}`
+        ctx.redirect(notLoggedInUrl)
+        return next()
+      }
+
       const wallet = await Credit.findOne({
         where: {
           user_id: ctx.profile.id
@@ -64,9 +70,9 @@ module.exports = function () {
         // 302
         ctx.redirect(`${apiRoot}/stream/${ctx.params.id}`)
       } else {
-        const ext = '.m3u8'
+        const ext = '.m4a'
         const filename = track.url
-        const alias = `/audio/${filename}/playlist${ext}`
+        const alias = `/audio/${filename}${ext}`
 
         // FIXME: this has to happen because of how nginx
         // is set up on local. We can't forward to port :80

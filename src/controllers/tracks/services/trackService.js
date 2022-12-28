@@ -32,6 +32,7 @@ const trackService = (ctx) => {
           },
       trackGroupId: trackGroup?.id,
       year: item.year,
+      hls: item.hls,
       status: item.status,
       creator: item.creator,
       userPlays: item.plays ? item.plays.length : undefined,
