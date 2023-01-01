@@ -13,8 +13,11 @@ export default function () {
 
     try {
       const track = await findTrack(id, ctx)
-      console.log('ffound track', track.get('status'))
-      await fetchFile(ctx, track.url, segment, track.get('status') !== 'free')
+      await fetchFile(ctx,
+        track.url,
+        segment === 'playlist.m3u8' && track.get('status') !== 'free'
+          ? 'trim-playlist.m3u8'
+          : segment)
     } catch (err) {
       ctx.throw(ctx.status, err.message)
     }

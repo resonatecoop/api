@@ -35,6 +35,9 @@ db.UserGroupLink = require(path.join(__dirname, '/resonate', 'user_group_link.js
 db.Playlist = require(path.join(__dirname, '/resonate', 'playlist.js'))(db.Resonate, DataTypes)
 db.PlaylistItem = require(path.join(__dirname, '/resonate', 'playlist_item.js'))(db.Resonate, DataTypes)
 db.UserGroupMember = require(path.join(__dirname, '/resonate', 'user_group_member.js'))(db.Resonate, DataTypes)
+db.UserLedgerEntry = require(path.join(__dirname, '/resonate', 'user_ledger_entry.js'))(db.Resonate, DataTypes)
+db.UserTrackGroupPurchase = require(path.join(__dirname, '/resonate', 'user_track_group_purchase.js'))(db.Resonate, DataTypes)
+db.UserTrackPurchase = require(path.join(__dirname, '/resonate', 'user_track_purchase.js'))(db.Resonate, DataTypes)
 
 db.sequelize = sequelize
 db.Sequelize = Sequelize

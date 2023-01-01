@@ -1,4 +1,4 @@
-const { Play, Track, Credit } = require('../../../../db/models')
+const { Play, Track, Credit, UserLedgerEntry, UserTrackPurchase } = require('../../../../db/models')
 const { Op } = require('sequelize')
 const { calculateRemainingCost, formatCredit } = require('@resonate/utils')
 const numbro = require('numbro')
@@ -66,16 +66,19 @@ module.exports = function () {
       let result
 
       if (cost > 0 && wallet.total >= cost) {
-        result = await Promise.all(plays.map(async (count) => {
-          // TODO save the final play count
-          return Play.create({
-            // count: count + 1,
-            trackId: track.id,
-            userId: ctx.profile.id,
-            createdAt: new Date(),
-            type: 'paid'
-          })
-        }))
+        const purchase = await UserTrackPurchase.create({
+          userId: ctx.profile.id,
+          trackId: track.id,
+          type: 'purchase'
+        })
+        await UserLedgerEntry.create({
+          userId: track.creatorId,
+          amount: Math.max(((cost / 1000) * 1.2).toFixed(2), 0.01),
+          type: 'credit',
+          extra: {
+            purchaseId: purchase.id
+          }
+        })
 
         wallet.total = subtract(wallet.total, cost)
 

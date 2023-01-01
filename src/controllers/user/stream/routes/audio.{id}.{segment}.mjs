@@ -11,9 +11,8 @@ const fsPromises = fs.promises
 
 const ROOT = '/data/media/audio'
 
-export const fetchFile = async (ctx, filename, segment, trimmed = false) => {
-  const alias = `${filename}/${trimmed ? 'trim.m4a' : segment}`
-  console.log('fetching file', filename, trimmed)
+export const fetchFile = async (ctx, filename, segment) => {
+  const alias = `${filename}/${segment}`
   // We test if this file works with m3u8.
   try {
     await fsPromises.stat(path.join(ROOT, alias))
@@ -33,7 +32,6 @@ export const fetchFile = async (ctx, filename, segment, trimmed = false) => {
   // cleaner way to fix this.
   if (process.env.NODE_ENV !== 'production') {
     try {
-      console.log('reading stream', path.join(ROOT, alias))
       ctx.body = fs.createReadStream(path.join(ROOT, alias))
     } catch (e) {
       console.error(e)
@@ -92,6 +90,12 @@ export default function () {
       if (segment === 'playlist.m3u8') {
         const track = await findTrack(id, ctx)
 
+        if (!ctx.profile) {
+          const notLoggedInUrl = `${apiRoot}/stream/${ctx.params.id}/playlist.m3u8`
+          ctx.redirect(notLoggedInUrl)
+          return next()
+        }
+
         const wallet = await Credit.findOne({
           where: {
             user_id: ctx.profile.id
@@ -126,6 +130,12 @@ export default function () {
           await fetchFile(ctx, track.url, segment)
         }
       } else {
+        // TODO: make it so that if we're fetching segment N
+        // we charge the user if they have money and if not
+        // we cut off playing. This will eliminate the play
+        // endpoint as well as the need for storing separate trim
+        // fields. This can only be done once we've migrated
+        // all of our music to be folder structured.
         const track = await findTrack(id)
         await fetchFile(ctx, track.url, segment)
       }

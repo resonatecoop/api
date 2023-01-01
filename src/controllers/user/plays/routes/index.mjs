@@ -1,13 +1,14 @@
-const { Play, Track, Credit } = require('../../../../db/models')
-const { Op } = require('sequelize')
-const { calculateCost } = require('@resonate/utils')
-const numbro = require('numbro')
-const { authenticate } = require('../../authenticate')
+import models from '../../../../db/models/index.js'
+import { Op } from 'sequelize'
+import { calculateCost } from '@resonate/utils'
+import numbro from 'numbro'
+import { authenticate } from '../../authenticate.js'
 
+const { Play, Track, Credit, UserLedgerEntry, UserTrackPurchase, UserGroup } = models
 const add = (a, b) => numbro(a).add(b).value()
 const subtract = (a, b) => numbro(a).subtract(b).value()
 
-module.exports = function () {
+export default function () {
   const operations = {
     POST: [authenticate, POST]
   }
@@ -22,8 +23,18 @@ module.exports = function () {
           status: {
             [Op.in]: [0, 2, 3]
           }
-        }
+        },
+        include: [{
+          model: UserGroup,
+          attributes: ['id', 'ownerId'],
+          as: 'creator'
+        }]
       })
+
+      if (track.creator.ownerId === ctx.profile.id) {
+        ctx.status = 200
+        ctx.throw(ctx.status, 'Track owned by listener')
+      }
 
       if (!track) {
         ctx.status = 404
@@ -44,7 +55,7 @@ module.exports = function () {
       const currentCount = await Play.count({
         where: {
           trackId: id,
-          user_id: ctx.profile.id,
+          userId: ctx.profile.id,
           event: 1
         }
       })
@@ -65,8 +76,23 @@ module.exports = function () {
         wallet.total = subtract(wallet.total, cost)
         play.type = 'paid'
         newCount = add(currentCount, 1)
-
         await play.save()
+        await play.reload()
+        await UserLedgerEntry.create({
+          userId: track.creatorId,
+          amount: Math.max(((cost / 1000) * 1.2).toFixed(2), 0.01),
+          type: 'credit',
+          extra: {
+            playId: play.id
+          }
+        })
+        if (newCount === 9) {
+          await UserTrackPurchase.create({
+            userId: ctx.profile.id,
+            trackId: track.id,
+            type: 'play'
+          })
+        }
         await wallet.save()
       } else {
         await play.save()
