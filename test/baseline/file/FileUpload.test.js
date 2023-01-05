@@ -9,36 +9,9 @@
 //  DO NOT RUN THIS FILE UNLESS YOU WANT TO GENERATE NEW TEST DATA
 // ****************************************************************
 
-// OUTPUT FROM process-file.js FOR TRACK ID 44a28752-1101-4e0d-8c40-2c36dc82d035
-// resonate-api         | processFile.data:  {
-// resonate-api         |   id: '8e2243a0-5c8d-4885-a134-460015dd52ef',
-// resonate-api         |   status: 'processing',
-// resonate-api         |   ownerId: '1c88dea6-0519-4b61-a279-4006954c5d4c',
-// resonate-api         |   filename: '8e2243a0-5c8d-4885-a134-460015dd52ef',
-// resonate-api         |   size: 466080,
-// resonate-api         |   mime: 'audio/x-m4a',
-// resonate-api         |   hash: '4beb60bbdd05674f0dba63b09b010bb11762acb6',
-// resonate-api         |   updatedAt: 2022-12-10T04:38:25.061Z,
-// resonate-api         |   createdAt: 2022-12-10T04:38:25.061Z,
-// resonate-api         |   filename_prefix: null,
-// resonate-api         |   description: null,
-// resonate-api         |   metadata: {
-// resonate-api         |     track: { no: null, of: null },
-// resonate-api         |     disk: { no: null, of: null },
-// resonate-api         |     movementIndex: {},
-// resonate-api         |     compilation: false,
-// resonate-api         |     gapless: true
-// resonate-api         |   },
-// resonate-api         |   filename_orig: 'whiteNoise5s1.m4a'
-// resonate-api         | }
-
 const { request, expect, testArtistUserId, testAccessToken } = require('../../testConfig')
 const MockAccessToken = require('../../MockAccessToken')
 
-// after processing, audio is served from /var/www/api/data/media/audio/, not .../incoming
-// below is the location of the source files. they are 'bundled' into the container in the test folder
-//    and need to be moved to /var/www/api/data/media/audio/, then renamed to use the uuid's in the
-//      File model / table / seeder thing
 const audioSourceFilePath = '/var/www/api/test/media/audio/'
 
 let response = null
