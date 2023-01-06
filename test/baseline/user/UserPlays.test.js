@@ -3,8 +3,7 @@
 
 const { request, expect, testArtistId, testAdminUserId, testAccessToken, testInvalidAccessToken, testArtistUserId } = require('../../testConfig')
 const ResetDB = require('../../ResetDB')
-const { Track, TrackGroup, TrackGroupItem, User, Credit, Play, UserGroup } = require('../../../src/db/models')
-const { Op } = require('sequelize')
+const { Track, UserLedgerEntry, UserTrackPurchase, TrackGroup, TrackGroupItem, User, Credit, Play, UserGroup } = require('../../../src/db/models')
 const { faker } = require('@faker-js/faker')
 const TestRedisAdapter = require('../../../src/auth/redis-adapter')
 
@@ -312,15 +311,15 @@ describe('baseline/user plays endpoint test', () => {
     expect(response.body.data.count).to.eql(9)
     expect(response.body.data.cost).to.eql(1022)
     expect(response.body.data.total).to.eql('8.9780')
-    expect(response.body.data.result.length).to.eql(9)
+
     await track.destroy({ force: true })
     await credit.destroy({ force: true })
-    await Play.destroy({
-      where: {
-        id: {
-          [Op.in]: response.body.data.result.map(play => play.id)
-        }
-      },
+    await UserLedgerEntry.destroy({
+      truncate: true,
+      force: true
+    })
+    await UserTrackPurchase.destroy({
+      truncate: true,
       force: true
     })
   })

@@ -63,8 +63,6 @@ module.exports = function () {
         plays.push(i)
       }
 
-      let result
-
       if (cost > 0 && wallet.total >= cost) {
         const purchase = await UserTrackPurchase.create({
           userId: ctx.profile.id,
@@ -89,7 +87,6 @@ module.exports = function () {
 
       ctx.body = {
         data: {
-          result,
           count: newCount,
           cost: cost,
           total: formatCredit(wallet.total)

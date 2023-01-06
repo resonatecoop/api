@@ -1,5 +1,15 @@
 module.exports = (sequelize, DataTypes) => {
   const UserTrackPurchase = sequelize.define('UserTrackPurchase', {
+    id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      validate: {
+        isUUID: 4
+      },
+      unique: true
+    },
     userId: {
       type: DataTypes.UUID,
       field: 'user_id',
