@@ -1,8 +1,6 @@
 
 # How the test data was made
 
-**Note:** The test data for the File Upload process was created using a different method that what is described here. You can read about the File Upload test data creation process [here](./HowTheFileUploadTestDataWasMade.md).
-
 TL;DR: Add new test data by creating new SQL INSERT INTO statements in a new test data seeder in the `api/src/db/seeders/test` folder. Create a new seeder in order to not disrupt the existing test data. You will need to re-seed the test database, as if you were starting the test container for the first time.
 
 You should never replace the existing test data set. If you do, you will have to rewrite every assertion in every test.
