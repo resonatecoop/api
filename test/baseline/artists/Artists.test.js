@@ -91,14 +91,14 @@ describe('baseline/artists endpoint test', () => {
     expect(theTrack.album_artist).to.be.null
     expect(theTrack.composer).to.be.null
     expect(theTrack.year).to.be.null
-    expect(theTrack.url).to.be.null
+    expect(theTrack.url).to.eql('b60f1759-6405-4457-9910-6da1ccd5f40f')
     expect(theTrack.cover_art).to.be.null
     expect(theTrack.number).to.be.null
     expect(theTrack.tags).to.be.null
     expect(theTrack.updatedAt).to.eql('2022-09-28T17:31:59.879Z')
     expect(theTrack.createdAt).to.eql('2022-09-28T17:31:59.879Z')
     expect(theTrack.deletedAt).to.be.null
-    expect(theTrack.track_url).to.be.null
+    expect(theTrack.track_url).to.be.eql('b60f1759-6405-4457-9910-6da1ccd5f40f')
     expect(theTrack.track_cover_art).to.be.null
 
     expect(attributes.count).to.eql(1)

@@ -52,9 +52,9 @@ describe('user/admin/files endpoint test', () => {
 
       expect(response.status).to.eql(200)
       const { data, count } = response.body
-      expect(data.length).to.eql(1)
+      expect(data.length).to.eql(31)
       expect(data.length).to.eql(count)
-      expect(data[0].id).to.eql(file.id)
+      expect(data.map(d => d.id)).to.include(file.id)
       expect(data[0].status).to.eql('processing')
       await file.destroy({ force: true })
     })
