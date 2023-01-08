@@ -128,7 +128,7 @@ describe('baseline/admin/trackgroups endpoint test', () => {
       expect(theTrack.artist).to.eql('Laurie Yost')
       expect(theTrack.composer).to.be.null
       expect(theTrack.year).to.be.null
-      expect(theTrack.audiofile).to.be.null
+      expect(theTrack.audiofile).to.not.be.null
 
       expect(theData.images).to.include.keys('small', 'medium')
       expect(theData.images.small).to.be.an('object')
